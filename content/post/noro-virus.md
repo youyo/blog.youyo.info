@@ -1,13 +1,17 @@
-+++
-date = "2016-01-29T00:00:00+09:00"
-draft = false
-title = "ウイルス性胃腸炎にかかった記録"
-tags = [ "private", "noro-virus" ]
-comments = true
-+++
+---
+title: "ウイルス性胃腸炎にかかった記録"
+metaAlignment: left
+date: 2016-01-29
+categories:
+- personal
+tags:
+- private
+- noro_virus
+---
 
 先日ウイルス性胃腸炎に感染しました。  
 ものすごく辛かったので記録。  
+<!--more-->
 
 ---
 

@@ -1,8 +1,15 @@
 ---
 title: "GAE/Goで外部にhttpリクエスト送るには？"
+thumbnailImage: //1.bp.blogspot.com/-ldb24xUV3f0/U-VjaM380DI/AAAAAAAAmPw/V9jDvdAT8R8/s1600/gae.png
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-07-05
-comments: true
-tags: ["go","gae","zabbix"]
+categories:
+- technology
+tags:
+- go
+- gae
+- zabbix
 ---
 
 httpでGETリクエスト送るとそこからzabbixのapi叩いてアラートを停止するってのをGAE/Goの勉強がてら作り直してて、そのときいざzabbixにリクエスト送ろうとしたらエラー出て動きませんでした。
@@ -10,6 +17,7 @@ httpでGETリクエスト送るとそこからzabbixのapi叩いてアラート�
 ```
 http.DefaultTransport and http.DefaultClient are not available in App Engine. See https://cloud.google.com/appengine/docs/go/urlfetch/
 ```
+<!--more-->
 
 そこにはこう書かれていて、
 

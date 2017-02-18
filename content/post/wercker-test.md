@@ -1,8 +1,12 @@
 ---
 title: "Werckerを使ってフェーズ間のパッケージの受け渡し周りでハマった"
+metaAlignment: left
 date: 2016-06-18
-comments: true
-tags: ["wercker","go"]
+categories:
+- technology
+tags:
+- wercker
+- go
 ---
 
 ### まとめ
@@ -13,6 +17,7 @@ tags: ["wercker","go"]
 - 今回のサンプルコード一式はこちら  
 [https://github.com/youyo/wercker-test](https://github.com/youyo/wercker-test)  
 [https://app.wercker.com/#applications/5764c96dc961d9eb3f0f515e](https://app.wercker.com/#applications/5764c96dc961d9eb3f0f515e)
+<!--more-->
 
 ### やりたかったこと
 

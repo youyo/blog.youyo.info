@@ -1,13 +1,11 @@
 ---
 title: "カレントディレクトリにあるmy.cnfファイルから設定を読み込む"
+thumbnailImage: //app-public.ds.jp-east.idcfcloud.com/images/event/1/e22f4c34fe85a0c105e8cdc79056938f479c386b.png
 thumbnailImagePosition: left
-thumbnailImage: //d1u9biwaxjngwg.cloudfront.net/cover-image-showcase/city-750.jpg
-coverImage: //d1u9biwaxjngwg.cloudfront.net/cover-image-showcase/city.jpg
-metaAlignment: center
-coverMeta: out
+metaAlignment: left
 date: 2016-09-26
 categories:
-- tranquilpeak
+- technology
 tags:
 - mysql
 - direnv

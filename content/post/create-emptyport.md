@@ -1,8 +1,13 @@
 ---
 title: "emptyportというGolangのライブラリを作った"
+thumbnailImage:
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-02-08
-comments: true
-tags: ["golang"]
+categories:
+- technology
+tags:
+- golang
 ---
 
 現在使用されていないTCPポートを知りたくて簡単に見つけられないかなーと思ってライブラリ探してたんだけど、見つからなかったので作ってみた。  
@@ -10,6 +15,7 @@ tags: ["golang"]
 なお、このライブラリは下記記事を大変参考にしています。  
 
 [Goで適当に空いてるportをListenする](http://qiita.com/sfujiwara/items/7629fa0cfac5603dab30)  
+<!--more-->
 
 ## とりあえずコード
 

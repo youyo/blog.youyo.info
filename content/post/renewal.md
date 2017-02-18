@@ -1,8 +1,11 @@
 ---
 title: "ブログリニューアル"
+metaAlignment: left
 date: 2015-10-10
-comments: true
-tags: ["hugo"]
+categories:
+- technology
+tags:
+- hugo
 ---
 
 間違って前のブログのソースを消しちゃって更新できなくなったのでリニューアルしました。  

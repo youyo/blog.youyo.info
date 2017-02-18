@@ -1,17 +1,22 @@
 ---
 title: "Amazon EFSがリリースされたので触ってみた"
+thumbnailImage: //cdn-ak.f.st-hatena.com/images/fotolife/L/Lync/20160630/20160630195305.png
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-06-29
-comments: true
-tags: ["aws","efs"]
+categories:
+- technology
+tags:
+- aws
+- efs
 ---
-
-
 
 
 <blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">EFSが正式リリースされたけど、そろそろクラメソさんがブログアップしてくれる頃だと思って待機してる。</p>&mdash; 洋@豆腐 (@youyo\_) <a href="https://twitter.com/youyo_/status/748047484929314816">2016年6月29日</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 と思って待ってたけどこのときはまだ出てなかったので自分で触ってみることにした。
+<!--more-->
 
 <blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">とりあえずEFS作成してみた。オレゴンとか触らなすぎてVPCの作成からやった..</p>&mdash; 洋@豆腐 (@youyo\_) <a href="https://twitter.com/youyo_/status/748052896932073472">2016年6月29日</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>

@@ -1,12 +1,19 @@
 ---
 title: "go buildしたバイナリを実行したら'/lib/ld-linux.so.2: bad ELF interpreter: No such file or directory'エラーが出た"
+thumbnailImage: //blog.golang.org/gopher/gopher.png
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-06-23
-comments: true
-tags: ["go","alpinelinux"]
+categories:
+- technology
+tags:
+- go
+- alpinelinux
 ---
 
 <blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">alpine linuxでgo buildしたバイナリでこの現象に出くわした。 <a href="https://t.co/smbA3ONLiX">https://t.co/smbA3ONLiX</a></p>&mdash; 洋@豆腐 (@youyo\_) <a href="https://twitter.com/youyo_/status/745799897186631681">2016年6月23日</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<!--more-->
 
 で、 [http://www.howtodoityourself.org/how-to-fix-libld-linux-so-2-bad-elf-interpreter-no-such-file-or-directory.html](http://www.howtodoityourself.org/how-to-fix-libld-linux-so-2-bad-elf-interpreter-no-such-file-or-directory.html)によると解決策は `glibc` をインストールすることらしい。  
   

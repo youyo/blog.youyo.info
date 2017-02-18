@@ -1,17 +1,22 @@
-+++
-date = "2016-01-10T00:00:00+09:00"
-draft = false
-title = "Error detected while processing vim_bootstrap_updater.vim"
-tags = [ "vim", "brew" ]
-comments = true
-image = "default.jpg"
-+++
+---
+title: "Error detected while processing vim_bootstrap_updater.vim"
+thumbnailImage: //ohdoylerules.com/content/images/vim.svg
+thumbnailImagePosition: left
+metaAlignment: left
+date: 2016-01-10
+categories:
+- technology
+tags:
+- vim
+- brew
+---
 
 `brew cask install hoge` とかやったらインストールできなかった。  
 調べてみたら `homebrew-cask` が本家に入ったとかで移行が必要なようだった。  
 [homebrew-caskがErrorになると思ったら本家に移行してた](http://qiita.com/emonuh/items/5dc518a64e6ca722b08a)  
   
 んで `brew update` かけたら `vim` でファイル開いたときにエラー出るようになってた...  
+<!--more-->
 
 ```
 [youyo@MBA ~] $ vim file

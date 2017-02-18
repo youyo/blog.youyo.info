@@ -1,8 +1,13 @@
 ---
 title: "SSL証明書のkeyとcrtがペアかどうか確認する"
+thumbnailImage: //i2.wp.com/static.movingpackets.net/2015/03/OpenSSLLogo.png
+thumbnailImagePosition: top
+metaAlignment: left
 date: 2016-02-19
-comments: true
-tags: ["openssl"]
+categories:
+- technology
+tags:
+- openssl
 ---
 
 apache起動しなくなったよー  
@@ -13,6 +18,7 @@ apache起動しなくなったよー
 ```
 [Fri Feb 19 00:00:00 2016] [error] SSL Library Error: 185073780 error:0B080074:x509 certificate routines:X509_check_private_key:key values mismatch
 ```
+<!--more-->
 
 なんとなくkeyファイルとcrtファイルの組み合わせが合ってないんだろうなーってのはわかる。その確認ってどうしたらいいんだ？ってググったら `openssl` コマンドでわかるみたい。  
 

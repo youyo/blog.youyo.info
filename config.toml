@@ -72,6 +72,12 @@ canonifyurls = true
   name = "Facebook"
   pre = "<i class=\"sidebar-button-icon fa fa-lg fa-facebook\"></i>"
   url = "https://www.facebook.com/naoto.ishizawa.94"
+[[menu.links]]
+  weight = 3
+  identifier = "archives"
+  name = "Archived Blog"
+  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-archive\"></i>"
+  url = "//blog.youyo.info/blog/archives/"
 
 [[menu.misc]]
   weight = 0

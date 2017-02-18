@@ -1,18 +1,23 @@
-+++
-date = "2015-10-23T13:23:27+09:00"
-draft = false
-title = "Hugoで作ったサイトをGoogle App Engineで公開した"
-tags = [ "gae", "hugo", "gcp" ]
-comments = true
-
-+++
-
+---
+title: "Hugoで作ったサイトをGoogle App Engineで公開した"
+thumbnailImage: //gohugo.io/apple-touch-icon.png
+thumbnailImagePosition: left
+metaAlignment: left
+date: 2015-10-23
+categories:
+- technology
+tags:
+- gae
+- hugo
+- gcp
 ---
 
 ブログを作りなおすにあたってOctopressからHugoに移行しました。理由はなんとなくです。気分です。  
 で、OctopressのときはS3でホストしてたのですが同じじゃつまらないのでGoogle Cloud Storageでホストしてみました。でもデプロイ時にコンテンツのパーミッションを設定する方法がわからなかったり差分だけど持っていくやり方がわからなかったのでイマイチだと感じていました。  
   
 なんかないかなーと調べてたらGAEで静的ファイルを配信する方法が見つかったのでサクッと移してみました。
+
+<!--more-->
 
 ---
 

@@ -1,16 +1,21 @@
-+++
-date = "2016-01-14T00:00:00+09:00"
-draft = false
-title = "CloudFlareの無料SSL/httpsリダイレクトを使用しているサイトにwordpressを突っ込む"
-tags = [ "cloudflare", "wordpress" ]
-comments = true
-image = "default.jpg"
-+++
+---
+title: "CloudFlareの無料SSL/httpsリダイレクトを使用しているサイトにwordpressを突っ込む"
+thumbnailImage: //www.cloudflare.com/img/cf-facebook-card.png
+thumbnailImagePosition: left
+metaAlignment: left
+date: 2016-01-14
+categories:
+- technology
+tags:
+- cloudflare
+- wordpress
+---
 
 まずやりたいこととしてはタイトルの通り。  
 既に運用している `https://test.youyo.info` (仮)の直下に `https://test.youyo.info/blog` というwordpressサイトを突っ込みたい。  
 最初は何も考えず普通に設置してみてインストール画面をみたらcssやらjsが読み込まれなかった。  
 あれーと思ったらphpが吐くリンク先が `http` で出力されているためだった。  
+<!--more-->
   
 wordpressから `https` でリンクを吐いてもらわないと困るなーってことでググった結果、下記内容を `wp-config.php` に追加すればいいって結論に。  
 

@@ -1,8 +1,13 @@
 ---
 title: "php-fpmはrootで動かない"
+thumbnailImage: //www.squaredbrainwebdesign.com/images/resources/PHP-logo.png
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-02-15
-comments: true
-tags: ["php","php-fpm"]
+categories:
+- technology
+tags:
+- php
 ---
 
 知らないサーバで `php-fpm` 止まってるよーなんとかしてー  
@@ -21,6 +26,7 @@ Starting php-fpm: [15-Feb-2016 13:22:04] ERROR: [pool www] please specify user a
 ```
 
 こんなこと言われて起動できなかった。  
+<!--more-->
   
 なにやらrootで動かさないとパーミション周りでエラーが出るからrootで動かしてくれ！ってことになり、ググったら `--allow-to-run-as-root` オプションをつけてあげればいいとわかった。  
 起動スクリプトを編集して無事起動 :)

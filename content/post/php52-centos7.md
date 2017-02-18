@@ -1,8 +1,14 @@
 ---
 title: "CentOS7にphp5.2をインストール"
+thumbnailImage: //raw.githubusercontent.com/docker-library/docs/c4df0024e2cad985326dc38f6b6ce39abeab59c5/centos/logo.png
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-02-10
-comments: true
-tags: ["centos","php"]
+categories:
+- technology
+tags:
+- centos
+- php
 ---
 
 <blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">今更php5.2とかやめてくれ！！！</p>&mdash; 洋@新婚 (@youyo\_) <a href="https://twitter.com/youyo_/status/697246270478356480">2016, 2月 10</a></blockquote>
@@ -22,6 +28,8 @@ tags: ["centos","php"]
 <br/>
 <br/>
 <br/>
+
+<!--more-->
 
 ---
 

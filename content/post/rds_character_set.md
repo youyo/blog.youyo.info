@@ -1,8 +1,15 @@
 ---
 title: "RDS for MySQLを再起動したら文字化けした"
+thumbnailImage: //doxwk67ta2990.cloudfront.net/wp-content/uploads/2016/05/logo-amazon-rds.gif
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-06-14
-comments: true
-tags: ["aws","mysql","rds"]
+categories:
+- technology
+tags:
+- mysql
+- aws
+- rds
 ---
 
 ## まとめ
@@ -10,6 +17,7 @@ tags: ["aws","mysql","rds"]
 - ZABBIXのデータベースとして使用しているRDS for MySQLを再起動してみた
 - アラート通知だけが文字化けした
 - `skip-character-set-client-handshake` 有効にしたら直った
+<!--more-->
 
 ## 環境
 

@@ -1,8 +1,16 @@
 ---
 title: "JAWS DAYS 2016で発表してきた"
+thumbnailImage:
+thumbnailImagePosition: left
+metaAlignment: left
 date: 2016-03-12
-comments: true
-tags: ["jawdays","jawsug"]
+categories:
+- technology
+tags:
+- jawdays
+- jawsug
+- aws
+- event
 ---
 
 <center>![](/images/jawsdays1.jpg)</center>

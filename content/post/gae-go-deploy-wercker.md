@@ -1,8 +1,18 @@
 ---
 title: "werckerを使ってGAE/GOにデプロイしてFastlyでURLベースのルーティングをする"
+thumbnailImage: //www.fastly.com/sites/all/themes/custom/fastly2016/logo.png
+thumbnailImagePosition: top
+metaAlignment: left
 date: 2016-06-15
-comments: true
-tags: ["hugo","gae","gcp","wercker","go","fastly"]
+categories:
+- technology
+tags:
+- hugo
+- gae
+- gcp
+- wercker
+- go
+- fastly
 ---
 
 このブログは `hugo` で静的htmlを生成して `GAE/GO` にデプロイしています。(http://blog.youyo.info/)  
@@ -11,6 +21,7 @@ tags: ["hugo","gae","gcp","wercker","go","fastly"]
 この２つを同じドメインで運用するにあたってURLベースでのルーティングを `CloudFront` で実現していて、 `Circle CI` を使って `git push` をトリガーにしてデプロイ/キャッシュクリアして **いました**。  
   
 先週あたりまでこの構成だったのですが、今は `CloudFront` => `Fastly` , `CircleCI` => `Wercker` へと変更しました。  
+<!--more-->
   
 ## 何故変更したか？
 

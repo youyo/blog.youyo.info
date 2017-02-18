@@ -1,8 +1,17 @@
 ---
 title: "JAWS-UG青森開催してきた"
+thumbnailImage: //jaws-ug.jp/wp-content/uploads/2013/02/unnamed.png
+thumbnailImagePosition: top
+metaAlignment: left
 date: 2016-06-26
-comments: true
-tags: ["jawsug","jawsugaomori","event","aws"]
+categories:
+- technology
+tags:
+- jawsug
+- jawsugaomori
+- aomori
+- event
+- aws
 ---
 
 ある日ふと思い立って、
@@ -12,6 +21,7 @@ tags: ["jawsug","jawsugaomori","event","aws"]
 という軽いノリでJAWS-UG青森開催することにしました。
 
 当日の様子の写真は[こちら](https://goo.gl/photos/C2bHUUS95qE6fxF58)です。あと詳細はトゥギャっときました。
+<!--more-->
 
 <blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">「JAWSUG青森第５回勉強会」をトゥギャりました。 <a href="https://t.co/39VFXaGUyL">https://t.co/39VFXaGUyL</a></p>&mdash; 洋@豆腐 (@youyo\_) <a href="https://twitter.com/youyo_/status/747027739522174976">2016年6月26日</a></blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>

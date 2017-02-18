@@ -1,12 +1,18 @@
 ---
 title: "NginxのTCP Load Balancing試してみた"
+thumbnailImage: //nginx.org/nginx.png
+thumbnailImagePosition: top
+metaAlignment: left
 date: 2016-06-07
-comments: true
-tags: ["nginx"]
+categories:
+- technology
+tags:
+- nginx
 ---
 
 公式サイトを参考にちょっとやってみた。  
 [https://www.nginx.com/resources/admin-guide/tcp-load-balancing/](https://www.nginx.com/resources/admin-guide/tcp-load-balancing/)
+<!--more-->
 
 ### 環境
 

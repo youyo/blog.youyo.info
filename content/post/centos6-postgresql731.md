@@ -1,11 +1,15 @@
-+++
-date = "2015-10-21T16:22:08+09:00"
-draft = false
-title = "CentOS6にPostgreSQL7.3.1をソースインストール"
-tags = [ "postgresql", "centos" ]
-comments = true
-
-+++
+---
+title: "CentOS6にPostgreSQL7.3.1をソースインストール"
+thumbnailImage: //www.postgresql.org/media/img/about/press/slonik_with_black_text_and_tagline.gif
+thumbnailImagePosition: top
+metaAlignment: left
+date: 2015-10-21
+categories:
+- technology
+tags:
+- centos
+- postgresql
+---
 
 備忘録です
 
@@ -13,6 +17,7 @@ comments = true
 
 - CentOS6.7 x86_64
 - PostgreSQL 7.3.1
+<!--more-->
 
 ---
 
