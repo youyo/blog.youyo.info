@@ -17,7 +17,7 @@ canonifyurls = true
 
 [author]
   name = "youyo"
-  bio = "I'm cloud engineer and software engineer.\nHere is a place to record casual things and what I did."
+  bio = "I'm cloud engineer and software engineer.\nThis is a daily memorandum."
   job = "Cloud engineer\nSoftware engineer"
   location = "Sendai in Japan"
   gravatarEmail = "1003ni2@gmail.com"
@@ -89,7 +89,7 @@ canonifyurls = true
 [params]
   clearReading = true
   hierarchicalCategories = false
-  description = "I'm cloud engineer and software engineer.\nHere is a place to record casual things and what I did."
+  description = "I'm cloud engineer and software engineer.\nThis is a daily memorandum."
   sidebarBehavior = 1
   coverImage = "cover.jpg"
   imageGallery = true
