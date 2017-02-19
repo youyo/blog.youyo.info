@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mail | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/mail/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[opendkim設定]]></title>
+    <link href="http://blog.youyo.info/blog/2014/10/21/opendkim/"/>
+    <updated>2014-10-21T16:05:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/10/21/opendkim</id>
+    <content type="html"><![CDATA[<p>opendkimの設定したのでメモ。</p>
+
+<ul>
+<li>opendkim,postfix</li>
+</ul>
+
+
+<p>```
+yum install sendmail-devel openssl-devel opendkim --enablerepo=epel
+DOMAIN=test.youyo.info
+mkdir /etc/opendkim/keys/${DOMAIN}
+opendkim-genkey -D /etc/opendkim/keys/${DOMAIN}/ -d ${DOMAIN} -s default
+chown -R opendkim:opendkim /etc/opendkim/keys
+mv /etc/opendkim/keys/${DOMAIN}/default.private /etc/opendkim/keys/${DOMAIN}/default</p>
+
+<h2>vim /etc/opendkim.conf</h2>
+
+<p>Mode sv         #sは送信時の署名、vは受信時の確認</p>
+
+<h1>KeyFile        /etc/opendkim/keys/default.private</h1>
+
+<p>KeyTable        refile:/etc/opendkim/KeyTable
+SigningTable        refile:/etc/opendkim/SigningTable
+ExternalIgnoreList  refile:/etc/opendkim/TrustedHosts</p>
+
+<h2>InternalHosts       refile:/etc/opendkim/TrustedHosts</h2>
+
+<h2>vim /etc/opendkim/KeyTable</h2>
+
+<h2>default._domainkey.test.youyo.info test.youyo.info:default:/etc/opendkim/keys/test.youyo.info/default</h2>
+
+<h2>vim /etc/opendkim/SigningTable</h2>
+
+<h2>*@test.youyo.info default._domainkey.test.youyo.info</h2>
+
+<h2>cat /etc/opendkim/keys/${DOMAIN}/default.txt </h2>
+
+<p>default._domainkey  IN  TXT ( "v=DKIM1; k=rsa; "</p>
+
+<pre><code>  "p=MIGfMA0SIb3DQEB.........AQUJd1j+P+QIDAQAB" )  ; ----- DKIM key default for test.youyo.info
+</code></pre>
+
+<hr />
+
+<h2>vim /etc/postfix/main.cf</h2>
+
+<p>mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain</p>
+
+<p>smtpd_milters = inet:127.0.0.1:8891
+non_smtpd_milters       = $smtpd_milters</p>
+
+<h2>milter_default_action   = accept</h2>
+
+<p>service postfix check</p>
+
+<p>```</p>
+
+<ul>
+<li>dns</li>
+</ul>
+
+
+<p><code>
+_adsp._domainkey    IN TXT  "dkim=unknown"
+default._domainkey  IN TXT  "v=DKIM1; k=rsa; p=MIGfMA0SIb3DQEB.........AQUJd1j+P+QIDAQAB"
+</code></p>
+
+<ul>
+<li>反映</li>
+</ul>
+
+
+<p><code>
+service opendkim start
+chkconfig opendkim on
+service postfix restart
+</code></p>
+
+<ul>
+<li>ドメイン追加時</li>
+</ul>
+
+
+<p>```
+DOMAIN=test2.youyo.info
+mkdir /etc/opendkim/keys/${DOMAIN}
+opendkim-genkey -D /etc/opendkim/keys/${DOMAIN}/ -d ${DOMAIN} -s default
+chown -R opendkim:opendkim /etc/opendkim/keys
+mv /etc/opendkim/keys/${DOMAIN}/default.private /etc/opendkim/keys/${DOMAIN}/default</p>
+
+<h2>vim /etc/opendkim/KeyTable</h2>
+
+<h2>default._domainkey.test2.youyo.info test2.youyo.info:default:/etc/opendkim/keys/test2.youyo.info/default</h2>
+
+<h2>vim /etc/opendkim/SigningTable</h2>
+
+<h2>*@test2.youyo.info default._domainkey.test2.youyo.info</h2>
+
+<p>dns設定</p>
+
+<p>service opendkim restart
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

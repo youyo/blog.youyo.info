@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>mysql5.6+php5.4+nginxな環境を作る(インストールのみ) - blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="今までVPS2Gプランを借りていたのですが、ちょっとした家計の事情でより安い1Gプランに移ることにしました。んで。せっかくなのでmysql5.6な環境作りたいな〜っと思いまして、ついでにphpも5.4にして毎回忘れるVDAパッチ済みのpostfixもつくっとこうってことでやりました。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/2013/02/12/server-build-log//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">mysql5.6+php5.4+nginxな環境を作る(インストールのみ)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-12T20:16:00+09:00" pubdate data-updated="true">Feb 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>今までVPS2Gプランを借りていたのですが、ちょっとした家計の事情でより安い1Gプランに移ることにしました。んで。せっかくなのでmysql5.6な環境作りたいな〜っと思いまして、ついでにphpも5.4にして毎回忘れるVDAパッチ済みのpostfixもつくっとこうってことでやりました。<br/>
+以下いつも通りやったことです。今回はインストール作業のみで設定ファイル編集とかは基本的にやってないです。</p>
+
+<h2>環境とインストールしたもの</h2>
+
+<ul>
+<li>CentOS 6.3 x86_64</li>
+<li><a href="#N1">Minimal Install &amp; ユーザ追加</a></li>
+<li><a href="#N2">初期設定</a></li>
+<li><a href="#N3">rbenv install</a></li>
+<li><a href="#N4">dnsmasq2.48 install</a></li>
+<li><a href="#N5">mysql5.6 install</a></li>
+<li><a href="#N6">php5.4 install</a></li>
+<li><a href="#N7">nginx1.2.6 install</a></li>
+<li><a href="#N8">postfix2.9.5+VDAパッチ install</a></li>
+<li><a href="#N9">dovecot2.0.9 install</a></li>
+</ul>
+
+
+<!--more-->
+
+
+
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N1">Minimal Install &amp; ユーザ追加</a></h3>
+
+<p>普通にOSインストールしてユーザ追加です。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># useradd xxxx
+</span><span class='line'># su - xxxx
+</span><span class='line'>$ ssh-keygen -t rsa
+</span><span class='line'>$ cat .ssh/id_rsa.pub &gt; .ssh/authorized_keys
+</span><span class='line'>$ chmod 400 .ssh/authorized_keys
+</span><span class='line'># sed -ie "s/#PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config
+</span><span class='line'># echo -e "AllowUsers\txxxx" &gt;&gt; /etc/ssh/sshd_config
+</span><span class='line'># /etc/init.d/sshd restart</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N2">初期設定</a></h3>
+
+<p>とりあえずこまごま設定です。iptablesとかselinuxとかoffってるけど構築途中ということで勘弁！</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># yum groupinstall "Base"
+</span><span class='line'># yum update
+</span><span class='line'># yum install sudo git
+</span><span class='line'># echo "xxxx ALL=(ALL) NOPASSWD:ALL" &gt; /etc/sudoers.d/xxxx
+</span><span class='line'># chmod 400 /etc/sudoers.d/xxxx
+</span><span class='line'># sed -ie "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
+</span><span class='line'># chkconfig iptables off
+</span><span class='line'># chkconfig ip6tables off
+</span><span class='line'># chkconfig cpuspeed off
+</span><span class='line'># echo "NETWORKING_IPV6=no" &gt;&gt; /etc/sysconfig/network
+</span><span class='line'># echo "options ipv6 disable=1" &gt; /etc/modprobe.d/disable-ipv6.conf
+</span><span class='line'># sed -ie 's/NM_CONTROLLED="yes"/NM_CONTROLLED="no"/' /etc/sysconfig/network-scripts/ifcfg-eth0
+</span><span class='line'># echo -e "nameserver 210.157.1.171\nnameserver 8.8.8.8" &gt; /etc/resolv.conf
+</span><span class='line'># sed -ie "s/server 0.centos.pool.ntp.org/server ntp.nict.jp/" /etc/ntp.conf 
+</span><span class='line'># sed -ie "s/server 1.centos.pool.ntp.org/server ntp1.jst.mfeed.ad.jp/" /etc/ntp.conf 
+</span><span class='line'># sed -ie "s/server 2.centos.pool.ntp.org/server ntp2.jst.mfeed.ad.jp/" /etc/ntp.conf
+</span><span class='line'># chkconfig ntpd on
+</span><span class='line'># chkconfig ntpdate on
+</span><span class='line'># su - xxxx
+</span><span class='line'>$ vim .vimrc
+</span><span class='line'># reboot</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>.vimrc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>syntax on
+</span><span class='line'><span class="nb">set </span><span class="nv">encoding</span><span class="o">=</span>utf-8
+</span><span class='line'><span class="nb">set </span><span class="nv">fileencoding</span><span class="o">=</span>utf-8
+</span><span class='line'><span class="nb">set </span><span class="nv">fileencodings</span><span class="o">=</span>utf-8,iso-2022-jp,euc-jp,ucs-2,cp932,sjis
+</span><span class='line'><span class="nb">set </span><span class="nv">tabstop</span><span class="o">=</span>2
+</span><span class='line'><span class="nb">set </span>autoindent
+</span><span class='line'><span class="nb">set </span>expandtab
+</span><span class='line'><span class="nb">set </span><span class="nv">shiftwidth</span><span class="o">=</span>2
+</span><span class='line'><span class="nb">set </span>ignorecase
+</span><span class='line'><span class="nb">set </span>showmatch
+</span><span class='line'><span class="nb">set </span>showmode
+</span><span class='line'><span class="nb">set </span>title
+</span><span class='line'>highlight JpSpace <span class="nv">cterm</span><span class="o">=</span>underline <span class="nv">ctermfg</span><span class="o">=</span>darkblue <span class="nv">guifg</span><span class="o">=</span>darkblue
+</span><span class='line'>match JpSpace /　/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<p>ここからは項目通りにインストールしていくだけです。</p>
+
+<h3><a id="N3">rbenv install</a></h3>
+
+<p>自分の記事まんま(´ω`)<br/>
+<a href="http://blog.youyo.info/blog/2013/01/21/rbenv-all-users/">http://blog.youyo.info/blog/2013/01/21/rbenv-all-users/</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c"># cd /usr/local/src/</span>
+</span><span class='line'><span class="c"># wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span>
+</span><span class='line'><span class="c"># rpm -ivh epel-release-6-8.noarch.rpm</span>
+</span><span class='line'><span class="c"># sed -ie &quot;s/enabled=1/enabled=0/&quot; /etc/yum.repos.d/epel.repo</span>
+</span><span class='line'><span class="c"># cd /usr/local/</span>
+</span><span class='line'><span class="c"># git clone git://github.com/sstephenson/rbenv.git rbenv</span>
+</span><span class='line'><span class="c"># mkdir rbenv/{shims,versions}</span>
+</span><span class='line'><span class="c"># git clone git://github.com/sstephenson/ruby-build.git ruby-build</span>
+</span><span class='line'><span class="c"># cd ruby-build/</span>
+</span><span class='line'><span class="c"># ./install.sh</span>
+</span><span class='line'><span class="c"># echo &#39;export RBENV_ROOT=&quot;/usr/local/rbenv&quot;&#39; &gt; /etc/profile.d/rbenv.sh  </span>
+</span><span class='line'><span class="c"># echo &#39;export PATH=&quot;/usr/local/rbenv/bin:$PATH&quot;&#39; &gt;&gt; /etc/profile.d/rbenv.sh  </span>
+</span><span class='line'><span class="c"># echo &#39;eval &quot;$(rbenv init -)&quot;&#39; &gt;&gt; /etc/profile.d/rbenv.sh  </span>
+</span><span class='line'><span class="c"># . /etc/profile.d/rbenv.sh</span>
+</span><span class='line'><span class="c"># yum install make gcc kernel-devel zlib-devel openssl-devel readline-devel curl-devel sqlite-devel libyaml-devel --enablerepo=epel</span>
+</span><span class='line'><span class="c"># rbenv install 1.9.3-p385</span>
+</span><span class='line'><span class="c"># rbenv global 1.9.3-p385</span>
+</span><span class='line'><span class="c"># rbenv rehash</span>
+</span><span class='line'><span class="c"># gem install bundler</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N4">dnsmasq2.48 install</a></h3>
+
+<p>自分の記事まんま2(´ω`)<br/>
+<a href="http://blog.youyo.info/blog/2013/01/24/dnsmasq/">http://blog.youyo.info/blog/2013/01/24/dnsmasq/</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo yum install dnsmasq
+</span><span class='line'>sudo vim /etc/resolv.conf
+</span><span class='line'>sudo /etc/init.d/dnsmasq start
+</span><span class='line'>sudo chkconfig dnsmasq on
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>resolv.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>nameserver 127.0.0.1
+</span><span class='line'>nameserver 210.157.1.171
+</span><span class='line'>nameserver 8.8.8.8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N5">mysql5.6 install</a></h3>
+
+<p>こちらのサイト様を参考に(´ω`)<br/>
+<a href="http://d.hatena.ne.jp/akishin999/20130207/1360241401">http://d.hatena.ne.jp/akishin999/20130207/1360241401</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo mkdir /usr/local/src/mysql5.6/
+</span><span class='line'><span class="nb">cd</span> /usr/local/src/mysql5.6/
+</span><span class='line'>sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-shared-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+</span><span class='line'>sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-shared-compat-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+</span><span class='line'>sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-server-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+</span><span class='line'>sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-client-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+</span><span class='line'>sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-devel-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+</span><span class='line'>sudo yum localinstall MySQL-*
+</span><span class='line'>sudo /etc/init.d/mysql start
+</span><span class='line'>mysql -u root -p
+</span><span class='line'>mysql&gt; SET PASSWORD FOR root@localhost<span class="o">=</span>PASSWORD<span class="o">(</span><span class="s1">&#39;password&#39;</span><span class="o">)</span>;
+</span><span class='line'>sudo mysql_secure_installation
+</span><span class='line'>sudo ln -s /usr/my.cnf /etc/
+</span><span class='line'>sudo vim /etc/my.cnf
+</span><span class='line'>sudo mkdir /var/run/mysqld
+</span><span class='line'>sudo chown mysql /var/run/mysqld/
+</span><span class='line'>sudo mkdir /var/log/mysqld
+</span><span class='line'>sudo chown mysql:mysql /var/log/mysqld
+</span><span class='line'>sudo /etc/init.d/mysql restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>my.cnf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="o">[</span>mysqld<span class="o">]</span>
+</span><span class='line'><span class="nv">datadir</span>                 <span class="o">=</span> /var/lib/mysql
+</span><span class='line'><span class="nv">socket</span>                  <span class="o">=</span> /var/lib/mysql/mysql.sock
+</span><span class='line'>pid-file                <span class="o">=</span> /var/run/mysqld/mysqld.pid
+</span><span class='line'>character-set-server    <span class="o">=</span> utf8
+</span><span class='line'>skip-character-set-client-handshake
+</span><span class='line'>
+</span><span class='line'>log-error               <span class="o">=</span> /var/log/mysqld/mysqld-error.log
+</span><span class='line'><span class="nv">general_log</span>             <span class="o">=</span> 1
+</span><span class='line'><span class="nv">general_log_file</span>        <span class="o">=</span> /var/log/mysqld/mysql.log
+</span><span class='line'><span class="nv">slow_query_log</span>          <span class="o">=</span> 1
+</span><span class='line'><span class="nv">slow_query_log_file</span>     <span class="o">=</span> /var/log/mysqld/slow.log
+</span><span class='line'>
+</span><span class='line'>log-bin                 <span class="o">=</span> mysql-bin
+</span><span class='line'><span class="nv">binlog_format</span>           <span class="o">=</span> mixed
+</span><span class='line'><span class="nv">expire_logs_days</span>        <span class="o">=</span> 30
+</span><span class='line'>server-id               <span class="o">=</span> 1
+</span><span class='line'>
+</span><span class='line'>innodb_file_per_table
+</span><span class='line'><span class="nv">innodb_flush_log_at_trx_commit</span> <span class="o">=</span> 0
+</span><span class='line'><span class="nv">innodb_flush_method</span>     <span class="o">=</span> O_DIRECT
+</span><span class='line'><span class="nv">innodb_buffer_pool_size</span> <span class="o">=</span> 256M
+</span><span class='line'><span class="nv">innodb_log_file_size</span>    <span class="o">=</span> 128M
+</span><span class='line'><span class="nv">innodb_log_buffer_size</span>  <span class="o">=</span> 8M
+</span><span class='line'>
+</span><span class='line'><span class="nv">query_cache_type</span>        <span class="o">=</span> 1
+</span><span class='line'><span class="nv">query_cache_size</span>        <span class="o">=</span> 64M
+</span><span class='line'><span class="nv">key_buffer_size</span>         <span class="o">=</span> 32M
+</span><span class='line'><span class="nv">sort_buffer_size</span>        <span class="o">=</span> 1M
+</span><span class='line'><span class="nv">read_buffer_size</span>        <span class="o">=</span> 1M
+</span><span class='line'><span class="nv">read_rnd_buffer_size</span>    <span class="o">=</span> 4M
+</span><span class='line'>
+</span><span class='line'><span class="nv">sql_mode</span><span class="o">=</span>NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>mysqld_safe<span class="o">]</span>
+</span><span class='line'>log-error               <span class="o">=</span> /var/log/mysqld/mysqld_safe-error.log
+</span><span class='line'>pid-file                <span class="o">=</span> /var/run/mysqld/mysqld.pid
+</span><span class='line'>character-set-server    <span class="o">=</span> utf8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N6">php5.4 install</a></h3>
+
+<p>php54.specファイルを少しいじっています(´ω`)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo yum groupinstall <span class="s2">&quot;Development tools&quot;</span>
+</span><span class='line'>sudo yum install bzip2-devel db4-devel gmp-devel httpd-devel pam-devel libedit-devel libtool-ltdl-devel libc-client-devel cyrus-sasl-devel openldap-devel postgresql-devel unixODBC-devel libxml2-devel firebird-devel net-snmp-devel libxslt-devel libjpeg-devel libpng-devel freetype-devel libXpm-devel t1lib-devel libmcrypt-devel libtidy-devel libtidy-devel freetds-devel aspell-devel recode-devel libicu-devel enchant-devel --enablerepo<span class="o">=</span>epel
+</span><span class='line'>sudo useradd rpmdevel
+</span><span class='line'>su - root
+</span><span class='line'>su - rpmdevel
+</span><span class='line'>mkdir -p ~/rpm/<span class="o">{</span>BUILD,SRPMS,SPECS,SOURCES,RPMS<span class="o">}</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;%_topdir $HOME/rpm&quot;</span> &gt; <span class="nv">$HOME</span>/.rpmmacros
+</span><span class='line'>mkdir src
+</span><span class='line'><span class="nb">cd </span>src/
+</span><span class='line'>wget http://rpms.famillecollet.com/SRPMS/php-5.4.11-1.remi.src.rpm
+</span><span class='line'>rpm -ivh php-5.4.11-1.remi.src.rpm
+</span><span class='line'><span class="nb">cd</span> ../rpm/SPECS/
+</span><span class='line'>sed -ie <span class="s2">&quot;s/mysql-devel/MySQL-devel/&quot;</span> php54.spec
+</span><span class='line'>vim php54.spec
+</span><span class='line'>--------------------------
+</span><span class='line'><span class="c">#%global mysql_config %{_libdir}/mysql/mysql_config</span>
+</span><span class='line'>%global mysql_config /usr/bin/mysql_config
+</span><span class='line'>--------------------------
+</span><span class='line'>rpmbuild -v -ba --clean php54.spec
+</span><span class='line'><span class="nb">logout</span>
+</span><span class='line'><span class="nb">cd</span> /home/rpmdevel/rpm/RPMS/x86_64/
+</span><span class='line'>yum localinstall php-5.4.11-1.el6.x86_64.rpm php-cli-5.4.11-1.el6.x86_64.rpm php-common-5.4.11-1.el6.x86_64.rpm php-devel-5.4.11-1.el6.x86_64.rpm php-fpm-5.4.11-1.el6.x86_64.rpm php-gd-5.4.11-1.el6.x86_64.rpm php-mbstring-5.4.11-1.el6.x86_64.rpm php-mcrypt-5.4.11-1.el6.x86_64.rpm php-mysql-5.4.11-1.el6.x86_64.rpm php-pdo-5.4.11-1.el6.x86_64.rpm php-snmp-5.4.11-1.el6.x86_64.rpm php-xml-5.4.11-1.el6.x86_64.rpm php-xmlrpc-5.4.11-1.el6.x86_64.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N7">nginx1.2.6 install</a></h3>
+
+<p>適当にインストール(´ω`)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo vim /etc/yum.repos.d/nginx.repo
+</span><span class='line'>sudo yum install nginx --enablerepo<span class="o">=</span>nginx
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>nginx.repo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="o">[</span>nginx<span class="o">]</span>
+</span><span class='line'><span class="nv">name</span><span class="o">=</span>nginx repo
+</span><span class='line'><span class="nv">baseurl</span><span class="o">=</span>http://nginx.org/packages/rhel/<span class="nv">$releasever</span>/<span class="nv">$basearch</span>/
+</span><span class='line'><span class="nv">gpgcheck</span><span class="o">=</span>0
+</span><span class='line'><span class="nv">enabled</span><span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N8">postfix2.9.5+VDAパッチ install</a></h3>
+
+<p>VDAパッチ当てるのとmysql対応させるためにspecファイルいじってます(´ω`)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo yum install pcre-devel
+</span><span class='line'>su - rpmdevel
+</span><span class='line'><span class="nb">cd </span>src/
+</span><span class='line'>wget http://download.imt-systems.com/postfix/2.9.5/x86_64/postfix-2.9.5-1.el6.src.rpm
+</span><span class='line'>wget http://vda.sourceforge.net/VDA/postfix-vda-v11-2.9.5.patch
+</span><span class='line'>rpm -ivh postfix-2.9.5-1.el6.src.rpm
+</span><span class='line'>mv postfix-vda-v11-2.9.5.patch ../rpm/SOURCES/
+</span><span class='line'><span class="nb">cd</span> ../rpm/SPECS/
+</span><span class='line'>sed -ie <span class="s2">&quot;s/%bcond_without mysql/%bcond_with mysql/&quot;</span> postfix.spec
+</span><span class='line'>sed -ie <span class="s2">&quot;s/mysql-devel/MySQL-devel/&quot;</span> postfix.spec
+</span><span class='line'>vim postfix.spec
+</span><span class='line'>-------------------
+</span><span class='line'>Release: 1_VDA_%<span class="o">{</span>?dist<span class="o">}</span>
+</span><span class='line'>Epoch: 3
+</span><span class='line'>Patch12: postfix-vda-v11-2.9.5.patch
+</span><span class='line'>%patch12 -p1 -b .VDA
+</span><span class='line'>-------------------
+</span><span class='line'>rpmbuild -v -ba --clean postfix.spec
+</span><span class='line'><span class="nb">logout</span>
+</span><span class='line'><span class="nb">cd</span> /home/rpmdevel/rpm/RPMS/x86_64/
+</span><span class='line'>yum localinstall postfix-2.9.5-1_VDA_.el6.x86_64.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N9">dovecot2.0.9 install</a></h3>
+
+<p>適当にインス(ry</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>sudo yum install dovecot dovecot-mysql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<br>
+
+
+<br>
+
+
+<ul>
+<li>インストールだけしました。</li>
+<li>ちゃんとした設定はあとで。</li>
+<li><s>作成したrpmはなくさないようにあとで公開予定(未定)</s></li>
+</ul>
+
+
+<p>置きました！<br/>
+<a href="http://download.youyo.info/Linux/centos/6/x86_64/RPM/">http://download.youyo.info/Linux/centos/6/x86_64/RPM/</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">youyo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-12T20:16:00+09:00" pubdate data-updated="true">Feb 12<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dnsmasq/'>dnsmasq</a>, <a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/nginx/'>nginx</a>, <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  <a href="http://b.hatena.ne.jp/entry/blog.youyo.info/" class="hatena-bookmark-button" 
+  data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加">
+    <img src="http://b.st-hatena.com/images/entry-button/button-only.gif"
+      alt="このエントリーをはてなブックマークに追加"
+      width="20" height="20" style="border: none;" />
+  </a>
+  <script type="text/javascript"
+    src="http://b.st-hatena.com/js/bookmark_button.js"
+    charset="utf-8" async="async">
+  </script>
+  &nbsp;&nbsp;&nbsp;
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.youyo.info/blog/2013/02/12/server-build-log/" data-via="youyo_" data-counturl="http://blog.youyo.info/blog/2013/02/12/server-build-log/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+  <h2>Related posts</h2>
+  <ul class="posts">
+  
+    <li class="related">
+      <a href="/blog/2013/01/29/zabbix-on-aws/">AWS上にzabbix-server構築してみた (Nginx + php-fpm)</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2014/06/06/redmine-mysql-nginx/">Redmine構築</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2013/02/13/phpmyadmin-nginx/">Nginx+php-fpmでphpMyAdminを動かす</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2013/01/24/dnsmasq/">dnsmasqでDNSキャッシュサーバたててみた</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2014/06/02/mysql-replication-copy/">インスタンスを複製してレプリケーション組んだら詰まった</a>
+    </li>
+  
+  </ul>
+
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/31/sendmail-ses-on-zabbix/" title="Previous Post: ZabbixのアラートメールをSESから送信してみた">&laquo; ZabbixのアラートメールをSESから送信してみた</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/13/phpmyadmin-nginx/" title="Next Post: Nginx+php-fpmでphpMyAdminを動かす">Nginx+php-fpmでphpMyAdminを動かす &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/27/xbuild/">xbuildでrubyセットアップメモ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/31/2014nian-matome/">2014年まとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/05/centos-latest-ruby/">CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/14/td-agent-syslog/">fluentdでsyslog受信しようとしたらハマった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 148.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(10)</a> <a href='/blog/categories/chef' style='font-size: 106.0%'>chef(1)</a> <a href='/blog/categories/development' style='font-size: 106.0%'>development(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 112.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 112.0%'>docker(2)</a> <a href='/blog/categories/ec2' style='font-size: 106.0%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 112.0%'>fluentd(2)</a> <a href='/blog/categories/ha' style='font-size: 112.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 106.0%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 124.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 106.0%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 112.0%'>kvm(2)</a> <a href='/blog/categories/mail' style='font-size: 106.0%'>mail(1)</a> <a href='/blog/categories/mongodb' style='font-size: 106.0%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 130.0%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 112.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 148.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 106.0%'>nsd(1)</a> <a href='/blog/categories/opendkim' style='font-size: 106.0%'>opendkim(1)</a> <a href='/blog/categories/openstack' style='font-size: 112.0%'>openstack(2)</a> <a href='/blog/categories/pacemaker' style='font-size: 106.0%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 130.0%'>php(5)</a> <a href='/blog/categories/postfix' style='font-size: 106.0%'>postfix(1)</a> <a href='/blog/categories/redis' style='font-size: 112.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 106.0%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 154.0%'>ruby(9)</a> <a href='/blog/categories/s3' style='font-size: 112.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 106.0%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 106.0%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 106.0%'>spdy(1)</a> <a href='/blog/categories/swift' style='font-size: 106.0%'>swift(1)</a> <a href='/blog/categories/syslog' style='font-size: 106.0%'>syslog(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 106.0%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 124.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 118.0%'>その他(3)</a> <a href='/blog/categories/勉強会' style='font-size: 118.0%'>勉強会(3)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51wzT24ZBHL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51wvIrJ%2BsxL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/416BZhuMxEL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.youyo.info/blog/2013/02/12/server-build-log/';
+        var disqus_url = 'http://blog.youyo.info/blog/2013/02/12/server-build-log/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mongodb | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/mongodb/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[MongoMapperでautoincrementやってみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/10/02/mongomapper-autoincrement/"/>
+    <updated>2013-10-02T22:26:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/10/02/mongomapper-autoincrement</id>
+    <content type="html"><![CDATA[<p><img src="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" alt="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" /></p>
+
+<p>MongoMapperでautoincrement使いたかったけど、ちょっと悩んだんでメモ。</p>
+
+<h2>まずMongoDBに標準で備わってない</h2>
+
+<p>MongoMapperというかMongoDBにautoincrementがありません。<br/>
+でも実現方法は公式にあるのでそれ参照。</p>
+
+<p><a href="http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/">http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/</a></p>
+
+<p>要はautoincrement用のcollection作って<code>findAndModify</code>コマンドでアトミックにドキュメントを更新してその値を取り出して使用する。って感じです。<br/>
+これをMongoMapperでやればいいわけですね(´ω｀)</p>
+
+<!-- more -->
+
+
+<h2>findAndModifyがない</h2>
+
+<p>MongoMapperには<code>findAndModify</code>コマンドがありませんでした。。。<br/>
+でもその辺はやっぱり、先駆者様が何とかしていてくれるわけで。</p>
+
+<p><a href="http://jottingsoncomputation.blogspot.jp/2012/08/adding-findandmodify-to-mongomapper-and.html">http://jottingsoncomputation.blogspot.jp/2012/08/adding-findandmodify-to-mongomapper-and.html</a></p>
+
+<p>このplugin使えば<code>findAndModify</code>コマンドが使えるわけです。素晴らしいです(´ω｀)</p>
+
+<h2>いざ、実装</h2>
+
+<p>とりあえずサンプルをば。</p>
+
+<p>``` ruby sinatra_app.rb</p>
+
+<h1>!/usr/bin/env ruby</h1>
+
+<p>require 'sinatra'
+require 'mongo_mapper'</p>
+
+<p>module FindAndModifyPlugin
+  extend ActiveSupport::Concern
+  module ClassMethods</p>
+
+<pre><code>def find_and_modify(options)
+  load collection.find_and_modify(options)
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>class MongoTest
+  include MongoMapper::Document
+  plugin  FindAndModifyPlugin
+  key     :counter_id,  Integer,  :required => true, :numeric => true
+  set_collection_name   'MongoTest.counter'
+end</p>
+
+<p>MongoMapper.connection = Mongo::Connection.new('localhost',27017)
+MongoMapper.database = 'counter_test'</p>
+
+<p>get '/' do
+  "#{getNewSequence}"
+end</p>
+
+<p>helpers do
+  def getNewSequence</p>
+
+<pre><code>return  MongoTest.find_and_modify(
+  :update =&gt; {:$inc =&gt; {:counter_id =&gt; 1}}, :new =&gt; true, :upsert =&gt; true).counter_id
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>簡単にですが書きました。<br/>
+これで'/'にアクセスするたびに、<code>counter_test</code>dbの<code>MongoTest.counter</code>collectionの<code>counter_id</code>が1増えてその値を返してくれます。実際には別のドキュメントをinsertするときに<code>getNewSequence</code>メソッドを使用することでいい感じに動くかと思います。</p>
+]]></content>
+  </entry>
+  
+</feed>

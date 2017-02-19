@@ -1,0 +1,497 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Redis-Sentinelのclient-reconfig-scriptでVIPをつける - blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="Redis-Sentinelを使って冗長化するとき、VIPの制御はどうしよっかな〜と思っていろいろ調べた結果、client-reconfig-scriptを使うとVIP付けれそう！ってことがわかって、やってみたのでまとめ。 環境 CentOS 6.5 x86_64
+redis-2.8.9-1. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/2014/05/24/redis-cluster//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Redis-Sentinelのclient-reconfig-scriptでVIPをつける</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-24T20:59:00+09:00" pubdate data-updated="true">May 24<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Redis-Sentinelを使って冗長化するとき、VIPの制御はどうしよっかな〜と思っていろいろ調べた結果、<code>client-reconfig-script</code>を使うとVIP付けれそう！ってことがわかって、やってみたのでまとめ。</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>CentOS 6.5 x86_64</li>
+<li>redis-2.8.9-1.el6.remi.x86_64</li>
+</ul>
+
+
+<p>3台構成でIPとかははこんな感じで。<br/>
+Portはデフォルトの6379です。
+3台全てでredis,redis-sentinelが動きます。</p>
+
+<ul>
+<li>redis1 192.168.0.1/24</li>
+<li>redis2 192.168.0.2/24</li>
+<li>redis3 192.168.0.3/24</li>
+<li>VIP    192.168.0.4/24</li>
+</ul>
+
+
+<h2>Redis,Redis-Sentinel インストール</h2>
+
+<p>remiレポジトリを使用して2.8系をyumでサクッと。<br/>
+redis1をマスターにしてレプリケーションを組んでおきます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install --enablerepo=epel,remi redis -y
+</span><span class='line'>sed -i "s|bind 127.0.0.1|bind 0.0.0.0|g" /etc/redis.conf
+</span><span class='line'>service redis start
+</span><span class='line'>chkconfig redis on</span></code></pre></td></tr></table></div></figure>
+
+
+<p>redis2,redis3で。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>redis-cli
+</span><span class='line'>127.0.0.1:6379&gt; SLAVEOF 192.168.0.1 6379</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>VIP設定用スクリプト</h2>
+
+<p>フェイルオーバー時に実行されるスクリプトです。<br/>
+<code>client-reconfig-script</code>で実行されるスクリプトには下記のような引数が渡されます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># The following arguments are passed to the script:
+</span><span class='line'>#
+</span><span class='line'># &lt;master-name&gt; &lt;role&gt; &lt;state&gt; &lt;from-ip&gt; &lt;from-port&gt; &lt;to-ip&gt; &lt;to-port&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>6番目の<code>&lt;to-ip&gt;</code>を使って、自分がマスターになったときにVIPをつけて、それ以外のときはVIPを外す動作をします。
+<code>ip</code>コマンドで付けてるだけなので、フェイルオーバー時にarpが問題になることがあります。
+そのため<code>arping</code>コマンドでGARPを投げています。
+<code>ip</code>コマンド、<code>arping</code>コマンドいずれもroot権限が必要なので<code>sudo</code>設定します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vim /var/lib/redis/failover.sh
+</span><span class='line'>chmod 755 /var/lib/redis/failover.sh
+</span><span class='line'>chown redis: /var/lib/redis/failover.sh
+</span><span class='line'>echo -e "redis\tALL=(ALL)\tNOPASSWD:/sbin/ip,NOPASSWD:/sbin/arping" &gt; /etc/sudoers.d/redis
+</span><span class='line'>sed -i "s|Defaults.*requiretty|#Defaults\trequiretty|" /etc/sudoers
+</span><span class='line'>chmod 440 /etc/sudoers.d/redis</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/bash
+</span><span class='line'>
+</span><span class='line'>MASTER_IP=${6}
+</span><span class='line'>MY_IP='192.168.0.1'   # 各サーバ自身のIP
+</span><span class='line'>VIP='192.168.0.4'     # VIP
+</span><span class='line'>NETMASK='24'          # Netmask
+</span><span class='line'>INTERFACE='eth0'      # インターフェイス
+</span><span class='line'>
+</span><span class='line'>if [ ${MASTER_IP} = ${MY_IP} ]; then
+</span><span class='line'>        sudo /sbin/ip addr add ${VIP}/${NETMASK} dev ${INTERFACE}
+</span><span class='line'>        sudo /sbin/arping -q -c 3 -A ${VIP} -I ${INTERFACE}
+</span><span class='line'>        exit 0
+</span><span class='line'>else
+</span><span class='line'>        sudo /sbin/ip addr del ${VIP}/${NETMASK} dev ${INTERFACE}
+</span><span class='line'>        exit 0
+</span><span class='line'>fi
+</span><span class='line'>exit 1</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Redis-Sentinel設定</h2>
+
+<p>redis-sentonelの設定をして起動します。<br/>
+初回だけVIPを手動で設定します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vim /etc/redis-sentinel.conf
+</span><span class='line'>
+</span><span class='line'>service redis-sentinel start
+</span><span class='line'>chkconfig redis-sentinel on
+</span><span class='line'>
+</span><span class='line'>ip addr add 192.168.0.4/24 dev eth0</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># sentinel.conf
+</span><span class='line'>port 26379
+</span><span class='line'>logfile /var/log/redis/sentinel.log
+</span><span class='line'>sentinel monitor mymaster 192.168.0.1 6379 2
+</span><span class='line'>sentinel down-after-milliseconds mymaster 3000
+</span><span class='line'>sentinel parallel-syncs mymaster 1
+</span><span class='line'>sentinel failover-timeout mymaster 60000
+</span><span class='line'>sentinel client-reconfig-script mymaster /var/lib/redis/failover.sh</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>確認</h2>
+
+<p>あとはマスターになっているredisをkillしてみてフェイルオーバーするか、pingを打ちながらフェイルオーバーさせて途切れないか、などチェックしてみればいいと思います。<br/>
+<code>sentinel down-after-milliseconds mymaster 3000</code>にあるように3秒でredisのダウンを検知するようにしています。よりシビアな環境の場合は短く変更して試してみるといいと思います。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">youyo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-24T20:59:00+09:00" pubdate data-updated="true">May 24<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ha/'>HA</a>, <a class='category' href='/blog/categories/redis/'>redis</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  <a href="http://b.hatena.ne.jp/entry/blog.youyo.info/" class="hatena-bookmark-button" 
+  data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加">
+    <img src="http://b.st-hatena.com/images/entry-button/button-only.gif"
+      alt="このエントリーをはてなブックマークに追加"
+      width="20" height="20" style="border: none;" />
+  </a>
+  <script type="text/javascript"
+    src="http://b.st-hatena.com/js/bookmark_button.js"
+    charset="utf-8" async="async">
+  </script>
+  &nbsp;&nbsp;&nbsp;
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.youyo.info/blog/2014/05/24/redis-cluster/" data-via="youyo_" data-counturl="http://blog.youyo.info/blog/2014/05/24/redis-cluster/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+  <h2>Related posts</h2>
+  <ul class="posts">
+  
+    <li class="related">
+      <a href="/blog/2013/05/22/heartbeat-pacemaker-3/">Heartbeat + Pacemaker で３ノードクラスタ</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2013/05/02/rack-session-redis/">sinatraでセッション管理をredisでやろうとしたらちょっと困った話</a>
+    </li>
+  
+  </ul>
+
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/20/nat-centos/" title="Previous Post: CentOS6でNAT設定">&laquo; CentOS6でNAT設定</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/01/jaws-ug-aomori-3/" title="Next Post: JAWS-UG青森#3でLTしてきた">JAWS-UG青森#3でLTしてきた &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/27/xbuild/">xbuildでrubyセットアップメモ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/31/2014nian-matome/">2014年まとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/05/centos-latest-ruby/">CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/14/td-agent-syslog/">fluentdでsyslog受信しようとしたらハマった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 148.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(10)</a> <a href='/blog/categories/chef' style='font-size: 106.0%'>chef(1)</a> <a href='/blog/categories/development' style='font-size: 106.0%'>development(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 112.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 112.0%'>docker(2)</a> <a href='/blog/categories/ec2' style='font-size: 106.0%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 112.0%'>fluentd(2)</a> <a href='/blog/categories/ha' style='font-size: 112.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 106.0%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 124.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 106.0%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 112.0%'>kvm(2)</a> <a href='/blog/categories/mail' style='font-size: 106.0%'>mail(1)</a> <a href='/blog/categories/mongodb' style='font-size: 106.0%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 130.0%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 112.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 148.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 106.0%'>nsd(1)</a> <a href='/blog/categories/opendkim' style='font-size: 106.0%'>opendkim(1)</a> <a href='/blog/categories/openstack' style='font-size: 112.0%'>openstack(2)</a> <a href='/blog/categories/pacemaker' style='font-size: 106.0%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 130.0%'>php(5)</a> <a href='/blog/categories/postfix' style='font-size: 106.0%'>postfix(1)</a> <a href='/blog/categories/redis' style='font-size: 112.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 106.0%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 154.0%'>ruby(9)</a> <a href='/blog/categories/s3' style='font-size: 112.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 106.0%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 106.0%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 106.0%'>spdy(1)</a> <a href='/blog/categories/swift' style='font-size: 106.0%'>swift(1)</a> <a href='/blog/categories/syslog' style='font-size: 106.0%'>syslog(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 106.0%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 124.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 118.0%'>その他(3)</a> <a href='/blog/categories/勉強会' style='font-size: 118.0%'>勉強会(3)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51wzT24ZBHL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51wvIrJ%2BsxL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/416BZhuMxEL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.youyo.info/blog/2014/05/24/redis-cluster/';
+        var disqus_url = 'http://blog.youyo.info/blog/2014/05/24/redis-cluster/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

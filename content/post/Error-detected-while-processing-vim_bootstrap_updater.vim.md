@@ -1,6 +1,6 @@
 ---
 title: "Error detected while processing vim_bootstrap_updater.vim"
-thumbnailImage: //ohdoylerules.com/content/images/vim.svg
+thumbnailImage: images/eye-catch/vim.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-01-10

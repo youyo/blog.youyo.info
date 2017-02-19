@@ -1,6 +1,6 @@
 ---
 title: "Hugoで作ったサイトをGoogle App Engineで公開した"
-thumbnailImage: //gohugo.io/apple-touch-icon.png
+thumbnailImage: images/eye-catch/hugo.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2015-10-23

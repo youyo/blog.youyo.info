@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: network | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/network/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6でtag-vlan設定]]></title>
+    <link href="http://blog.youyo.info/blog/2013/06/15/tag-vlan/"/>
+    <updated>2013-06-15T21:13:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/06/15/tag-vlan</id>
+    <content type="html"><![CDATA[<p>OS側でtag-vlan設定するメモ。(vlan100)<br/>
+VLAN_NAME_TYPEはDEV_PLUS_VID_NO_PADで設定。<br/>
+詳細は<a href="http://aikotobaha.blogspot.jp/2012/05/vlanvconfig.html">こちら</a><br/>
+　<br/>
+以下、雑なメモ。</p>
+
+<p>```
+yum install vconfig</p>
+
+<p>cat &lt;<EOF>> /etc/sysconfig/network
+VLAN=yes
+VLAN_NAME_TYPE=DEV_PLUS_VID_NO_PAD
+EOF</p>
+
+<p>service network restart</p>
+
+<p>vconfig add eth0 100
+cat &lt;<EOF> /etc/sysconfig/network-scripts/ifcfg-eth0.100
+DEVICE=eth0.100
+BOOTPROTO=static
+BROADCAST=192.168.2.255
+IPADDR=192.168.1.1
+NETMASK=255.255.255.0
+NETWORK=192.168.1.0
+GATEWAY=192.168.1.254
+ONBOOT=yes
+EOF</p>
+
+<p>ifup eth0.100
+ # or
+service network restart
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6でBondingする]]></title>
+    <link href="http://blog.youyo.info/blog/2013/06/15/bonding/"/>
+    <updated>2013-06-15T20:53:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/06/15/bonding</id>
+    <content type="html"><![CDATA[<p>BondingしてNIC冗長化。eth0とeth1を使用してbond0作成します。<br/>
+mode=1(active-backup)に設定します。<br/>
+詳しくは<a href="http://www.oss-d.net/centos/bonding">こちら</a><br/>
+　<br/>
+雑な手順。</p>
+
+<p>```
+echo "alias bond0 bonding" >> /etc/modprobe.conf</p>
+
+<p>cat &lt;<EOF> /etc/sysconfig/network-scripts/ifcfg-bond0
+DEVICE=bond0
+BOOTPROTO=static
+ONBOOT=yes
+NETMASK=255.255.255.0
+IPADDR=192.168.1.1
+GATEWAY=192.168.1.254
+TYPE=Ethernet
+BONDING_OPTS="mode=1 primary=eth0 miimon=100 updelay=5000"
+EOF</p>
+
+<p>cat &lt;<EOF> /etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=Ethernet
+MASTER=bond0
+SLAVE=yes
+EOF</p>
+
+<p>cat &lt;<EOF> /etc/sysconfig/network-scripts/ifcfg-eth1
+DEVICE=eth1
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=Ethernet
+MASTER=bond0
+SLAVE=yes
+EOF</p>
+
+<p>service network restart
+```</p>
+
+<p>これでできるはず。<br/>
+あとはLANケーブル片方ずつ抜いて問題ないことを確認して終了。</p>
+]]></content>
+  </entry>
+  
+</feed>

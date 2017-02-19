@@ -1,6 +1,6 @@
 ---
 title: "werckerを使ってGAE/GOにデプロイしてFastlyでURLベースのルーティングをする"
-thumbnailImage: //www.fastly.com/sites/all/themes/custom/fastly2016/logo.png
+thumbnailImage: images/eye-catch/fastly.png
 thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-06-15

@@ -1,6 +1,6 @@
 ---
 title: "go buildしたバイナリを実行したら'/lib/ld-linux.so.2: bad ELF interpreter: No such file or directory'エラーが出た"
-thumbnailImage: //blog.golang.org/gopher/gopher.png
+thumbnailImage: images/eye-catch/gopher.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-06-23

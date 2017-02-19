@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: stress | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/stress/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2014-10-02T10:37:26+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[負荷テストツール「siege」でBasic認証を突破する方法]]></title>
+    <link href="http://blog.youyo.info/blog/2014/10/02/siege-basic-auth/"/>
+    <updated>2014-10-02T10:31:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/10/02/siege-basic-auth</id>
+    <content type="html"><![CDATA[<h2>siegeとは</h2>
+
+<p>siegeの詳細は下記URL参照。<br/>
+<a href="http://blog.cloudpack.jp/2014/08/25/easy-web-load-test-with-using-siege/">http://blog.cloudpack.jp/2014/08/25/easy-web-load-test-with-using-siege/</a></p>
+
+<h2>basic認証通るには</h2>
+
+<p><code>$HOME/.siegerc</code>に1行追加するだけ。</p>
+
+<p><code>
+login = username:password:siege_basic_auth
+</code></p>
+
+<p>siege 3.0.0 で確認。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sinatra | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/sinatra/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[sinatraでセッション管理をredisでやろうとしたらちょっと困った話]]></title>
+    <link href="http://blog.youyo.info/blog/2013/05/02/rack-session-redis/"/>
+    <updated>2013-05-02T10:39:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/05/02/rack-session-redis</id>
+    <content type="html"><![CDATA[<p>sinatra勉強中で、セッションの管理をデフォルトのクッキーではなくredisでやりたいなと。<br/>
+んでちょっと調べたら良さそうなのがあると。<br/>
+　<br/>
+<a href="https://github.com/vangberg/rack-session-redis">https://github.com/vangberg/rack-session-redis</a>
+　<br/>
+使い方も簡単そうだしいいね！てことでちょっと使ってみることに。</p>
+
+<ul>
+<li>Usage</li>
+</ul>
+
+
+<p>READMEそのままでOKです。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis'
+</code></p>
+
+<p>``` rb config.ru
+require "rack/session/redis"</p>
+
+<p>use Rack::Session::Redis, {<br/>
+  :url          => "redis://localhost:6379/0",<br/>
+  :namespace    => "rack:session",<br/>
+  :expire_after => 600<br/>
+}
+```</p>
+
+<!-- more -->
+
+
+<p>あとは普通に<code>session['name']</code>とかで使用するだけ。簡単幸せです(´ω`)</p>
+
+<p><code>rb 　
+get '/' do
+  session['name'] = youyo
+  haml :index
+end
+</code></p>
+
+<ul>
+<li>しかししかし削除がうまくいかない...</li>
+</ul>
+
+
+<p><code>rb 　
+get '/logout' do
+  session.clear
+  redirect '/'
+end
+</code></p>
+
+<p>とかやれば通常のクッキーベースのセッションであればクリアされるのですが、何故か消えない...<br/>
+ググったところこれはバグでもうすでに直っているそうです。(<a href="https://github.com/vangberg/rack-session-redis/commits/">https://github.com/vangberg/rack-session-redis/commits/</a>)<br/>
+　<br/>
+あれ？じゃあ、なんでdelete失敗してるの？って思ってコードみたら直ってなかった...<br/>
+　<br/>
+　</p>
+
+<h3>なるほど。gemでインストールできるのではなく最新を持ってこい。と。</h3>
+
+<ul>
+<li>Bundlerでgithubから直接ソースを取得する</li>
+</ul>
+
+
+<p><a href="http://qiita.com/items/d92ec09f51e8ff144be6">こちら</a>を参考にGemfileを修正。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis', :git =&gt; "git://github.com/vangberg/rack-session-redis.git"
+</code></p>
+
+<p>あとは再インストール。簡単ですね(´ω`)<br/>
+無事<code>session.clear</code>動きました！</p>
+]]></content>
+  </entry>
+  
+</feed>

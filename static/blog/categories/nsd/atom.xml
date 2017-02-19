@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: nsd | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/nsd/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[nsdでDNSサーバ構築]]></title>
+    <link href="http://blog.youyo.info/blog/2013/02/16/nsd-server/"/>
+    <updated>2013-02-16T18:05:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/02/16/nsd-server</id>
+    <content type="html"><![CDATA[<ul>
+<li>CentOS6.3 x86_64</li>
+<li>Install</li>
+<li>設定</li>
+</ul>
+
+
+<h3>Install</h3>
+
+<p>centosデフォルトレポジトリにはないのでepelからインストールします。</p>
+
+<p><code>sh
+sudo yum install nsd --enablerepo=epel
+</code></p>
+
+<!--more-->
+
+
+<h3>設定</h3>
+
+<p>/etc/nsd/nsd.confの最下行に追記。</p>
+
+<p><code>sh
+sudo vim /etc/nsd/nsd.conf
+</code></p>
+
+<p>``` sh /etc/nsd/nsd.conf</p>
+
+<h1>youyo.info</h1>
+
+<p>zone:
+  name: youyo.info
+  zonefile: youyo.info.zone
+```</p>
+
+<p>zone情報を書く。</p>
+
+<p><code>sh
+sudo vim /etc/nsd/youyo.info.zone
+</code></p>
+
+<p>``` sh /etc/nsd/youyo.info.zone
+;youyo.info
+$TTL 86400
+@ IN SOA ns1.youyo.info. root.youyo.info. (
+  2013021601  ;Serial
+  3600        ;Refresh
+  1800        ;Retry
+  604800      ;Expire
+  86400       ;Minimum TTL
+)</p>
+
+<p>@       IN  NS  ns1.youyo.info.</p>
+
+<pre><code>    IN  A   49.212.132.45
+</code></pre>
+
+<p>ns1     IN  A   157.7.137.71
+```</p>
+
+<p>とりあえずAレコードだけ書いてテスト。<br/>
+rebuildして起動してdigしてみる。</p>
+
+<p>``` sh
+sudo /etc/init.d/nsd rebuild
+sudo /etc/init.d/nsd start
+dig @127.0.0.1 youyo.info
+; &lt;&lt;>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.6 &lt;&lt;>> @127.0.0.1 youyo.info
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 27285
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 1
+;; WARNING: recursion requested but not available</p>
+
+<p>;; QUESTION SECTION:
+;youyo.info.            IN  A</p>
+
+<p>;; ANSWER SECTION:
+youyo.info.     86400   IN  A   49.212.132.45</p>
+
+<p>;; AUTHORITY SECTION:
+youyo.info.     86400   IN  NS  ns1.youyo.info.</p>
+
+<p>;; ADDITIONAL SECTION:
+ns1.youyo.info.     86400   IN  A   157.7.137.71</p>
+
+<p>;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+;; WHEN: Sat Feb 16 16:57:41 2013
+;; MSG SIZE  rcvd: 78
+```</p>
+
+<p>いい感じです！<br/>
+あとは必要なレコードを追加してネームサーバ変更してあげて運用開始です！</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JTF2014行ってきた - blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="JTF2014行ってきました。
+朝起きれなかったので途中からの参加で、かつ夜仕事があったので途中で帰ったわけですが、とても貴重なお話が聞けました！
+箇条書きですが自分がメモったことをざっと書きます。 インフラエンジニアのための次世代プロトコル入門 ※ 途中から参加 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/2014/06/22/jtf2014//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JTF2014行ってきた</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-22T16:37:00+09:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>JTF2014行ってきました。<br/>
+朝起きれなかったので途中からの参加で、かつ夜仕事があったので途中で帰ったわけですが、とても貴重なお話が聞けました！<br/>
+箇条書きですが自分がメモったことをざっと書きます。</p>
+
+<!-- more -->
+
+
+<h2>インフラエンジニアのための次世代プロトコル入門</h2>
+
+<p>※ 途中から参加</p>
+
+<p><a class="embedly-card" href="https://speakerdeck.com/nunnun/inhuraenziniafalsetamefalseci-shi-dai-purotokoruru-men-july-techfesta-2014">インフラエンジニアのための次世代プロトコル入門 - July TechFesta 2014</a></p>
+
+<script>!function(a){var b="embedly-platform",c="script";if(!a.getElementById(b)){var d=a.createElement(c);d.id=b,d.src=("https:"===document.location.protocol?"https":"http")+"://cdn.embedly.com/widgets/platform.js";var e=document.getElementsByTagName(c)[0];e.parentNode.insertBefore(d,e)}}(document);</script>
+
+
+<h3>HTTP/2.0</h3>
+
+<ul>
+<li>サーバからpushできる</li>
+<li>1つのtcp接続で複数の情報をやりとりできる</li>
+</ul>
+
+
+<h3>QUIC</h3>
+
+<ul>
+<li>quick udp internet connections</li>
+<li>udp上に多重化して通信</li>
+<li>googleが現状のinternetで動くプロトコル実装</li>
+<li>TCP/TLSは3RTTセッション確立、再接続は1RTT</li>
+<li>1RTTでセッション確立、再接続は0RTT(ダイレクトにでデータ送信)</li>
+<li>QUICはやい</li>
+<li>packet pacing (流量調整)</li>
+<li>multi path</li>
+<li>wifi接続から3G接続のように回線が変わっても、セッションid送ることで0RTTで再接続可能</li>
+</ul>
+
+
+<h3>TLS</h3>
+
+<ul>
+<li>v1.3策定中</li>
+<li>ハンドシェイク簡略化を目指す</li>
+<li>0.5RTTでも早く</li>
+</ul>
+
+
+<h3>ipv6</h3>
+
+<ul>
+<li>AzureのUSリージョンでipv4アドレス枯渇発生</li>
+<li>ipv4-ipv6移行共存技術</li>
+<li>新サービスはipv6対応で作ると今度楽できるかも</li>
+<li>cloudフレアはipv6対応済み。CDN使うのもあり</li>
+</ul>
+
+
+<h3>ハイパフォーマンスブラウザネットワーキング(本)</h3>
+
+<ul>
+<li>素晴らしい</li>
+</ul>
+
+
+<h3>まとめ</h3>
+
+<ul>
+<li>いずれ対応するなら事前に準備したほうがいい</li>
+<li>HTTP/2.0はデプロイ間近</li>
+</ul>
+
+
+<h2>Dockerのエンタープライズ開発での活用モデル</h2>
+
+<p>資料見つけたらはる。</p>
+
+<h3>dockerとは</h3>
+
+<ul>
+<li>google trend 急上昇</li>
+<li>軽い。使いやすい</li>
+<li>起動が速い。仮想ハードウェア作詞して起動ではなく、ハードウェア、カーネルは共有してるから速い</li>
+<li>異なるディストリでもカーネルは共有</li>
+<li>物理と同じ速度が出る。virtualboxなどの仮想化は遅い</li>
+<li>インストール簡単</li>
+<li>Dockerfileで楽々イメージ作成</li>
+<li>コマンド一つで起動</li>
+<li>後片付けも簡単</li>
+<li>Docker registry</li>
+<li>どこでも使える。ポータビリティ高い</li>
+</ul>
+
+
+<h3>仕組み</h3>
+
+<h4>AUFS</h4>
+
+<ul>
+<li>何層にも重ねられるFS</li>
+<li>readonly-FSの上にwritable-FSを重ねて使用</li>
+<li>変更のないファイルはベースで共有する</li>
+</ul>
+
+
+<h4>コンテナ仮想化</h4>
+
+<ul>
+<li>namespace</li>
+<li>cgroups</li>
+<li>PID namespace コンテナ側からは他のPIDに見えない干渉できないが、ホストからはコンテナのPIDは別プロセスIDとして見える</li>
+<li>Net namespace hostからはvethという仮想NICとして見える</li>
+<li>cgroup</li>
+<li>プロセスのリソース制御</li>
+</ul>
+
+
+<h3>事例</h3>
+
+<h4>CIに利用</h4>
+
+<ul>
+<li>docker + jenkins + gitlab でCI</li>
+<li>jenkinsに様々な環境が必要になる</li>
+<li>virtualbox等で分けたのでは重い</li>
+<li>dockerで準備すれば軽くできる</li>
+</ul>
+
+
+<h4>評価環境</h4>
+
+<ul>
+<li>tomcatがまとめて落ちるの困る</li>
+<li>とりあえずdockerで分けた</li>
+<li>開発者の確認終わるまでコンテナ残す必要がある</li>
+<li>削除フラグのjob作成していらなくなってから削除</li>
+</ul>
+
+
+<h4>開発環境</h4>
+
+<ul>
+<li>複数バージョンの保守が必要</li>
+<li>必要なものを全て入れたイメージ作成して利用</li>
+<li>docker registry利用</li>
+<li>オーバーヘッド少ないのでいい</li>
+<li>環境消すのも楽</li>
+</ul>
+
+
+<h4>複数拠点でのDB利用</h4>
+
+<ul>
+<li>海外の複数拠点での同じDB利用</li>
+<li>東京-上海間でレジストリーサーバの同期</li>
+<li>東京でpush、上海でpull</li>
+<li>状況にあったインフラ上で同一環境を作れた</li>
+</ul>
+
+
+<h2>クラウドストレージを自前で構築できる「OpenStack Swift」をPuppetで数百台自動構築して見えた課題と現状のベストプラクティス</h2>
+
+<iframe src="http://www.slideshare.net/slideshow/embed_code/36156032" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/MotokiKakinuma/july-techfesta2014-f30" title="July techfesta2014 f30" target="_blank">July techfesta2014 f30</a> </strong> from <strong><a href="http://www.slideshare.net/MotokiKakinuma" target="_blank">Motoki Kakinuma</a></strong> </div></p>
+
+<h3>openstack swiftとは</h3>
+
+<ul>
+<li>世界中でエンプラ用途進む</li>
+<li>proxyとstorage</li>
+<li>故障に備えて複数のレプリカに書き込む(3カ所 or 2カ所書き込みでOK、1カ所だけだとNG返す)</li>
+<li>ディスク故障時には自動復旧</li>
+<li>proxyを増やせばスループット上昇</li>
+<li>storage増やせば容量増える
+データ3倍保存なので帯域、容量全て食う</li>
+</ul>
+
+
+<h4>利用目的</h4>
+
+<ul>
+<li>スケールアウトしたい</li>
+<li>長期保存したい(非ベンダー依存)</li>
+<li>高速、性能重視</li>
+</ul>
+
+
+<p>　</p>
+
+<ul>
+<li>readのほうが速い</li>
+<li>1ファイルへのアクセス集中に強い</li>
+<li>バックアップ</li>
+</ul>
+
+
+<h3>swift数百台自動構築</h3>
+
+<ul>
+<li>数百台(6セット)</li>
+<li>監視サーバ等も必要</li>
+<li>高水準、少人数</li>
+</ul>
+
+
+<h4>つかったもの</h4>
+
+<ul>
+<li>kickstart</li>
+<li>puppet (理由なし)</li>
+<li>subversion</li>
+<li>pssh</li>
+<li>ipmi</li>
+</ul>
+
+
+<p>　</p>
+
+<ul>
+<li>puppet 自動化、誰でも出来るようにわかりやすく書いた</li>
+<li>数百台になったとき、puppetマスターが耐えられない可能性</li>
+<li>ローカルデプロイ方式でやった</li>
+</ul>
+
+
+<h4>デプロイ手順</h4>
+
+<ol>
+<li>ipmiで電源on</li>
+<li>kickstart pxeboot</li>
+<li>psshでマニュフェスト配布</li>
+<li>puppetで一斉に実行</li>
+</ol>
+
+
+<p>　</p>
+
+<ul>
+<li>自動試験</li>
+<li>tempest(openstackの自動試験ツール)を拡張</li>
+<li>+お手製ツールでテスト(serverspecは評価段階だったのでやめ)</li>
+<li>tempestでできないこと</li>
+<li>tempestはapi試験なのでバックグラウンド処理の試験は出来ない</li>
+</ul>
+
+
+<h4>遭遇したトラブル</h4>
+
+<ul>
+<li>検証環境のファイルを本番にデプロイ</li>
+<li>別の理由で止めておいたプロセスがpuppetで起動しちゃった</li>
+<li>ファイルでデプロイ出来たが、設定が反映されなかった</li>
+<li>本番環境へのプロビジョニング運用はもうやめたい！</li>
+</ul>
+
+
+<h3>インフラプロビジョニングベストプラクティス</h3>
+
+<ul>
+<li>イミュータブル</li>
+<li>blue-green deployment</li>
+<li>packer ビルドツール</li>
+<li>複数クラウド仮想環境に対応</li>
+<li>開発環境と本番環境の差異を吸収できる</li>
+<li>クラウド環境の移行も楽</li>
+<li>dockerもいい</li>
+<li>基本はpackerを使う(dockerfileは使わない)</li>
+<li>dockerはあくまでプラットフォーム</li>
+<li>dockerはまだ課題あり</li>
+<li>DB、ログはどうする？</li>
+</ul>
+
+
+<h4>まとめ</h4>
+
+<ul>
+<li>自動構築は出来たけど、運用でトラブった。</li>
+<li>本番環境に手を加えるべきじゃない。</li>
+<li>ネットワークの冗長度は落とさないほうがいい</li>
+<li>RAIDはいらない</li>
+</ul>
+
+
+<h2>世界で最も高機能なオープンソース・ハイブリッドクラウド自動化システム「openQRM」で実現するOpenStack/AWS統合管理</h2>
+
+<ul>
+<li>セルフサービス化と課金システム</li>
+<li>複数クラウド環境での双方向インテグレーション</li>
+<li>openQRMがあればvCenterいらない？</li>
+<li>KVMの管理も可能</li>
+<li>APIもある</li>
+</ul>
+
+
+<p>ここで途中帰宅。。。</p>
+
+<h2>楽しかった</h2>
+
+<ul>
+<li>これからopenstackやろうと思えた。</li>
+<li>GlusterFSでいいじゃん派だったけど、swiftも見てみようと思った。</li>
+<li>dockerはやっぱり楽しそう。</li>
+<li>お昼美味しかった。</li>
+<li>最後まで見たかった。</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">youyo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-22T16:37:00+09:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/docker/'>docker</a>, <a class='category' href='/blog/categories/jtf/'>jtf</a>, <a class='category' href='/blog/categories/openstack/'>openstack</a>, <a class='category' href='/blog/categories/swift/'>swift</a>, <a class='category' href='/blog/categories/勉強会/'>勉強会</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  <a href="http://b.hatena.ne.jp/entry/blog.youyo.info/" class="hatena-bookmark-button" 
+  data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加">
+    <img src="http://b.st-hatena.com/images/entry-button/button-only.gif"
+      alt="このエントリーをはてなブックマークに追加"
+      width="20" height="20" style="border: none;" />
+  </a>
+  <script type="text/javascript"
+    src="http://b.st-hatena.com/js/bookmark_button.js"
+    charset="utf-8" async="async">
+  </script>
+  &nbsp;&nbsp;&nbsp;
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.youyo.info/blog/2014/06/22/jtf2014/" data-via="youyo_" data-counturl="http://blog.youyo.info/blog/2014/06/22/jtf2014/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+  <h2>Related posts</h2>
+  <ul class="posts">
+  
+    <li class="related">
+      <a href="/blog/2014/10/27/opst19/">#opst19に参加してきた</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2014/09/08/jft2014-s3/">JFT2014でAmazonS3の発表してきた</a>
+    </li>
+  
+  </ul>
+
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/06/17/hang-by-hwclock/" title="Previous Post: hwclockのせいでOS起動しなくなった">&laquo; hwclockのせいでOS起動しなくなった</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/08/18/kvm-live-migrate/" title="Next Post: KVMでLiveMigrationしてみた">KVMでLiveMigrationしてみた &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/27/xbuild/">xbuildでrubyセットアップメモ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/31/2014nian-matome/">2014年まとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/05/centos-latest-ruby/">CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/14/td-agent-syslog/">fluentdでsyslog受信しようとしたらハマった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 148.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(10)</a> <a href='/blog/categories/chef' style='font-size: 106.0%'>chef(1)</a> <a href='/blog/categories/development' style='font-size: 106.0%'>development(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 112.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 112.0%'>docker(2)</a> <a href='/blog/categories/ec2' style='font-size: 106.0%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 112.0%'>fluentd(2)</a> <a href='/blog/categories/ha' style='font-size: 112.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 106.0%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 124.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 106.0%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 112.0%'>kvm(2)</a> <a href='/blog/categories/mail' style='font-size: 106.0%'>mail(1)</a> <a href='/blog/categories/mongodb' style='font-size: 106.0%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 130.0%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 112.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 148.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 106.0%'>nsd(1)</a> <a href='/blog/categories/opendkim' style='font-size: 106.0%'>opendkim(1)</a> <a href='/blog/categories/openstack' style='font-size: 112.0%'>openstack(2)</a> <a href='/blog/categories/pacemaker' style='font-size: 106.0%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 130.0%'>php(5)</a> <a href='/blog/categories/postfix' style='font-size: 106.0%'>postfix(1)</a> <a href='/blog/categories/redis' style='font-size: 112.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 106.0%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 154.0%'>ruby(9)</a> <a href='/blog/categories/s3' style='font-size: 112.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 106.0%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 106.0%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 106.0%'>spdy(1)</a> <a href='/blog/categories/swift' style='font-size: 106.0%'>swift(1)</a> <a href='/blog/categories/syslog' style='font-size: 106.0%'>syslog(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 106.0%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 124.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 118.0%'>その他(3)</a> <a href='/blog/categories/勉強会' style='font-size: 118.0%'>勉強会(3)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51wzT24ZBHL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51wvIrJ%2BsxL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/416BZhuMxEL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.youyo.info/blog/2014/06/22/jtf2014/';
+        var disqus_url = 'http://blog.youyo.info/blog/2014/06/22/jtf2014/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

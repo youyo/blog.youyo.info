@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: zabbix | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/zabbix/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[zabbix2.0でグラフが文字化けしてたので修正したら時刻表時が消えたので回避した]]></title>
+    <link href="http://blog.youyo.info/blog/2013/03/14/zabbix-graph/"/>
+    <updated>2013-03-14T20:00:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/03/14/zabbix-graph</id>
+    <content type="html"><![CDATA[<p>zabbix2.0をインストールして言語を日本語に設定。グラフを確認すると...</p>
+
+<p><img src="http://cloudfront.youyo.info/zabbix-graph/zabbix_graph1.jpg" alt="zabbix_graph1" /></p>
+
+<p>あ〜日本語表示されてないわ〜( ･´ｰ･｀)<br/>
+僕これ知ってるわ〜( ･´ｰ･｀)<br/>
+フォント変えればいいやつだわ〜( ･´ｰ･｀)<br/>
+　<br/>
+　<br/>
+とかどや顔( ･´ｰ･｀)してました。</p>
+
+<!--more-->
+
+
+<p>　<br/>
+　<br/>
+　<br/>
+　<br/>
+さっそく修正しました。</p>
+
+<p><code>php /usr/share/zabbix/include/defines.inc.php
+//define('ZBX_FONTPATH',                          realpath('fonts')); // where to search for font (GD &gt; 2.0.18)
+//define('ZBX_GRAPH_FONT_NAME',           'graphfont'); // font file name
+define('ZBX_FONTPATH',                                '/usr/share/fonts/vlgothic'); // where to search for font (GD &gt; 2.0.18)
+define('ZBX_GRAPH_FONT_NAME',         'VL-Gothic-Regular'); // font file name
+</code></p>
+
+<p>んで確認。</p>
+
+<p><img src="http://cloudfront.youyo.info/zabbix-graph/zabbix_graph2.jpg" alt="zabbix_graph2" /></p>
+
+<p>あ〜直ったわ〜( ･´ｰ･｀)<br/>
+楽勝だ...わ...!?<br/>
+　<br/>
+...（ﾟ〇ﾟ；）<br/>
+　<br/>
+　</p>
+
+<h1>じ、時間の表示が消えてる！</h1>
+
+<p>　<br/>
+　<br/>
+こりゃだめだってことで調査開始。<br/>
+とりあえず/usr/share/zabbix/include/defines.inc.phpはもとに戻しました。</p>
+
+<p>``` sh</p>
+
+<h1>ll /usr/share/zabbix/fonts/graphfont.ttf</h1>
+
+<p>lrwxrwxrwx 1 root root 33  3月 14 17:39 2013 /usr/share/zabbix/fonts/graphfont.ttf -> /etc/alternatives/zabbix-web-font</p>
+
+<h1>ll /etc/alternatives/zabbix-web-font</h1>
+
+<p>lrwxrwxrwx 1 root root 38  3月 14 17:35 2013 /etc/alternatives/zabbix-web-font -> /usr/share/fonts/dejavu/DejaVuSans.ttf
+```</p>
+
+<p>シンボリックリンクですね。alternativesってことは切り替えられるんですかね？</p>
+
+<p>```</p>
+
+<h1>alternatives --display zabbix-web-font</h1>
+
+<p>zabbix-web-font - ステータスは手動です。
+リンクは現在 /usr/share/fonts/dejavu/DejaVuSans.ttf を指しています。
+/usr/share/fonts/dejavu/DejaVuSans.ttf - 優先項目 10
+現在の「最適」バージョンは /usr/share/fonts/dejavu/DejaVuSans.ttf です。</p>
+
+<h1>alternatives --config zabbix-web-font</h1>
+
+<p>1 プログラムがあり 'zabbix-web-font' を提供します。</p>
+
+<p>  選択       コマンド</p>
+
+<hr />
+
+<p>  *+ 1           /usr/share/fonts/dejavu/DejaVuSans.ttf</p>
+
+<p>  Enter を押して現在の選択 [+] を保持するか、選択番号を入力します:
+```</p>
+
+<p>一択ですね。。。<br/>
+ここで本当なら<code>alternatives --install hogehoge</code>とかやって選択肢追加するのが正解なんだと思いますが、僕、わからないしちょっと時間なかったのでシンボリックリンク張り替えで対応しちゃいました(・ω&lt;)</p>
+
+<p><code>
+rm /usr/share/zabbix/fonts/graphfont.ttf
+ln -s /usr/share/fonts/vlgothic/VL-Gothic-Regular.ttf /usr/share/zabbix/fonts/graphfont.ttf
+</code></p>
+
+<p>　<br/>
+　<br/>
+その結果...<br/>
+　<br/>
+　</p>
+
+<p><img src="http://cloudfront.youyo.info/zabbix-graph/zabbix_graph3.jpg" alt="zabbix_graph3" /></p>
+
+<p>　<br/>
+　<br/>
+はい！ 無事、日本語も時間も表示できました！ (画像見にくくてすいません...)<br/>
+　<br/>
+リンク張り替えじゃないとダメな理由は何なんでしょうね('・u・`)？<br/>
+zabbix1.8までは最初のやり方で問題なかったのですが...<br/>
+もしかして僕だけの環境依存的な問題でしょうか...？<br/>
+なんであれ、「ソース読め」っていう結論だと思うのですが、僕はPHPとか知らないのでこれで完結します。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ZabbixのアラートメールをSESから送信してみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/31/sendmail-ses-on-zabbix/"/>
+    <updated>2013-01-31T21:25:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/31/sendmail-ses-on-zabbix</id>
+    <content type="html"><![CDATA[<p><a href="http://blog.youyo.info/blog/2013/01/29/zabbix-on-aws/">前回の記事</a>の続き。</p>
+
+<h2>やったこと。</h2>
+
+<ul>
+<li>SESにIAMユーザー作成</li>
+<li>送信用アドレスを認証</li>
+<li>zabbixから送信設定</li>
+</ul>
+
+
+<p>本日の参考サイト様はこちら(´ω`)<br/>
+<a href="http://dev.classmethod.jp/cloud/amazon-ses-smtp/">http://dev.classmethod.jp/cloud/amazon-ses-smtp/</a><br/>
+<a href="http://blog.cloudpack.jp/2011/12/aws-news-ses-smtp-support.html">http://blog.cloudpack.jp/2011/12/aws-news-ses-smtp-support.html</a><br/>
+<a href="http://www.zabbix.jp/node/1441">http://www.zabbix.jp/node/1441</a></p>
+
+<h2>SESにIAMユーザー作成</h2>
+
+<p>AWS Management Consoleから SES > SMTP Settings に移動し、<code>Create My SMTP Credentials</code>を選ぶ。</p>
+
+<!--more-->
+
+
+<p>　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/SES-smtp.png" alt="SES-smtp" /></p>
+
+<p>適当にIAMユーザー名を入力して<code>Create</code> done!<br/>
+　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/create-ses-user1.png" alt="create-ses-user1" /></p>
+
+<p>SMTPユーザーとパスワードをメモる。<br/>
+　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/create-ses-user2.png" alt="create-ses-user2" /></p>
+
+<p>これでIAMユーザー作成完了です。</p>
+
+<h2>送信用アドレスを認証</h2>
+
+<p>AWS Management Consoleから SES > Verified Senders に移動する。<code>Verify a New Email Address</code>を選び送信用アドレスを入力してVerify!
+　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/verify-sender1.png" alt="verify-sender1" /></p>
+
+<p>入力したアドレス宛に認証リクエストのメールが来るのでURLポチって認証。するとこんなページが！なんとなくありがとうとつぶやきましょう。<br/>
+　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/verify-sender2.png" alt="verify-sender2" /></p>
+
+<p>AWS Management Consoleから SES > Verified Senders でリロードすると先ほどのアドレスのステータスがverifiedになってます。これでSESでメール送信の準備ができた！...はずです。</p>
+
+<h2>zabbixから送信設定</h2>
+
+<p>zabbix公式からスクリプトをダウンロードしてきてSMTP_USERとかPWとか設定する。<br/>
+ついでに<code>/etc/zabbix/zabbix_server.conf</code>のAlertScriptsPathを修正しておきます。</p>
+
+<p><code>
+cd /usr/local/src/
+sudo git clone git://github.com/zabbix-jp/plugins.git
+sudo mkdir -p /var/lib/zabbix/bin
+sudo cp -a plugins/notification/sendmessage-smtp-php/ /var/lib/zabbix/bin
+sudo chown -R zabbix:zabbix /var/lib/zabbix/
+sudo chmod 755 /var/lib/zabbix/bin/sendmessage-smtp-php/sendmessage_smtp_php.sh
+sudo vim /var/lib/zabbix/bin/sendmessage-smtp-php/sendmessage_smtp_php.sh
+sudo sed -ie "s/^AlertScriptsPath=.*/AlertScriptsPath=\/var\/lib\/zabbix\/bin/g" /etc/zabbix/zabbix_server.conf
+</code></p>
+
+<p><code>sendmessage_smtp_php.sh</code> 編集箇所</p>
+
+<p><code>
+/* setting */
+$MAIL_FROM      = "めーるふろむ(´ω`)";
+$MAIL_FROMNAME  = "Zabbix 障害通知";
+$MAIL_SMTP_HOST = 'ssl://email-smtp.us-east-1.amazonaws.com:465';
+$MAIL_SMTP_USER = 'SMTPユーザー';
+$MAIL_SMTP_PASS = 'SMTPパスワード';
+/* setting */
+</code></p>
+
+<p><code>$MAIL_SMTP_USER</code>と<code>$MAIL_SMTP_PASS</code>はIAMユーザー作成したときにメモったものを使います。</p>
+
+<ul>
+<li>カスタムスクリプトとして登録</li>
+</ul>
+
+
+<p>管理 > メディアタイプ > メディアタイプの作成 でこんな感じで保存。<br/>
+　<br/>
+<img src="http://cloudfront.youyo.info/2013-01-30-sendmail-ses-on-zabbix/zabbix-sendmail-php.png" alt="zabbix-sendmail-php" /></p>
+
+<p>あとはユーザーのメディアに登録してアクションとかごにょごにょ設定すればいいと思います。<br/>
+(めんどくなった←</p>
+
+<h2>おまけ（感想）</h2>
+
+<ul>
+<li>SESの設定は簡単でいいね！</li>
+<li>やっぱり外部スクリプトでアラートメール送信だとちょっとだけ遅い気がする。</li>
+<li>zabbix-2.0はひとつのホストに複数のIP(インターフェイス)設定できて素晴らしい！</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[AWS上にzabbix-server構築してみた (Nginx + php-fpm)]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/29/zabbix-on-aws/"/>
+    <updated>2013-01-29T10:32:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/29/zabbix-on-aws</id>
+    <content type="html"><![CDATA[<p>Nginx + php-fpmの勉強をしたくて構築してみました。<br/>
+最終的にはそれ以外のことに費やした時間のほうが長くなりましたが...<br/>
+メモ書きなのでつらつらと書いていきます。<br/>
+　<br/>
+※かなりの長文になってしまいました...</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>Amazon Linux (3.2.34-55.46.amzn1.x86_64)</li>
+<li>zabbix 2.0.4</li>
+<li>mysql 5.5.27</li>
+<li>nginx 1.2.6</li>
+<li>php 5.3.20</li>
+</ul>
+
+
+<h2>やったこと</h2>
+
+<ol>
+<li>RDSセットアップ</li>
+<li>zabbix-2.0のrpm作成</li>
+<li>zabbix インストール</li>
+<li>Nginx + php-fpm インストール</li>
+<li><s>SESでアラートメール送信設定</s> ←力尽きました... あとでやります。</li>
+</ol>
+
+
+<p>※ <a href="http://blog.youyo.info/blog/2013/01/29/zabbix-on-aws/">続き</a>書きました！</p>
+
+<!--more-->
+
+
+<h2>RDSセットアップ</h2>
+
+<p>ec2にmysql入れてもいいのですが、せっかくなのでRDS使用してみます。</p>
+
+<ul>
+<li>AWS Management ConsoleからDB Parameter Group 作成</li>
+</ul>
+
+
+<p><img src="http://cloudfront.youyo.info/2013-01-29-zabbix-on-aws/create_rds_prm2.png" alt="create_rds_prm" /></p>
+
+<ul>
+<li>文字コードをutf-8に修正。CLIでズババッと。<a href="http://d.hatena.ne.jp/deeeki/20110606/rds_modify_db_parameter_group">こちら</a>を参考に。</li>
+</ul>
+
+
+<p><code>
+mkdir aws
+cd aws/
+wget http://s3.amazonaws.com/rds-downloads/RDSCli.zip
+unzip RDSCli.zip
+cd RDSCli-1.12.001/
+echo "AWSAccessKeyId=********" &gt; credential-file-path.txt
+echo "AWSSecretKey=********" &gt;&gt; credential-file-path.txt
+echo "export AWS_RDS_HOME=/home/ec2-user/aws/RDSCli-1.12.001" &gt;&gt; ~/.bashrc
+echo "export PATH=/home/ec2-user/aws/RDSCli-1.12.001/bin:$PATH" &gt;&gt; ~/.bashrc
+echo "export EC2_REGION=ap-northeast-1" &gt;&gt; ~/.bashrc
+echo "export AWS_CREDENTIAL_FILE=/home/ec2-user/aws/RDSCli-1.12.001/credential-file-path.txt" &gt;&gt; ~/.bashrc
+source ~/.bashrc
+rds-describe-db-parameter-groups
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_client, value=utf8, method=immediate"
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_connection, value=utf8, method=immediate"
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_database, value=utf8, method=immediate"
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_results, value=utf8, method=immediate"
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_server, value=utf8, method=immediate"
+</code></p>
+
+<ul>
+<li>DBインスタンス作成して接続確認</li>
+</ul>
+
+
+<p>こんな感じで適当に作成。</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-01-29-zabbix-on-aws/create_db-instance2.png" alt="create_db-instance" /></p>
+
+<p>接続して文字コードチェック。</p>
+
+<p><code>
+sudo yum install mysql
+mysql -u USER -h ********.ap-northeast-1.rds.amazonaws.com -p DATABASE
+Enter password:
+ERROR 2003 (HY000): Can't connect to MySQL server on '********.ap-northeast-1.rds.amazonaws.com' (110)
+</code></p>
+
+<p>DB Security Groupsの設定が抜けていました。。。<br/>
+設定して再チャレンジ！</p>
+
+<p><code>
+mysql -u USER -h ********.ap-northeast-1.rds.amazonaws.com -p DATABASE
+mysql&gt; SHOW VARIABLES LIKE 'character_set%';
++--------------------------+-------------------------------------------+
+| Variable_name            | Value                                     |
++--------------------------+-------------------------------------------+
+| character_set_client     | utf8                                      |
+| character_set_connection | utf8                                      |
+| character_set_database   | latin1                                    |
+| character_set_filesystem | binary                                    |
+| character_set_results    | utf8                                      |
+| character_set_server     | utf8                                      |
+| character_set_system     | utf8                                      |
+| character_sets_dir       | /rdsdbbin/mysql-5.5.27.R1/share/charsets/ |
++--------------------------+-------------------------------------------+
+</code></p>
+
+<p>えぇ〜！(ﾉω＜；)<br/>
+databaseどうした...<br/>
+設定抜けた？ 再設定してもう１回...</p>
+
+<p><code>
+rds-modify-db-parameter-group zabbix20 -p "name=character_set_database, value=utf8, method=immediate"
+mysql&gt; SHOW VARIABLES LIKE 'character_set%';
++--------------------------+-------------------------------------------+
+| Variable_name            | Value                                     |
++--------------------------+-------------------------------------------+
+| character_set_client     | utf8                                      |
+| character_set_connection | utf8                                      |
+| character_set_database   | latin1                                    |
+| character_set_filesystem | binary                                    |
+| character_set_results    | utf8                                      |
+| character_set_server     | utf8                                      |
+| character_set_system     | utf8                                      |
+| character_sets_dir       | /rdsdbbin/mysql-5.5.27.R1/share/charsets/ |
++--------------------------+-------------------------------------------+
+</code></p>
+
+<p>ぐぬぬ。。。 とりあえずrebootしてみる。<br/>
+→ダメでした。。。<br/>
+→<a href="http://www.teps4545.com/2010/01/amazon-rds.html">こちら</a>のサイト様を参考に解決しました！</p>
+
+<p><code>
+mysql&gt; alter database DATABASE default character set utf8;
+mysql&gt; SHOW VARIABLES LIKE 'character_set%';
++--------------------------+-------------------------------------------+
+| Variable_name            | Value                                     |
++--------------------------+-------------------------------------------+
+| character_set_client     | utf8                                      |
+| character_set_connection | utf8                                      |
+| character_set_database   | utf8                                      |
+| character_set_filesystem | binary                                    |
+| character_set_results    | utf8                                      |
+| character_set_server     | utf8                                      |
+| character_set_system     | utf8                                      |
+| character_sets_dir       | /rdsdbbin/mysql-5.5.27.R1/share/charsets/ |
++--------------------------+-------------------------------------------+
+</code></p>
+
+<h2>zabbix-2.0のrpm作成</h2>
+
+<p>zabbix-2.0のrpm作成します。<br/>
+参考サイト様は<a href="http://d.hatena.ne.jp/zabbio/20120606/1338941328">こちら</a>。</p>
+
+<ul>
+<li>必要なパッケージ類のインストール</li>
+</ul>
+
+
+<p><code>
+git clone https://github.com/atanaka7/zabbix-jp-amzn1.git
+sudo yum update
+sudo yum groupinstall 'Development tools'
+sudo yum install mysql-devel net-snmp-devel openldap-devel sqlite-devel unixODBC-devel libssh2-devel java-devel curl-devel OpenIPMI-devel mysql postgresql-devel
+sudo rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+sudo sed -ie "s/\$releasever/6/g" /etc/yum.repos.d/remi.repo
+sudo yum install php-cli php-mbstring php-common php-mysql php-xml php php-pdo php-gd php-bcmath --enablerepo=remi
+cd /usr/local/src/
+sudo wget http://www.zabbix.jp/binaries/relatedpkgs/rhel6/x86_64/fping-2.4b2-16.el6.JP.x86_64.rpm
+sudo wget http://www.zabbix.jp/binaries/relatedpkgs/rhel6/x86_64/iksemel-1.4-2.el6.JP.x86_64.rpm
+sudo wget http://www.zabbix.jp/binaries/relatedpkgs/rhel6/x86_64/iksemel-devel-1.4-2.el6.JP.x86_64.rpm
+sudo yum localinstall fping-2.4b2-16.el6.JP.x86_64.rpm iksemel-1.4-2.el6.JP.x86_64.rpm iksemel-devel-1.4-2.el6.JP.x86_64.rpm
+</code></p>
+
+<ul>
+<li>rpmbuild</li>
+</ul>
+
+
+<p><code>
+mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+echo "%_topdir $HOME/rpmbuild" &gt; ~/.rpmmacros
+echo "%_builddir %{_topdir}/BUILD" &gt;&gt; ~/.rpmmacros
+echo "%_rpmdir %{_topdir}/RPMS" &gt;&gt; ~/.rpmmacros
+echo "%_sourcedir %{_topdir}/SOURCES" &gt;&gt; ~/.rpmmacros
+echo "%_specdir %{_topdir}/SPECS" &gt;&gt; ~/.rpmmacros
+echo "%_srcrpmdir %{_topdir}/SRPMS" &gt;&gt; ~/.rpmmacros
+rpmbuild --rebuild zabbix-2.0.4-1.amzn1.src.rpm
+</code></p>
+
+<h2>zabbix インストール</h2>
+
+<ul>
+<li>rpm インストール</li>
+</ul>
+
+
+<p><code>
+cd ~/rpmbuild/RPMS/x86_64/
+sudo yum localinstall zabbix-2.0.4-1.amzn1.x86_64.rpm zabbix-server-2.0.4-1.amzn1.x86_64.rpm \
+zabbix-server-mysql-2.0.4-1.amzn1.x86_64.rpm zabbix-web-mysql-2.0.4-1.amzn1.x86_64.rpm \
+zabbix-agent-2.0.4-1.amzn1.x86_64.rpm ../noarch/zabbix-web-2.0.4-1.amzn1.noarch.rpm
+</code></p>
+
+<ul>
+<li>データベース設定</li>
+</ul>
+
+
+<p><code>
+cd /usr/share/doc/zabbix-server-2.0.4/database/mysql/
+sudo cat schema.sql |mysql -u USER -h ********.ap-northeast-1.rds.amazonaws.com -p DATABASE
+sudo cat images.sql |mysql -u USER -h ********.ap-northeast-1.rds.amazonaws.com -p DATABASE
+sudo cat data.sql |mysql -u USER -h ********.ap-northeast-1.rds.amazonaws.com -p DATABASE
+</code></p>
+
+<ul>
+<li>Zabbix-Server設定</li>
+</ul>
+
+
+<p><code>/etc/zabbix/zabbix_server.conf</code>の修正点のみつらつらと...</p>
+
+<p><code>
+DBHost=********.ap-northeast-1.rds.amazonaws.com
+DBName=MYSQL_DB
+DBUser=MYSQL_USER
+DBPassword=MYSQL_PW
+</code></p>
+
+<ul>
+<li>Zabbix-Server起動</li>
+</ul>
+
+
+<p>エラーなければok.</p>
+
+<p><code>
+sudo /etc/init.d/zabbix-server start
+</code></p>
+
+<h2>Nginx + php-fpm インストール</h2>
+
+<ul>
+<li>インストール手順</li>
+</ul>
+
+
+<p><code>
+sudo yum install nginx php php-fpm php-devel php-cli php-xml php-mysql php-mbstring php-gd --enablerepo=remi
+cd /etc/nginx/
+sudo vim /etc/php.ini
+sudo vim /etc/php-fpm.d/php_zabbix.conf
+sudo vim nginx.conf
+sudo vim conf.d/nginx_zabbix.conf
+sudo mkdir /var/log/nginx/zabbix/
+sudo mkdir /var/www/nginx
+sudo ln -s /usr/share/zabbix /var/www/nginx/zabbix
+sudo /etc/init.d/php-fpm start
+sudo nginx -t
+sudo /etc/init.d/nginx start
+</code></p>
+
+<ul>
+<li>各種設定ファイル</li>
+</ul>
+
+
+<p><div><script src='https://gist.github.com/4662274.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/4662301.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/4662318.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p><div><script src='https://gist.github.com/4662327.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<ul>
+<li>Nginx,php-fpm起動</li>
+</ul>
+
+
+<p>起動時にエラーがなく、http://domain/zabbixにアクセスしてこんな画面が出ればok. あとは画面の指示に従ってインストール！<br/>
+何かおかしいときは画面上部に赤字でエラー内容が出るのでそれを参考に修正。</p>
+
+<p><code>
+sudo /etc/init.d/php-fpm start
+sudo /etc/init.d/nginx start
+sudo chown nginx:nginx /etc/zabbix/zabbix.conf.php
+</code></p>
+
+<p><img src="http://cloudfront.youyo.info/2013-01-29-zabbix-on-aws/zabbix_web.png" alt="zabbix_web" /></p>
+
+<h2>とりあえず完成！</h2>
+
+<ul>
+<li>完全に複数の記事に分けるべきでした。</li>
+<li>構築しながらブログ書いて疲れました。</li>
+<li>SESでアラートメール送信は後日やります。。。</li>
+</ul>
+
+
+<p>※ <a href="http://blog.youyo.info/blog/2013/01/29/zabbix-on-aws/">続き</a>はこちら！</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-01-29-zabbix-on-aws/zabbix_web2.png" alt="zabbix_web2" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[fluent-plugin-ping-messageとzabbixで死活監視]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/28/fluentd-ping-message-zabbix/"/>
+    <updated>2013-01-28T10:04:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/28/fluentd-ping-message-zabbix</id>
+    <content type="html"><![CDATA[<p>Fluentdの死活監視を設定しました。使用したプラグインは下記です。</p>
+
+<ul>
+<li>fluent-plugin-ping-message</li>
+<li>fluent-plugin-flowcounter</li>
+<li>fluent-plugin-forest</li>
+<li>fluent-plugin-redeliver</li>
+<li>fluent-plugin-zabbix</li>
+</ul>
+
+
+<p>ログの送信には基本的に<code>fluent-agent-lite</code>を使用しています。<code>fluent-agent-lite</code>で<code>ping_message</code>を設定すると<code>fluent-agent-lite</code>のプロセス数分ping messageが飛ぶので、その数値を<code>fluent-plugin-flowcounter</code>で計測しzabbixで監視しています。また、どのプロセスが落ちたのかを記録するために<code>ping_message_checker</code>にも渡してファイルに記録されるようにしています。<code>fluent-plugin-flowcounter</code>と<code>ping_message_checker</code>にタグを書き換えて渡すために、<code>fluent-plugin-redeliver</code>を使用します。</p>
+
+<p>送信側の<code>fluent-agent-lite</code>の設定は下記のようにしています。<code>PING_TAG</code>のhostnameはzabbixに登録してあるホスト名と同じであると想定しています。違う場合は適当に直書きでいいと思います。</p>
+
+<!--more-->
+
+
+<p><code>
+PING_TAG=ping.`hostname`
+PING_DATA=`hostname`
+PING_INTERVAL=60
+</code></p>
+
+<p>受信側の設定は下記です。<code>notification_times</code>や<code>PING_INTERVAL</code>等、監視間隔を60秒で統一するのがポイントです(´ω`)</p>
+
+<p><div><script src='https://gist.github.com/4652167.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p>あとはzabbixでこんな感じのアイテム作ればfluentdのプロセス鵜が取れてくると思います。</p>
+
+<p><img src="http://cloudfront.youyo.info/fluentd-ping-message-zabbix/zabbix-item.jpg" alt="item" /></p>
+
+<p>適当にトリガーを設定してプロセス数に変化があったらアラートあげるなりfluent-agent-lite再起動するなりすればいいと思います。</p>
+
+<p>また、これだけだとどのログを読み込んでいたプロセスが落ちたのかわからないですが、<code>ping_message_checker</code>で落ちたプロセスをファイルに落としているのでそこを見れば一応わかるようになってます。(/var/log/td-agent/ping_error)</p>
+
+<p>「こんなめんどくさいことしなくても、ping_message_checkerのアラートをzabbixのログ監視すればいいんじゃね？('・u・`) 」と最初思いましたが、zabbix 1.8系のログ監視はミリ秒単位のログ監視はできず、1秒以内に複数のログがあがった場合正確にアラートをあげることができなかったような気がするな〜ってことでやめました。(zabbix 2.0系では直っていたはずです。)</p>
+
+<p>送信側<code>fluent-agent-lite</code>の設定はホストごとに変える必要がなく、かつzabbixでホストごとに監視できるのでわかりやすいかと思います。(たぶん) <code>fluent-agent-lite</code>は<code>PING_TAG</code>等をあらかじめ設定したrpmファイルを作成してzabbixはテンプレートを作成することでホスト追加も簡単にできる！！と思います(´ω`) 個人的には満足のできです！</p>
+]]></content>
+  </entry>
+  
+</feed>

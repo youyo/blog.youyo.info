@@ -1,0 +1,628 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>chefでmysql-5.6インストールしようとしたら苦労した話 - blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="最近chefにハマってます。
+いろんなレシピを書いて勉強中です。
+　
+で、mysql-5.6をchefでインストールしようとしたらはまってしまいました。(泥沼に&#8230;
+CentOS6標準のmysql-5.1と同じノリでやったら苦労したのでメモ。
+　
+　 mysql-5.1のとき &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/2013/07/11/chef-mysql56//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">chefでmysql-5.6インストールしようとしたら苦労した話</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T18:32:00+09:00" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近chefにハマってます。<br/>
+いろんなレシピを書いて勉強中です。<br/>
+　<br/>
+で、mysql-5.6をchefでインストールしようとしたらはまってしまいました。(泥沼に&#8230;<br/>
+CentOS6標準のmysql-5.1と同じノリでやったら苦労したのでメモ。<br/>
+　<br/>
+　</p>
+
+<ul>
+<li>mysql-5.1のとき</li>
+</ul>
+
+
+<p>こんな感じでレシピ書いてました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>%w(mysql-server mysql mysql-devel).each do |pkg|
+</span><span class='line'>  package pkg do
+</span><span class='line'>    action :install
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>template '/etc/my.cnf' do
+</span><span class='line'>  source 'my.cnf.erb'
+</span><span class='line'>  owner 'root'
+</span><span class='line'>  group 'root'
+</span><span class='line'>  mode 644
+</span><span class='line'>  notifies :restart, "service[mysqld]", :delayed
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>service 'mysqld' do
+</span><span class='line'>  action [:start, :enable]
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>script "Secure_Install" do
+</span><span class='line'>  interpreter 'bash'
+</span><span class='line'>  user "root"
+</span><span class='line'>  only_if "mysql -u root -e 'show databases'"
+</span><span class='line'>  code &lt;&lt;-EOL
+</span><span class='line'>    mysqladmin -u root password "your_password"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='';"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1');"
+</span><span class='line'>    mysql -u root -pyour_password -e "DROP DATABASE test;"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+</span><span class='line'>    mysql -u root -pyour_password -e "FLUSH PRIVILEGES;"
+</span><span class='line'>  EOL
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p><code>script "Secure_Install" do</code>の部分は<code>mysql_secure_installation</code>コマンドを叩いたときに流れるクエリを並べただけです。rootのパスワードが空のときのみ実行されます。<br/>
+　<br/>
+　<br/>
+これと同じノリでmysql-5.6のレシピを最初書いたのですがまったくうまくいかない。。。<br/>
+　<br/>
+　<br/>
+　</p>
+
+<h3>(個人的)ハマりポイント</h3>
+
+<ol>
+<li>MySQL-serverのrpmファイルのインストールが完了した時点で<code>mysql_install_db</code>が自動実行される。</li>
+<li>初期パスワードが設定されている。</li>
+<li>そのパスワードの有効期限？が切れている。。。</li>
+</ol>
+
+
+<p>　<br/>
+上から順番に。</p>
+
+<h4>MySQL-serverのrpmファイルのインストールが完了した時点で<code>mysql_install_db</code>が自動実行される</h4>
+
+<p>今までは初回起動時だったと思います。なのでmysqlインストール→my.cnf編集→mysql起動でいい感じに<code>ib_logfile0</code>なんかが作成されていました。<br/>
+が、rpmでmysql5.6をインストールするとその時点で<code>mysql_install_db</code>が走ります。<br/>
+さらに<code>/usr/my.cnf</code>を作成したうえで走ります。(なぜ/etc/my.cnfじゃないんだ！！！<br/>
+　<br/>
+MySQL-serverをインストールしてからmy.cnf(innodb_log_file_sizeとか)をいじったらうまく起動しないのです。。。
+　<br/>
+　<br/>
+なのでインストール前にmy.cnf置いておけばOKです。<br/>
+(詳しくはこちら様をご覧ください。<a href="http://yoku0825.blogspot.jp/2013/01/rpmmycnf.html">http://yoku0825.blogspot.jp/2013/01/rpmmycnf.html</a>)<br/>
+　</p>
+
+<h4>初期パスワードが設定されている</h4>
+
+<p>そのまんまです。初期パスワードは空ではなくランダムに設定されています。<br/>
+その初期パスワードは<code>/root/.mysql_secret</code>に書かれています。
+初回ログイン時にしっかり確認しましょう。
+　</p>
+
+<h4>そのパスワードの有効期限？が切れている</h4>
+
+<p><code>password_expired</code>なる項目があり<code>Y</code>ってなってます。<br/>
+このままだと下記のようなエラーが出てしまいます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mysql -u root -p -e "show databases"
+</span><span class='line'>ERROR 1862 (HY000): Your password has expired. To log in you must change it using a client that supports expired passwords.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>よくわかんねーなーと思いながら<code>mysql_secure_installation</code>を読んでたら<code>--connect-expired-password</code>なるオプション見つけました。<br/>
+いいのあるじゃない！ これ使います。</p>
+
+<ul>
+<li>mysql-5.6のレシピ</li>
+</ul>
+
+
+<p>(個人的)ハマりポイントを解消した結果のレシピがこちらです。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># MySQL-client MySQL-shared-compat MySQL-shared-compat MySQL-devel をインストール
+</span><span class='line'>for number in 0..3
+</span><span class='line'>
+</span><span class='line'>  cookbook_file "/usr/local/src/#{node[:mysql56][:rpm][:filename][number]}" do
+</span><span class='line'>    source node[:mysql56][:rpm][:filename][number]
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  package node[:mysql56][:rpm][:package][number] do
+</span><span class='line'>    action :install
+</span><span class='line'>    provider Chef::Provider::Package::Rpm
+</span><span class='line'>    source "/usr/local/src/#{node[:mysql56][:rpm][:filename][number]}"
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>link '/etc/my.cnf' do
+</span><span class='line'>  to '/usr/my.cnf'
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>template '/etc/my.cnf' do
+</span><span class='line'>  source 'my.cnf.erb'
+</span><span class='line'>  owner 'root'
+</span><span class='line'>  group 'root'
+</span><span class='line'>  notifies :restart, "service[mysql]", :delayed
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># MySQL-server をインストール
+</span><span class='line'>cookbook_file "/usr/local/src/#{node[:mysql56][:rpm][:filename][4]}" do
+</span><span class='line'>  source node[:mysql56][:rpm][:filename][4]
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>package node[:mysql56][:rpm][:package][4] do
+</span><span class='line'>  action :install
+</span><span class='line'>  provider Chef::Provider::Package::Rpm
+</span><span class='line'>  source "/usr/local/src/#{node[:mysql56][:rpm][:filename][4]}"
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>directory '/var/run/mysqld' do
+</span><span class='line'>  owner 'mysql'
+</span><span class='line'>  group 'root'
+</span><span class='line'>  mode 0755
+</span><span class='line'>  action :create
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>service 'mysql' do
+</span><span class='line'>  action [:start, :enable]
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>script "Secure_Install" do
+</span><span class='line'>  interpreter 'bash'
+</span><span class='line'>  user "root"
+</span><span class='line'>  not_if "mysql -u root -pyour_password -e 'show databases'"
+</span><span class='line'>  code &lt;&lt;-EOL
+</span><span class='line'>    export Initial_PW=`head -n 1 /root/.mysql_secret |awk '{print $(NF - 0)}'`
+</span><span class='line'>    mysql -u root -p${Initial_PW} --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('your_password');"
+</span><span class='line'>    mysql -u root -pyour_password -e "SET PASSWORD FOR root@'127.0.0.1'=PASSWORD('your_password');"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='';"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1');"
+</span><span class='line'>    mysql -u root -pyour_password -e "DROP DATABASE test;"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+</span><span class='line'>    mysql -u root -pyour_password -e "FLUSH PRIVILEGES;"
+</span><span class='line'>  EOL
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>僕のようなsqlのsもわからないようなへっぽこにしてはよくできたほうです。<br/>
+満足(´ω`)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">youyo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T18:32:00+09:00" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/chef/'>chef</a>, <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  <a href="http://b.hatena.ne.jp/entry/blog.youyo.info/" class="hatena-bookmark-button" 
+  data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加">
+    <img src="http://b.st-hatena.com/images/entry-button/button-only.gif"
+      alt="このエントリーをはてなブックマークに追加"
+      width="20" height="20" style="border: none;" />
+  </a>
+  <script type="text/javascript"
+    src="http://b.st-hatena.com/js/bookmark_button.js"
+    charset="utf-8" async="async">
+  </script>
+  &nbsp;&nbsp;&nbsp;
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.youyo.info/blog/2013/07/11/chef-mysql56/" data-via="youyo_" data-counturl="http://blog.youyo.info/blog/2013/07/11/chef-mysql56/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+  <h2>Related posts</h2>
+  <ul class="posts">
+  
+    <li class="related">
+      <a href="/blog/2014/06/06/redmine-mysql-nginx/">Redmine構築</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2014/06/02/mysql-replication-copy/">インスタンスを複製してレプリケーション組んだら詰まった</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2013/02/12/server-build-log/">mysql5.6+php5.4+nginxな環境を作る(インストールのみ)</a>
+    </li>
+  
+    <li class="related">
+      <a href="/blog/2013/01/29/zabbix-on-aws/">AWS上にzabbix-server構築してみた (Nginx + php-fpm)</a>
+    </li>
+  
+  </ul>
+
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/15/tag-vlan/" title="Previous Post: CentOS6でtag-vlan設定">&laquo; CentOS6でtag-vlan設定</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/29/release-battery-growl/" title="Next Post: BatteryGrowlリリースしました">BatteryGrowlリリースしました &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/27/xbuild/">xbuildでrubyセットアップメモ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/31/2014nian-matome/">2014年まとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/05/centos-latest-ruby/">CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/14/td-agent-syslog/">fluentdでsyslog受信しようとしたらハマった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 148.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(10)</a> <a href='/blog/categories/chef' style='font-size: 106.0%'>chef(1)</a> <a href='/blog/categories/development' style='font-size: 106.0%'>development(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 112.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 112.0%'>docker(2)</a> <a href='/blog/categories/ec2' style='font-size: 106.0%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 112.0%'>fluentd(2)</a> <a href='/blog/categories/ha' style='font-size: 112.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 106.0%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 124.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 106.0%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 112.0%'>kvm(2)</a> <a href='/blog/categories/mail' style='font-size: 106.0%'>mail(1)</a> <a href='/blog/categories/mongodb' style='font-size: 106.0%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 130.0%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 112.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 148.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 106.0%'>nsd(1)</a> <a href='/blog/categories/opendkim' style='font-size: 106.0%'>opendkim(1)</a> <a href='/blog/categories/openstack' style='font-size: 112.0%'>openstack(2)</a> <a href='/blog/categories/pacemaker' style='font-size: 106.0%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 130.0%'>php(5)</a> <a href='/blog/categories/postfix' style='font-size: 106.0%'>postfix(1)</a> <a href='/blog/categories/redis' style='font-size: 112.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 106.0%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 154.0%'>ruby(9)</a> <a href='/blog/categories/s3' style='font-size: 112.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 106.0%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 106.0%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 106.0%'>spdy(1)</a> <a href='/blog/categories/swift' style='font-size: 106.0%'>swift(1)</a> <a href='/blog/categories/syslog' style='font-size: 106.0%'>syslog(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 106.0%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 124.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 118.0%'>その他(3)</a> <a href='/blog/categories/勉強会' style='font-size: 118.0%'>勉強会(3)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51wzT24ZBHL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51wvIrJ%2BsxL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/416BZhuMxEL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.youyo.info/blog/2013/07/11/chef-mysql56/';
+        var disqus_url = 'http://blog.youyo.info/blog/2013/07/11/chef-mysql56/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

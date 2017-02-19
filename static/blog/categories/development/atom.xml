@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: development | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/development/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[xbuildでrubyセットアップメモ]]></title>
+    <link href="http://blog.youyo.info/blog/2015/05/27/xbuild/"/>
+    <updated>2015-05-27T23:20:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2015/05/27/xbuild</id>
+    <content type="html"><![CDATA[<p><code>
+yum install epel-release
+yum install make gcc kernel-devel zlib-devel openssl-devel readline-devel curl-devel sqlite-devel libyaml-devel libffi-devel
+cd /usr/local/
+git clone https://github.com/tagomoris/xbuild.git
+/usr/local/xbuild/ruby-install 2.2.2 /usr/local/ruby-2.2.2
+echo 'export PATH=/usr/local/ruby-2.2.2/bin:$PATH' &gt; /etc/profile.d/ruby-2.2.2.sh
+exec $SHELL -l
+gem install bundler
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

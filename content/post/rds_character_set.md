@@ -1,6 +1,6 @@
 ---
 title: "RDS for MySQLを再起動したら文字化けした"
-thumbnailImage: //doxwk67ta2990.cloudfront.net/wp-content/uploads/2016/05/logo-amazon-rds.gif
+thumbnailImage: images/eye-catch/aws-rds.jpg
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-06-14

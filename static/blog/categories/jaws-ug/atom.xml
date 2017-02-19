@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: jaws-ug | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/jaws-ug/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JFT2014でAmazonS3の発表してきた]]></title>
+    <link href="http://blog.youyo.info/blog/2014/09/08/jft2014-s3/"/>
+    <updated>2014-09-08T01:42:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/09/08/jft2014-s3</id>
+    <content type="html"><![CDATA[<p>発表資料はこちら。</p>
+
+<iframe src="http://blog.youyo.info//www.slideshare.net/slideshow/embed_code/38766359" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/youyo_/s3-38766359" title="クラウドを支えるS3の基本を学ぼう" target="_blank">クラウドを支えるS3の基本を学ぼう</a> </strong> from <strong><a href="http://www.slideshare.net/youyo_" target="_blank">Naoto Ishizawa</a></strong> </div></p>
+
+<!-- more -->
+
+
+<h3>とにかく緊張してた</h3>
+
+<p>当日は朝7:30集合で会場準備を始めて、朝飯も食わずに動き回ってお腹もすいてたのに、お弁当がまったく喉を通らない状況。「もし時間が余って変な感じになったらどうしよう」などという不安から、食事を諦めてスライドを1枚足す作業を開始。この時点で発表1時間30分前。</p>
+
+<h3>マサカリの方、お断り！</h3>
+
+<p>お昼休み終わりの一発目で教室は空いていたので、45分前に入室しててちゃんと映るか確認。そのまま開始までぐだぐだする。今までの人生で一番長く感じた45分間だった。</p>
+
+<p><img src="http://cloudfront.youyo.info/2014-09-08-jft2014-s3/no_masakari.png" width="500"></p>
+
+<p>ただ待ってるのもアレなので、「マサカリの方、お断り！ 質問禁止！！」と書いてみたら逆効果だったようで、マサカリの方に絡まれました。</p>
+
+<h3>汗だくで発表した</h3>
+
+<p><img src="http://cloudfront.youyo.info/2014-09-08-jft2014-s3/jft2014-s3-photo.jpg"></p>
+
+<p>自分が思ってたよりも人数が多い。(汗<br/>
+　<br/>
+25人くらいはいたのかなぁと。始まってから後ろのほうで立ち見し始めた方もいたのでもう少しいたのかもしれない。もともと汗っかきな上に少し教室が暑かった(僕だけ？)ので、汗だくで大変でした。。 ハンカチ片手に水飲みつつ、勝手に休みつつ。。<br/>
+　<br/>
+早口にならないように、時間を余らせないように。を意識してしゃべった結果、時間オーバーしました。LTならきれいにパイ投げられてましたね。危なかったです。</p>
+
+<h3>結果</h3>
+
+<ul>
+<li>すげー楽しかった！</li>
+<li>気づいたら発表することになっててこの1ヶ月間ずっと吐きそうだったけど、最終的に楽しかった！</li>
+<li>見にくいスライドでごめんなさい。1枚に詰め込みすぎるのは僕の悪い癖。</li>
+<li>もう50分とか喋りたくないです。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JAWS-UG青森#3でLTしてきた]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/01/jaws-ug-aomori-3/"/>
+    <updated>2014-06-01T01:21:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/01/jaws-ug-aomori-3</id>
+    <content type="html"><![CDATA[<p>JAWS-UG青森#3でLTしてきました。<br/>
+資料はこちら。</p>
+
+<p><iframe src="http://www.slideshare.net/slideshow/embed_code/35336300" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/youyo_/aws-35336300" title="最近やったAWS案件" target="_blank">最近やったAWS案件</a> </strong> from <strong><a href="http://www.slideshare.net/youyo_" target="_blank">Naoto Ishizawa</a></strong> </div>
+
+</p>
+
+<p>初LTということで緊張して噛み噛みでしたが、なんとか乗り切れたと思います。。<br/>
+今回のことをしっかり省みて、今後に活かそうと思います！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JAWS FESTA Kansai 2013に参加してきた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/09/30/jawsfestakansai2013/"/>
+    <updated>2013-09-30T17:39:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/09/30/jawsfestakansai2013</id>
+    <content type="html"><![CDATA[<p><img src="http://cdn.wpbooster.net/7a1b5033e1a656592b6c75a15dcf2645/wp-content/themes/jfk2013/images/headers/main-image.jpg" alt="http://cdn.wpbooster.net/7a1b5033e1a656592b6c75a15dcf2645/wp-content/themes/jfk2013/images/headers/main-image.jpg" /></p>
+
+<p>行ってきました大阪！<br/>
+　<br/>
+とてもじゃないけれど全部は書けないの僕がお手伝い&amp;参加をしたアンカンファレンス「地方におけるAWSの現状ついて語ろう」について書きます。(決してめんどくさいわけじゃないよ！</p>
+
+<!-- more -->
+
+
+<h2>「地方におけるAWSの現状ついて語ろう」</h2>
+
+<p>モデレータはこちらのお二方。</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/tachibana_goto.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/tachibana_goto.jpg" /></p>
+
+<ul>
+<li><a href="http://jfk2013.jaws-ug.jp/speaker/biatunky/">立花 拓也</a> (株式会社ヘプタゴン) (左側)</li>
+<li><a href="http://jfk2013.jaws-ug.jp/speaker/egopro/">後藤 永吉</a> (株式会社インプレイス 取締役) (右側)</li>
+</ul>
+
+
+<p>　<br/>
+説明タイムの漫才も無事にウケていましたw</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/manzai.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/manzai.jpg" /></p>
+
+<p>アンカンファレンスの内容としては地方におけるAWSの現状ついて語ろう、そしてICDPを作ろうというものでした。</p>
+
+<h3>ICDP?</h3>
+
+<blockquote><p>AWS田舎クラウドデザインパターン (AWS Inaka Cloud Design Pattern, 略してICDPと呼ぶ)とは、田舎においてAWSクラウドを使ったシステムアーキテクチャ設計を行う際に発生する、典型的な問題とそれに対する解決策・設計方法を、分かりやすく分類して、ノウハウとして利用できるように整理したものである。</p></blockquote>
+
+<p>詳しくはこちら！<br/>
+発表時は非公認サイトでしたがその後どうなったんでしょうか？('・u・`)</p>
+
+<p><a href="http://icdp.biz/">http://icdp.biz/</a></p>
+
+<p>要は今回のアンカンファレンス参加者が体験した事例(田舎あるある)をまとめたまとめたものです。。<br/>
+参加者全員がちゃんと意見を出せて素晴らしいものが出来上がりました！！<br/>
+僕自身はまだAWS個人ユーザーなので特に出せる事例もなく、、、<br/>
+今後貢献できるように頑張りたいです。</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/icdp_mt.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/icdp_mt.jpg" /></p>
+
+<p>ほかのセッションなどもとても盛り上がってました！</p>
+
+<h2>懇親会</h2>
+
+<p>巫女さんやら婦警さんやら爆笑LTやらとても楽しかったです！</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/LT.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/LT.jpg" /></p>
+
+<p>AWS-HUBのときから配りまくっていた(入社予定)の名刺が「初めて見た！」と、評判が良かったので満足です。前日から急いで作成したかいがありました。</p>
+
+<h2>さよなら、大阪</h2>
+
+<p>とても楽しいイベントでした！<br/>
+僕自身、引きこもり気味の人見知りなのであまりイベント系は好きじゃなかったのですが、そんなことは関係なくなりました！ 大阪最高です！！ ぜひまた来たいです(´ω｀)</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/takoyaki3.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/takoyaki.jpg" />
+<img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/kani3.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/kani.jpg" />
+<img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/kuidaore.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/kuidaore.jpg" />
+<img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/glico.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/glico.jpg" />
+<img src="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/tsutenkaku.jpg" alt="http://cloudfront.youyo.info/2013-09-30-jawsfestakansai2013/tsutenkaku.jpg" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[JAWS-UG青森 第０回勉強会に参加してきた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/02/24/jaws-ug-aomori0/"/>
+    <updated>2013-02-24T14:01:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/02/24/jaws-ug-aomori0</id>
+    <content type="html"><![CDATA[<p>JAWS-UG青森に参加してきました！ こういった勉強会への参加は初めてで緊張しましたが、楽しめてよかったです！ 以下感想やメモなどをつらつらと書いていきます。</p>
+
+<h2>「AWS入門」AWSエバンジェリスト堀内氏</h2>
+
+<ul>
+<li>クラウドコンピューティングとは必要なときに必要なだけ使えるインフラ</li>
+<li>AWSは24時間日本語サポートがある</li>
+<li>GovCloudってのもある(政府専用)</li>
+<li>DDos緩和技術ってのもある(めっちゃ気になった)</li>
+<li>ケイオスモンキーっていう恐ろしいやつがいる(有効利用してみたい)</li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>「AWS活用事例 CDP」cloudpackエバンジェリスト後藤氏</h2>
+
+<ul>
+<li>クラウドデザインパターン(CDP)とは、典型的な問題とそれに対する解決策・設計方法を分かりやすく分類して、ノウハウとして利用できるように整理したもの</li>
+<li>CDPにはいろいろある</li>
+<li>書籍化してる(<a href="http://www.amazon.co.jp/Amazon-Web-Services-%E3%82%AF%E3%83%A9%E3%82%A6%E3%83%89%E3%83%87%E3%82%B6%E3%82%A4%E3%83%B3%E3%83%91%E3%82%BF%E3%83%BC%E3%83%B3%E5%AE%9F%E8%A3%85%E3%82%AC%E3%82%A4%E3%83%89-%E5%A4%A7%E6%BE%A4/dp/4822211983/ref=pd_bxgy_b_img_y">Amazon Web Services クラウドデザインパターン実装ガイド</a>)</li>
+<li>とりあえずポチった(-3,990円)</li>
+</ul>
+
+
+<h2>「AWSカルタ」cloudpackエバンジェリスト吉田氏</h2>
+
+<ul>
+<li>資料は<a href="http://www.slideshare.net/YoshidaShingo/20130223-jawsug-aws">こちら</a></li>
+<li>「AWSカルタ」で楽しくAWSサービスについて覚えよう</li>
+<li>めっちゃ盛り上がった</li>
+<li>カルタあと１枚になったときは、説明を聞くことよりもカードを取ることに集中してしまう(ごめんなさい)</li>
+<li>２位になってAWSステッカーをいただいた(めっちゃうれしい！もったいなくてパソコンに張れない！)</li>
+</ul>
+
+
+<p><img src="http://cloudfront.youyo.info/2013-02-24-jaws-ug-aomori0/aws2.jpg" alt="awsステッカー" /></p>
+
+<h2>LT「○○を支える技術」立花氏</h2>
+
+<ul>
+<li>タイトル忘れました(ごめんなさい)</li>
+<li>通常ならサーバの準備に１ヶ月近くかかりそうなところを３時間で準備できた</li>
+<li>AWSってすばらしい</li>
+</ul>
+
+
+<h2>LT「awsとperlについて」後藤氏</h2>
+
+<ul>
+<li>剣道うまい</li>
+<li>perl大好き</li>
+<li>php使っていいのは小学生まで</li>
+<li>perlやるならMac買え</li>
+<li>AWS大好き</li>
+</ul>
+
+
+<h2>ハンズオン！</h2>
+
+<ul>
+<li>ec2インスタンス作成とか</li>
+<li>RDSのセキュリティグループの接続元にec2のセキュリティグループを設定できる</li>
+<li>「IPをたくさん書き連ねて管理してる人は使いこなせてない」</li>
+<li>wordpress AMIを起動(簡単かつ一瞬でwordpress環境が準備できた。感動。)</li>
+<li>wordpress AMIはnginxを使用しているあたり非常に好感が持てた(個人的嗜好)</li>
+</ul>
+
+
+<br>
+
+
+<br>
+
+
+<p>中身のないメモで申し訳ないです。。。 豪華な講師陣+楽しいタメになるLTを聞けて幸せでした!(´ω`)<br/>
+　<br/>
+勉強会後の懇親会も楽しかったです！ 周りの方々が名刺交換をしている中、僕は名刺を忘れてしまい、積極的に声をかけることもできず後悔しました... 次回参加するときは忘れずに名刺持参しようと思います。<br/>
+懇親会に最後まで参加できなかったのも残念でした... 仕事の都合で途中で抜けて帰らざるをえなかったのですが、次回はもっとちゃんとスケジュール調整して参加したいです！<br/>
+　<br/>
+最後に運営の方、大変お疲れさまでした！ 次回は交通アクセスの良い八戸での開催を期待しています！(←</p>
+]]></content>
+  </entry>
+  
+</feed>

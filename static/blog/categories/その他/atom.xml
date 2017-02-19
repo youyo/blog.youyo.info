@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: その他 | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/その他/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2014年まとめ]]></title>
+    <link href="http://blog.youyo.info/blog/2014/12/31/2014nian-matome/"/>
+    <updated>2014-12-31T12:27:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/12/31/2014nian-matome</id>
+    <content type="html"><![CDATA[<h2>2014年の出来事</h2>
+
+<p>1月から書き出していこうかと思いましたが全然覚えてませんでした。<br/>
+なので覚えていることだけ。</p>
+
+<h3>6月</h3>
+
+<ul>
+<li><a href="http://blog.youyo.info/blog/2014/06/01/jaws-ug-aomori-3/">jaws-ug 青森#3 で初めてのLT.</a></li>
+</ul>
+
+
+<p>初めてのLTだから緊張しまくってたけど、酒の力でごりおした記憶。</p>
+
+<p><iframe src="http://www.slideshare.net/slideshow/embed_code/35336300" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/youyo_/aws-35336300" title="最近やったAWS案件" target="_blank">最近やったAWS案件</a> </strong> from <strong><a href="http://www.slideshare.net/youyo_" target="_blank">Naoto Ishizawa</a></strong> </div>
+
+</p>
+
+<h3>9月</h3>
+
+<ul>
+<li><a href="http://blog.youyo.info/blog/2014/09/08/jft2014-s3/">JAWS FESTA TOHOKU 2014 でAmazon S3について発表してきた.</a></li>
+</ul>
+
+
+<p>2回目の発表なのに大人数の前で50分、汗が止まらなかった。。</p>
+
+<iframe src="http://blog.youyo.info//www.slideshare.net/slideshow/embed_code/38766359" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/youyo_/s3-38766359" title="クラウドを支えるS3の基本を学ぼう" target="_blank">クラウドを支えるS3の基本を学ぼう</a> </strong> from <strong><a href="http://www.slideshare.net/youyo_" target="_blank">Naoto Ishizawa</a></strong> </div></p>
+
+<h3>12月</h3>
+
+<ul>
+<li>jaws-ug 青森#4 で監視周りの発表</li>
+</ul>
+
+
+<p>ダラダラしててちゃんと資料を作らずやっつけでやったら、盛大に失敗した。。<br/>
+ただ「参考になった！帰って実践してみる！」と言われたので、内容は悪くなかったんだと思う。それだけにちゃんと準備して喋ればよかったと後悔。</p>
+
+<p>※ 資料なし</p>
+
+<h3>1年通して</h3>
+
+<ul>
+<li>社内勉強会を始めた
+
+<ul>
+<li>11月から始めてまだ2回目だけど、みんなの意欲も高いので毎月続けていけそう</li>
+</ul>
+</li>
+<li>1月に立てた目標があったけど、1割くらいしかできなかった</li>
+</ul>
+
+
+<h3>まとめ</h3>
+
+<p>jaws-ugの話くらいしかないですね。(汗<br/>
+去年の11月に転職してのヘプタゴンでの1年目、以前の会社の1年と比較して濃密で長かった！<br/>
+新しいチャレンジがし放題な感があって楽しい！<br/>
+やりたい放題しつつ来年も頑張る！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[株式会社ヘプタゴンに入社しました]]></title>
+    <link href="http://blog.youyo.info/blog/2013/11/09/joined-heptagon/"/>
+    <updated>2013-11-09T13:03:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/11/09/joined-heptagon</id>
+    <content type="html"><![CDATA[<p><img src="http://heptagon.co.jp/files/1713/4620/5543/heptagon_860_.png" alt="http://heptagon.co.jp/files/1713/4620/5543/heptagon_860_.png" /></p>
+
+<p>入社してもう１週間ほど過ぎていますが、一応記録。</p>
+
+<h2>11月1日付けで株式会社ヘプタゴンに入社しました。</h2>
+
+<p>前職は一応プロバイダ。(東北のちっちゃな。)<br/>
+その傍ら専用サーバやら共用サーバやらを作ったり運用したり。<br/>
+オンプレ一本！AWS？クラウド？そんなもんやらん！！<br/>
+そんな会社でした。<br/>
+　<br/>
+aws使ったほうが便利だし、質のいいサービス提供できるのになぁ〜。と思ってはいても行動には移せず。<br/>
+正直オンプレにこだわりすぎるのはどうかと思っていました。<br/>
+　<br/>
+　<br/>
+そんなこんなでモヤモヤしてたときに、うちにこないか。と誘われたので入りました。(あっさり<br/>
+ヘプタゴンの社長は前職の上司、とても尊敬できるし仕事のできる人。昔から今でも目標としている人です。<br/>
+その人とまた仕事できるとなれば迷いはないです。(うそ。少し迷った。だって社員１人の会社だし、いつまであるかまだわからないときだし、僕だって将来のこと考えるし。<br/>
+　<br/>
+　</p>
+
+<h2>ヘプタゴンって？</h2>
+
+<ul>
+<li><a href="http://heptagon.co.jp">http://heptagon.co.jp</a></li>
+<li>青森でaws使っていろいろしてる会社です。</li>
+<li>農業にも手を出してるようです。<a href="http://busaiku-yasai.com/">http://busaiku-yasai.com/</a></li>
+</ul>
+
+
+<h2>とりあえずがんばります！</h2>
+
+<p>まだ名刺も貰えてないし、保険証もいつ届くかわからないし、でも仕事はしっかりやらされてます！<br/>
+社長曰く、初めての社員ということで手続き面では「よくわかんない。」らしいので多少の不安はありますが、そのうちビシッとしてくれるはずです。(切実<br/>
+社長が社長業に時間を割けるように、僕がしっかり頑張っていかねばな。と。<br/>
+　<br/>
+入社祝いに頂いたマスタリングNginxをまだ１ページも開いていないので、そのページをめくるところから頑張っていこうと思います！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[octopressでブログ作りました]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/19/start-blog/"/>
+    <updated>2013-01-19T17:59:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/19/start-blog</id>
+    <content type="html"><![CDATA[<p>octopressでブログ作りました。<br/>
+元々concrete5で<a href="http://youyo.info/">こっちのサイト</a>でブログやってましたが、なんとなくoctopressに興味わいたので作ってしまいました。技術系の記事はここに移そうと思います。趣味系の記事は今まで通り向こうのサイトで。<br/>
+頑張って更新しようと思います(´ω`)</p>
+]]></content>
+  </entry>
+  
+</feed>

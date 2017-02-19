@@ -1,7 +1,7 @@
 ---
 title: "JAWS-UG青森開催してきた"
-thumbnailImage: //jaws-ug.jp/wp-content/uploads/2013/02/unnamed.png
-thumbnailImagePosition: top
+thumbnailImage: images/eye-catch/jawsug.jpg
+thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-06-26
 categories:

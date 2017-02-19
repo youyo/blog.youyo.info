@@ -1,6 +1,6 @@
 ---
 title: "カレントディレクトリにあるmy.cnfファイルから設定を読み込む"
-thumbnailImage: //app-public.ds.jp-east.idcfcloud.com/images/event/1/e22f4c34fe85a0c105e8cdc79056938f479c386b.png
+thumbnailImage: images/eye-catch/mysql.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-09-26

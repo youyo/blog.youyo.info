@@ -1,6 +1,6 @@
 ---
 title: "zabbix-proxyでout of memory発生"
-thumbnailImage: //www.zabbix.com/jp/img/logo/zabbix_logo_500x131.png
+thumbnailImage: images/eye-catch/zabbix.png
 thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-02-03

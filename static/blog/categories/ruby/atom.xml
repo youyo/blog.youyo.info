@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする]]></title>
+    <link href="http://blog.youyo.info/blog/2014/12/05/centos-latest-ruby/"/>
+    <updated>2014-12-05T13:33:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/12/05/centos-latest-ruby</id>
+    <content type="html"><![CDATA[<p>CentOS6系のパッケージでインストールされるrubyのバージョンは1.8.7です。さすがに低すぎるってことでもっと新しいバージョンを使おうってときに普通はrbenvやRVMを利用すると思います。<br/>
+でもdeamonからrubyを使おうとしたとき、rbenvで入れたrubyって少し使いづらいです。。</p>
+
+<p>systemのrubyのバージョンを上げたいってとき、epelなどでもパッケージ提供されていないのでソースからインストールするしかないのかな〜って思ってます。<br/>
+今回aws-sdkを使おうとしたらバージョン低すぎるよ！って言われたのでどうにかすることにしました。</p>
+
+<p>```</p>
+
+<h1>gem install aws-sdk</h1>
+
+<p>ERROR:  Error installing aws-sdk:</p>
+
+<pre><code>nokogiri requires Ruby version &gt;= 1.9.2.
+</code></pre>
+
+<p>```</p>
+
+<h2>でもソースインストールってめんどくさい</h2>
+
+<p>僕は嫌いです。。<br/>
+コンパイルオプションの指定とかめんどいし。。</p>
+
+<h2>ruby-build使えばいいんじゃね？</h2>
+
+<p><code>rbenv</code>のプラグインである<code>ruby-build</code>を直で使えば楽にソースインストールできるんじゃね？ってことでやってみました。</p>
+
+<p>```
+git clone https://github.com/sstephenson/ruby-build.git
+cd ruby-build
+./install.sh
+ruby-build 2.1.5 /usr/local/ruby-2.1.5
+ln -s /usr/local/ruby-2.1.5/bin/ruby /usr/local/bin/
+ln -s /usr/local/ruby-2.1.5/bin/gem /usr/local/bin/</p>
+
+<h1>ruby -v</h1>
+
+<p>ruby 2.1.5p273 (2014-11-13 revision 48405) [x86_64-linux]
+```</p>
+
+<h2>できました</h2>
+
+<p><code>/usr/local/bin/</code>にシンボリックリンクを作成することでバージョンアップが必要になったときもこれで楽チンです！<br/>
+これでsystemのrubyで気軽に最新バージョン使えますね！</p>
+
+<p>```
+ruby-build 2.0.0-p598 /usr/local/ruby-2.0.0-p598
+rm -f /usr/local/bin/ruby &amp;&amp; ln -s /usr/local/ruby-2.0.0-p598/bin/ruby /usr/local/bin/
+rm -f /usr/local/bin/gem &amp;&amp; ln -s /usr/local/ruby-2.0.0-p598/bin/gem /usr/local/bin/</p>
+
+<h1>ruby -v</h1>
+
+<p>ruby 2.0.0p598 (2014-11-13 revision 48408) [x86_64-linux]
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Redmine構築]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/06/redmine-mysql-nginx/"/>
+    <updated>2014-06-06T22:09:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/06/redmine-mysql-nginx</id>
+    <content type="html"><![CDATA[<p>Redmine構築したのでメモ。(いつも忘れてググってるので。。)</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>CentOS 6.5</li>
+<li>Redmine 2.5.1</li>
+<li>Ruby 2.0.0-p481</li>
+<li>Nginx 1.6.0</li>
+<li>MySQL 5.1.73</li>
+</ul>
+
+
+<p>Apache Passengerは使わず、unicornで起動してproxyとしてnginxを使います。unicornはupstartで起動します。rubyはrbenvでお好きなものを。</p>
+
+<!-- more -->
+
+
+<h2>MySQL install</h2>
+
+<p>適当に。<br/>
+チューニングはスペックに合わせてしっかりやる。</p>
+
+<p>```
+yum -y install mysql-server</p>
+
+<p>cat &lt;<EOS > /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+character-set-server = utf8
+skip-character-set-client-handshake
+ignore-builtin-innodb
+plugin-load=innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so
+innodb_file_per_table
+innodb_flush_method = O_DIRECT
+innodb_buffer_pool_size = 512M
+innodb_log_file_size = 256M
+innodb_data_file_path = ibdata1:64M:autoextend
+innodb_autoextend_increment = 64
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+character-set-server = utf8
+EOS</p>
+
+<p>service mysqld start
+chkconfig mysqld on
+mysql_secure_installation
+```</p>
+
+<p>データベース、ユーザーを作成しておく。</p>
+
+<p><code>
+create database redmine;
+grant all on redmine.* to redmine@"localhost" identified by "password";
+flush privileges;
+</code></p>
+
+<h2>Ruby install</h2>
+
+<p>ユーザーを追加してrbenvでrubyインストール。<br/>
+ホームディレクトリとかお好きにどうぞ。</p>
+
+<p><code>
+mkdir -p /var/www/vhost
+useradd -d /var/www/vhost/redmine.youyo.info redmine.youyo.info
+chmod 755 /var/www/vhost/redmine.youyo.info
+su - redmine.youyo.info
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bash_profile
+echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bash_profile
+exec $SHELL -l
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+exec $SHELL -l
+rbenv install 2.0.0-p481
+rbenv global 2.0.0-p481
+rbenv rehash
+gem install bundler
+rbenv rehash
+</code></p>
+
+<h2>Redmine install</h2>
+
+<p>そのまま<code>redmine.youyo.info</code>ユーザーでredmineをインストールしていきます。</p>
+
+<p>```
+cd
+wget http://www.redmine.org/releases/redmine-2.5.1.tar.gz
+tar xvzf redmine-2.5.1.tar.gz
+cd redmine-2.5.1/
+bundle install --without development test rmagick postgresql sqlite
+cp -a config/database.yml.example config/database.yml</p>
+
+<h2>vim config/database.yml</h2>
+
+<p>production:
+  adapter: mysql2
+  database: redmine
+  host: localhost
+  username: redmine
+  password: "password"</p>
+
+<h2>  encoding: utf8</h2>
+
+<p>echo "gem 'unicorn'" >> Gemfile
+bundle install --without development test rmagick postgresql sqlite
+RAILS_ENV=production rake db:migrate
+RAILS_ENV=production rake redmine:load_default_data
+rake generate_secret_token
+```</p>
+
+<p>テストで起動してみる。問題なければctrl＋cで終了しておく。</p>
+
+<p><code>
+bundle exec rails s -e production
+</code></p>
+
+<p>unicorn設定。</p>
+
+<p>```
+cp -a ~/.rbenv/versions/2.0.0-p481/lib/ruby/gems/2.0.0/gems/unicorn-4.8.3/examples/unicorn.conf.rb config/</p>
+
+<h2>vim config/unicorn.conf.rb</h2>
+
+<p>working_directory "/var/www/vhost/redmine.youyo.info/redmine-2.5.1"
+listen "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/sockets/unicorn.sock", :backlog => 64
+timeout 60
+pid "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/pids/unicorn.pid"</p>
+
+<p>stderr_path "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/log/unicorn.stderr.log"</p>
+
+<h2>stdout_path "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/log/unicorn.stdout.log"</h2>
+
+<p>```</p>
+
+<p>起動テスト。</p>
+
+<p><code>
+bundle exec unicorn_rails -c config/unicorn.conf.rb -E production
+</code></p>
+
+<h2>Upstart config</h2>
+
+<p>upstartでredmine起動するようにします。</p>
+
+<p>```</p>
+
+<h2>vim /etc/init/redmine.conf</h2>
+
+<p>description "redmine"
+author "youyo"</p>
+
+<p>start on runlevel [2345]
+stop on runlevel [016]</p>
+
+<p>exec su - redmine.youyo.info -c "cd /var/www/vhost/redmine.youyo.info/redmine-2.5.1 &amp;&amp; bundle exec unicorn_rails -c config/unicorn.conf.rb -E production"</p>
+
+<h2>respawn</h2>
+
+<p>initctl start redmine
+```</p>
+
+<h2>Nginx install</h2>
+
+<p>nginxでproxyする設定します。</p>
+
+<p>```</p>
+
+<h2>vim /etc/yum.repos.d/nginx.repo</h2>
+
+<p>[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=0</p>
+
+<h2>enabled=1</h2>
+
+<p>yum install nginx
+rm -rf /etc/nginx/conf.d/*</p>
+
+<h2>vim /etc/nginx/nginx.conf</h2>
+
+<p>keepalive_timeout  10;
+proxy_redirect off;
+proxy_set_header Host                   $host;
+proxy_set_header X-Real-IP              $remote_addr;
+proxy_set_header X-Forwarded-Host       $host;
+proxy_set_header X-Forwarded-Server     $host;
+proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto      $scheme;</p>
+
+<h2>server_tokens off;</h2>
+
+<h2>vim /etc/nginx/conf.d/redmine.conf</h2>
+
+<p>server {</p>
+
+<pre><code>    listen 80;
+    server_name redmine.youyo.info;
+    root /var/www/vhost/redmine.youyo.info/redmine-2.5.1/public;
+    location / {
+            if (!-f $request_filename) {
+                    proxy_pass http://unix:/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/sockets/unicorn.sock;
+                    break;
+            }
+    }
+</code></pre>
+
+<h2>}</h2>
+
+<p>nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful</p>
+
+<p>service nginx start
+chkconfig nginx on
+```</p>
+
+<h2>できあがり！</h2>
+
+<p>これで<code>http://redmine.youyo.info/</code>にアクセスすればredmine使えるはず！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MongoMapperでautoincrementやってみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/10/02/mongomapper-autoincrement/"/>
+    <updated>2013-10-02T22:26:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/10/02/mongomapper-autoincrement</id>
+    <content type="html"><![CDATA[<p><img src="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" alt="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" /></p>
+
+<p>MongoMapperでautoincrement使いたかったけど、ちょっと悩んだんでメモ。</p>
+
+<h2>まずMongoDBに標準で備わってない</h2>
+
+<p>MongoMapperというかMongoDBにautoincrementがありません。<br/>
+でも実現方法は公式にあるのでそれ参照。</p>
+
+<p><a href="http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/">http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/</a></p>
+
+<p>要はautoincrement用のcollection作って<code>findAndModify</code>コマンドでアトミックにドキュメントを更新してその値を取り出して使用する。って感じです。<br/>
+これをMongoMapperでやればいいわけですね(´ω｀)</p>
+
+<!-- more -->
+
+
+<h2>findAndModifyがない</h2>
+
+<p>MongoMapperには<code>findAndModify</code>コマンドがありませんでした。。。<br/>
+でもその辺はやっぱり、先駆者様が何とかしていてくれるわけで。</p>
+
+<p><a href="http://jottingsoncomputation.blogspot.jp/2012/08/adding-findandmodify-to-mongomapper-and.html">http://jottingsoncomputation.blogspot.jp/2012/08/adding-findandmodify-to-mongomapper-and.html</a></p>
+
+<p>このplugin使えば<code>findAndModify</code>コマンドが使えるわけです。素晴らしいです(´ω｀)</p>
+
+<h2>いざ、実装</h2>
+
+<p>とりあえずサンプルをば。</p>
+
+<p>``` ruby sinatra_app.rb</p>
+
+<h1>!/usr/bin/env ruby</h1>
+
+<p>require 'sinatra'
+require 'mongo_mapper'</p>
+
+<p>module FindAndModifyPlugin
+  extend ActiveSupport::Concern
+  module ClassMethods</p>
+
+<pre><code>def find_and_modify(options)
+  load collection.find_and_modify(options)
+end
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>class MongoTest
+  include MongoMapper::Document
+  plugin  FindAndModifyPlugin
+  key     :counter_id,  Integer,  :required => true, :numeric => true
+  set_collection_name   'MongoTest.counter'
+end</p>
+
+<p>MongoMapper.connection = Mongo::Connection.new('localhost',27017)
+MongoMapper.database = 'counter_test'</p>
+
+<p>get '/' do
+  "#{getNewSequence}"
+end</p>
+
+<p>helpers do
+  def getNewSequence</p>
+
+<pre><code>return  MongoTest.find_and_modify(
+  :update =&gt; {:$inc =&gt; {:counter_id =&gt; 1}}, :new =&gt; true, :upsert =&gt; true).counter_id
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>簡単にですが書きました。<br/>
+これで'/'にアクセスするたびに、<code>counter_test</code>dbの<code>MongoTest.counter</code>collectionの<code>counter_id</code>が1増えてその値を返してくれます。実際には別のドキュメントをinsertするときに<code>getNewSequence</code>メソッドを使用することでいい感じに動くかと思います。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[BatteryGrowlリリースしました]]></title>
+    <link href="http://blog.youyo.info/blog/2013/08/29/release-battery-growl/"/>
+    <updated>2013-08-29T15:06:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/08/29/release-battery-growl</id>
+    <content type="html"><![CDATA[<p>gem作成の練習で試しに作成しました！<br/>
+完全に個人用です...</p>
+
+<h2>こんなことありませんか？</h2>
+
+<p>愛用しているMacBookAir。<br/>
+　<br/>
+普段から電源接続しながら使用しているのですが、たまに気づかないうちに外れてしまっていることがあります。そのまま気づかずに使用していて急に</p>
+
+<blockquote><p>「予備電源で動作しています。充電してください。」</p></blockquote>
+
+<p>的なメッセージが出て焦ります。<br/>
+　<br/>
+これは心臓に悪い...</p>
+
+<h2>BatteryGrowl?</h2>
+
+<p>なんちゃってマカーの僕はとりあえずgrowl入れていろいろと通知してます。<br/>
+デフォルトではバッテリー残量が少なくなったら通知的なことはできないようでした。<br/>
+なので作りました。</p>
+
+<ul>
+<li><a href="https://rubygems.org/gems/battery_growl">battery_growl</a></li>
+<li><a href="https://github.com/youyo/battery_growl">youyo/battery_growl</a></li>
+</ul>
+
+
+<p><code>gem install battery_growl</code> して<code>battery_growl</code>コマンド実行すればそのときのバッテリー残量が10%以下だったら通知してくれます。<br/>
+<code>battery_growl 30</code>のようにすれば30%以下のときに通知してくれます。<br/>
+これをcronに仕込んでます。<br/>
+個人用ですからね。こんな感じでいいんです。</p>
+
+<h2>感想</h2>
+
+<ul>
+<li>とりあえずgem作成できて満足</li>
+<li>rspecの勉強にもなった</li>
+<li>cronいまいち？ やる気があればdaemon化？</li>
+<li><a href="https://itunes.apple.com/jp/app/hardwaregrowler/id475260933?mt=12">HardwareGrowler</a>があるので、こんなGem存在価値ないです ^ ^</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sinatraでセッション管理をredisでやろうとしたらちょっと困った話]]></title>
+    <link href="http://blog.youyo.info/blog/2013/05/02/rack-session-redis/"/>
+    <updated>2013-05-02T10:39:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/05/02/rack-session-redis</id>
+    <content type="html"><![CDATA[<p>sinatra勉強中で、セッションの管理をデフォルトのクッキーではなくredisでやりたいなと。<br/>
+んでちょっと調べたら良さそうなのがあると。<br/>
+　<br/>
+<a href="https://github.com/vangberg/rack-session-redis">https://github.com/vangberg/rack-session-redis</a>
+　<br/>
+使い方も簡単そうだしいいね！てことでちょっと使ってみることに。</p>
+
+<ul>
+<li>Usage</li>
+</ul>
+
+
+<p>READMEそのままでOKです。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis'
+</code></p>
+
+<p>``` rb config.ru
+require "rack/session/redis"</p>
+
+<p>use Rack::Session::Redis, {<br/>
+  :url          => "redis://localhost:6379/0",<br/>
+  :namespace    => "rack:session",<br/>
+  :expire_after => 600<br/>
+}
+```</p>
+
+<!-- more -->
+
+
+<p>あとは普通に<code>session['name']</code>とかで使用するだけ。簡単幸せです(´ω`)</p>
+
+<p><code>rb 　
+get '/' do
+  session['name'] = youyo
+  haml :index
+end
+</code></p>
+
+<ul>
+<li>しかししかし削除がうまくいかない...</li>
+</ul>
+
+
+<p><code>rb 　
+get '/logout' do
+  session.clear
+  redirect '/'
+end
+</code></p>
+
+<p>とかやれば通常のクッキーベースのセッションであればクリアされるのですが、何故か消えない...<br/>
+ググったところこれはバグでもうすでに直っているそうです。(<a href="https://github.com/vangberg/rack-session-redis/commits/">https://github.com/vangberg/rack-session-redis/commits/</a>)<br/>
+　<br/>
+あれ？じゃあ、なんでdelete失敗してるの？って思ってコードみたら直ってなかった...<br/>
+　<br/>
+　</p>
+
+<h3>なるほど。gemでインストールできるのではなく最新を持ってこい。と。</h3>
+
+<ul>
+<li>Bundlerでgithubから直接ソースを取得する</li>
+</ul>
+
+
+<p><a href="http://qiita.com/items/d92ec09f51e8ff144be6">こちら</a>を参考にGemfileを修正。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis', :git =&gt; "git://github.com/vangberg/rack-session-redis.git"
+</code></p>
+
+<p>あとは再インストール。簡単ですね(´ω`)<br/>
+無事<code>session.clear</code>動きました！</p>
+]]></content>
+  </entry>
+  
+</feed>

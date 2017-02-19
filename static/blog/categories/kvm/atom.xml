@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: kvm | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/kvm/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[KVMでLiveMigrationしてみた]]></title>
+    <link href="http://blog.youyo.info/blog/2014/08/18/kvm-live-migrate/"/>
+    <updated>2014-08-18T00:53:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/08/18/kvm-live-migrate</id>
+    <content type="html"><![CDATA[<p>やってみました。<br/>
+参考は<a href="http://d.hatena.ne.jp/enakai00/20111124/1322106772]">こちら。</a></p>
+
+<h2>構成</h2>
+
+<ul>
+<li>host1 centos6.5 (10.0.2.111)</li>
+<li>host2 centos6.5 (10.0.2.112)</li>
+<li>VM centos6.5 (gitlab)</li>
+</ul>
+
+
+<p>host1からhost2にVMを移動させてみます。</p>
+
+<h2>やってみる</h2>
+
+<ul>
+<li>とりあえず実行してみた</li>
+</ul>
+
+
+<p><code>
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+エラー: cannot open file '/var/lib/libvirt/images/gitlab.qcow2.img': No such file or directory
+</code></p>
+
+<p>「ディスクイメージないよ！」と言われたので作成して再度やってみる。</p>
+
+<ul>
+<li>ディスクイメージ作成して再実行</li>
+</ul>
+
+
+<p><code>
+qemu-img create -f qcow2 /var/lib/libvirt/images/gitlab.qcow2.img 50G
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+エラー: Unable to resolve address 'host2' service '49153': Name or service not known
+</code></p>
+
+<p>「<code>host2</code>が名前解決できないよ！」と言われたので、<code>/etc/hosts</code>に追記して再実行。</p>
+
+<ul>
+<li>名前解決できるようにして再実行</li>
+</ul>
+
+
+<p><code>
+echo -e "host2\t10.0.2.112" &gt;&gt; /etc/hosts
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+マイグレーション: [100 %]
+</code></p>
+
+<p>できた！！！</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>簡単にできた。</li>
+<li>VMにssh接続しながら移動させたけど、ほんとに止まってなかった。</li>
+<li>これ使わなくてもいいようなしっかりとした設計を。(戒め)</li>
+<li>でもメンテナンスには絶大な威力発揮できそう。(もっと検証必要だけど)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[KVMでconsole接続出来るようにするメモ]]></title>
+    <link href="http://blog.youyo.info/blog/2014/05/15/kvm-console/"/>
+    <updated>2014-05-15T18:48:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/05/15/kvm-console</id>
+    <content type="html"><![CDATA[<p>KVMでVM作成するとき、毎回console出来るようにする設定をググっていたので自分用にメモ。<br/>
++ ワンライナーにはならなかったけど、簡単なコマンドを。</p>
+
+<p>参考元はこちら。<br/>
+<a href="http://aikotobaha.blogspot.jp/2012/03/rhel6centos6sl6-on-kvm.html">RHEL6/CentOS6/SL6 on KVM時のシリアルコンソール設定</a><br/>
+<a href="http://aikotobaha.blogspot.jp/2010/08/rhel-kvm-2.html">RHEL KVM (2) コンソール接続</a></p>
+
+<ul>
+<li>CentOS6</li>
+</ul>
+
+
+<p><code>
+sed -i "s|hiddenmenu|hiddenmenu\nserial --speed=115200 --unit=0 --word=8 --parity=no --stop=1\nterminal --timeout=5 serial console|" /boot/grub/grub.conf
+sed -i "s|\(kernel.*\)|\1 console=tty0 console=ttyS0,115200n|g" /boot/grub/grub.conf
+</code></p>
+
+<ul>
+<li>CentOS5</li>
+</ul>
+
+
+<p><code>
+sed -i "s|standard runlevels|standard runlevels\nS0:12345:respawn:/sbin/agetty ttyS0 115200|" /etc/inittab
+sed -i "s|hiddenmenu|hiddenmenu\nserial --speed=115200 --unit=0 --word=8 --parity=no --stop=1|" /boot/grub/grub.conf
+sed -i "s|\(kernel.*\)|\1 console=ttyS0,115200n8|" /boot/grub/grub.conf
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,6 +1,6 @@
 ---
 title: "Amazon EFSがリリースされたので触ってみた"
-thumbnailImage: //cdn-ak.f.st-hatena.com/images/fotolife/L/Lync/20160630/20160630195305.png
+thumbnailImage: images/eye-catch/aws-efs.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-06-29

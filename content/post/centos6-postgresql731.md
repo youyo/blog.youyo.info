@@ -1,7 +1,7 @@
 ---
 title: "CentOS6にPostgreSQL7.3.1をソースインストール"
-thumbnailImage: //www.postgresql.org/media/img/about/press/slonik_with_black_text_and_tagline.gif
-thumbnailImagePosition: top
+thumbnailImage: images/eye-catch/postgresql.png
+thumbnailImagePosition: left
 metaAlignment: left
 date: 2015-10-21
 categories:

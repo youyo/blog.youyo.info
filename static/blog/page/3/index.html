@@ -1,0 +1,971 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="1
+yum install nginx-1.4.2-1.el6.ngx --enablerepo=nginx バージョンまで指定してinstall。
+">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/page/3//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/18/old-version-install/">Yumで古いバージョンのパッケージをインストールする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-18T14:18:00+09:00" pubdate data-updated="true">Oct 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install nginx-1.4.2-1.el6.ngx --enablerepo=nginx</span></code></pre></td></tr></table></div></figure>
+
+
+<p>バージョンまで指定してinstall。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/02/mongomapper-autoincrement/">MongoMapperでautoincrementやってみた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-02T22:26:00+09:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" alt="http://2.bp.blogspot.com/-yOxAoENqYkU/UUV-Xnmf4jI/AAAAAAAAACs/6FsB4DLz0MQ/s1600/mongo-db-logo.png" /></p>
+
+<p>MongoMapperでautoincrement使いたかったけど、ちょっと悩んだんでメモ。</p>
+
+<h2>まずMongoDBに標準で備わってない</h2>
+
+<p>MongoMapperというかMongoDBにautoincrementがありません。<br/>
+でも実現方法は公式にあるのでそれ参照。</p>
+
+<p><a href="http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/">http://docs.mongodb.org/manual/tutorial/create-an-auto-incrementing-field/</a></p>
+
+<p>要はautoincrement用のcollection作って<code>findAndModify</code>コマンドでアトミックにドキュメントを更新してその値を取り出して使用する。って感じです。<br/>
+これをMongoMapperでやればいいわけですね(´ω｀)</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/10/02/mongomapper-autoincrement/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/30/jawsfestakansai2013/">JAWS FESTA Kansai 2013に参加してきた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-30T17:39:00+09:00" pubdate data-updated="true">Sep 30<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="http://cdn.wpbooster.net/7a1b5033e1a656592b6c75a15dcf2645/wp-content/themes/jfk2013/images/headers/main-image.jpg" alt="http://cdn.wpbooster.net/7a1b5033e1a656592b6c75a15dcf2645/wp-content/themes/jfk2013/images/headers/main-image.jpg" /></p>
+
+<p>行ってきました大阪！<br/>
+　<br/>
+とてもじゃないけれど全部は書けないの僕がお手伝い&amp;参加をしたアンカンファレンス「地方におけるAWSの現状ついて語ろう」について書きます。(決してめんどくさいわけじゃないよ！</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/30/jawsfestakansai2013/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/29/release-battery-growl/">BatteryGrowlリリースしました</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-29T15:06:00+09:00" pubdate data-updated="true">Aug 29<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>gem作成の練習で試しに作成しました！<br/>
+完全に個人用です&#8230;</p>
+
+<h2>こんなことありませんか？</h2>
+
+<p>愛用しているMacBookAir。<br/>
+　<br/>
+普段から電源接続しながら使用しているのですが、たまに気づかないうちに外れてしまっていることがあります。そのまま気づかずに使用していて急に</p>
+
+<blockquote><p>「予備電源で動作しています。充電してください。」</p></blockquote>
+
+<p>的なメッセージが出て焦ります。<br/>
+　<br/>
+これは心臓に悪い&#8230;</p>
+
+<h2>BatteryGrowl?</h2>
+
+<p>なんちゃってマカーの僕はとりあえずgrowl入れていろいろと通知してます。<br/>
+デフォルトではバッテリー残量が少なくなったら通知的なことはできないようでした。<br/>
+なので作りました。</p>
+
+<ul>
+<li><a href="https://rubygems.org/gems/battery_growl">battery_growl</a></li>
+<li><a href="https://github.com/youyo/battery_growl">youyo/battery_growl</a></li>
+</ul>
+
+
+<p><code>gem install battery_growl</code> して<code>battery_growl</code>コマンド実行すればそのときのバッテリー残量が10%以下だったら通知してくれます。<br/>
+<code>battery_growl 30</code>のようにすれば30%以下のときに通知してくれます。<br/>
+これをcronに仕込んでます。<br/>
+個人用ですからね。こんな感じでいいんです。</p>
+
+<h2>感想</h2>
+
+<ul>
+<li>とりあえずgem作成できて満足</li>
+<li>rspecの勉強にもなった</li>
+<li>cronいまいち？ やる気があればdaemon化？</li>
+<li><a href="https://itunes.apple.com/jp/app/hardwaregrowler/id475260933?mt=12">HardwareGrowler</a>があるので、こんなGem存在価値ないです ^ ^</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/11/chef-mysql56/">chefでmysql-5.6インストールしようとしたら苦労した話</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T18:32:00+09:00" pubdate data-updated="true">Jul 11<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近chefにハマってます。<br/>
+いろんなレシピを書いて勉強中です。<br/>
+　<br/>
+で、mysql-5.6をchefでインストールしようとしたらはまってしまいました。(泥沼に&#8230;<br/>
+CentOS6標準のmysql-5.1と同じノリでやったら苦労したのでメモ。<br/>
+　<br/>
+　</p>
+
+<ul>
+<li>mysql-5.1のとき</li>
+</ul>
+
+
+<p>こんな感じでレシピ書いてました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>%w(mysql-server mysql mysql-devel).each do |pkg|
+</span><span class='line'>  package pkg do
+</span><span class='line'>    action :install
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>template '/etc/my.cnf' do
+</span><span class='line'>  source 'my.cnf.erb'
+</span><span class='line'>  owner 'root'
+</span><span class='line'>  group 'root'
+</span><span class='line'>  mode 644
+</span><span class='line'>  notifies :restart, "service[mysqld]", :delayed
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>service 'mysqld' do
+</span><span class='line'>  action [:start, :enable]
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>script "Secure_Install" do
+</span><span class='line'>  interpreter 'bash'
+</span><span class='line'>  user "root"
+</span><span class='line'>  only_if "mysql -u root -e 'show databases'"
+</span><span class='line'>  code &lt;&lt;-EOL
+</span><span class='line'>    mysqladmin -u root password "your_password"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='';"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1');"
+</span><span class='line'>    mysql -u root -pyour_password -e "DROP DATABASE test;"
+</span><span class='line'>    mysql -u root -pyour_password -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+</span><span class='line'>    mysql -u root -pyour_password -e "FLUSH PRIVILEGES;"
+</span><span class='line'>  EOL
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/11/chef-mysql56/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/15/tag-vlan/">CentOS6でtag-vlan設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T21:13:00+09:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>OS側でtag-vlan設定するメモ。(vlan100)<br/>
+VLAN_NAME_TYPEはDEV_PLUS_VID_NO_PADで設定。<br/>
+詳細は<a href="http://aikotobaha.blogspot.jp/2012/05/vlanvconfig.html">こちら</a><br/>
+　<br/>
+以下、雑なメモ。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install vconfig
+</span><span class='line'>
+</span><span class='line'>cat &lt;&lt;EOF&gt;&gt; /etc/sysconfig/network
+</span><span class='line'>VLAN=yes
+</span><span class='line'>VLAN_NAME_TYPE=DEV_PLUS_VID_NO_PAD
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>service network restart
+</span><span class='line'>
+</span><span class='line'>vconfig add eth0 100
+</span><span class='line'>cat &lt;&lt;EOF&gt; /etc/sysconfig/network-scripts/ifcfg-eth0.100
+</span><span class='line'>DEVICE=eth0.100
+</span><span class='line'>BOOTPROTO=static
+</span><span class='line'>BROADCAST=192.168.2.255
+</span><span class='line'>IPADDR=192.168.1.1
+</span><span class='line'>NETMASK=255.255.255.0
+</span><span class='line'>NETWORK=192.168.1.0
+</span><span class='line'>GATEWAY=192.168.1.254
+</span><span class='line'>ONBOOT=yes
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>ifup eth0.100
+</span><span class='line'> # or
+</span><span class='line'>service network restart</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/15/bonding/">CentOS6でBondingする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T20:53:00+09:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>BondingしてNIC冗長化。eth0とeth1を使用してbond0作成します。<br/>
+mode=1(active-backup)に設定します。<br/>
+詳しくは<a href="http://www.oss-d.net/centos/bonding">こちら</a><br/>
+　<br/>
+雑な手順。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo "alias bond0 bonding" &gt;&gt; /etc/modprobe.conf
+</span><span class='line'>
+</span><span class='line'>cat &lt;&lt;EOF&gt; /etc/sysconfig/network-scripts/ifcfg-bond0
+</span><span class='line'>DEVICE=bond0
+</span><span class='line'>BOOTPROTO=static
+</span><span class='line'>ONBOOT=yes
+</span><span class='line'>NETMASK=255.255.255.0
+</span><span class='line'>IPADDR=192.168.1.1
+</span><span class='line'>GATEWAY=192.168.1.254
+</span><span class='line'>TYPE=Ethernet
+</span><span class='line'>BONDING_OPTS="mode=1 primary=eth0 miimon=100 updelay=5000"
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>cat &lt;&lt;EOF&gt; /etc/sysconfig/network-scripts/ifcfg-eth0
+</span><span class='line'>DEVICE=eth0
+</span><span class='line'>BOOTPROTO=none
+</span><span class='line'>ONBOOT=yes
+</span><span class='line'>TYPE=Ethernet
+</span><span class='line'>MASTER=bond0
+</span><span class='line'>SLAVE=yes
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>cat &lt;&lt;EOF&gt; /etc/sysconfig/network-scripts/ifcfg-eth1
+</span><span class='line'>DEVICE=eth1
+</span><span class='line'>BOOTPROTO=none
+</span><span class='line'>ONBOOT=yes
+</span><span class='line'>TYPE=Ethernet
+</span><span class='line'>MASTER=bond0
+</span><span class='line'>SLAVE=yes
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>service network restart</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これでできるはず。<br/>
+あとはLANケーブル片方ずつ抜いて問題ないことを確認して終了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/22/heartbeat-pacemaker-3/">Heartbeat + Pacemaker で３ノードクラスタ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-22T21:48:00+09:00" pubdate data-updated="true">May 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Heartbeat + Pacemaker で冗長構成作ってみました。３ノードでVIPを２つ共有します。<br/>
+DRBDは絡みませんのでDRBDがらみの設定が知りたい方はすぐにブラウザバック！！</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>node1.info eth0[192.168.1.1] eth1[10.0.0.1]</li>
+<li>node2.info eth0[192.168.1.2] eth1[10.0.0.2]</li>
+<li>node3.info eth0[192.168.1.3] eth1[10.0.0.3]</li>
+<li>サービス用VIP 192.168.1.4 192.168.1.5</li>
+</ul>
+
+
+<p>こんな感じ？</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-05-22-heartbeat-pacemaker-3/3node-clster.jpg" width="300"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/22/heartbeat-pacemaker-3/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/09/nginx-1-dot-4/">Nginx-1.4.1にアップデート</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-09T16:30:00+09:00" pubdate data-updated="true">May 9<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>先日の記事(<a href="http://blog.youyo.info/blog/2013/03/31/nginx-spdy/">nginxにSPDYパッチあててみた</a>)でnginxのSPDY対応をすませた訳ですが、
+パッチをあてずとも正式にSPDY対応したnginx-1.4が出ちゃったのでアップデートします。<br/>
+あとwebsocketのリバースプロキシにも対応したそうですね。</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>CentOS6.3 x86_64</li>
+</ul>
+
+
+<h3>Install</h3>
+
+<p>手順はパッチをあてる以外、前回とほぼ同じです。<br/>
+しっかりバックアップを取ってから作業します。<br/>
+　<br/>
+まずは現在のconfigureオプションの確認から。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># nginx -V
+</span><span class='line'>nginx version: nginx/1.3.14
+</span><span class='line'>built by gcc 4.4.6 20120305 (Red Hat 4.4.6-4) (GCC)
+</span><span class='line'>TLS SNI support enabled
+</span><span class='line'>configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' --with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これを元にビルドします。<br/>
+SPDYは前回のビルド時に有効にしていたのでもうありますね。<br/>
+<code>--with-openssl</code>と<code>--sbin-path</code>のpathだけ書き換えてビルドします。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/09/nginx-1-dot-4/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/02/rack-session-redis/">Sinatraでセッション管理をredisでやろうとしたらちょっと困った話</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-02T10:39:00+09:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>sinatra勉強中で、セッションの管理をデフォルトのクッキーではなくredisでやりたいなと。<br/>
+んでちょっと調べたら良さそうなのがあると。<br/>
+　<br/>
+<a href="https://github.com/vangberg/rack-session-redis">https://github.com/vangberg/rack-session-redis</a>
+　<br/>
+使い方も簡単そうだしいいね！てことでちょっと使ってみることに。</p>
+
+<ul>
+<li>Usage</li>
+</ul>
+
+
+<p>READMEそのままでOKです。</p>
+
+<figure class='code'><figcaption><span>Gemfile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">gem</span> <span class="s1">&#39;rack-session-redis&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s2">&quot;rack/session/redis&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">use</span> <span class="ss">Rack</span><span class="p">:</span><span class="ss">:Session</span><span class="o">::</span><span class="no">Redis</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:url</span>          <span class="o">=&gt;</span> <span class="s2">&quot;redis://localhost:6379/0&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:namespace</span>    <span class="o">=&gt;</span> <span class="s2">&quot;rack:session&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:expire_after</span> <span class="o">=&gt;</span> <span class="mi">600</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/02/rack-session-redis/">Read more. &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/06/docker-connect-tls/">リモートのdockerホストに接続する</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/27/xbuild/">xbuildでrubyセットアップメモ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/31/2014nian-matome/">2014年まとめ</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/12/05/centos-latest-ruby/">CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/14/td-agent-syslog/">fluentdでsyslog受信しようとしたらハマった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 148.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(10)</a> <a href='/blog/categories/chef' style='font-size: 106.0%'>chef(1)</a> <a href='/blog/categories/development' style='font-size: 106.0%'>development(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 112.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 112.0%'>docker(2)</a> <a href='/blog/categories/ec2' style='font-size: 106.0%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 112.0%'>fluentd(2)</a> <a href='/blog/categories/ha' style='font-size: 112.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 106.0%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 124.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 106.0%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 112.0%'>kvm(2)</a> <a href='/blog/categories/mail' style='font-size: 106.0%'>mail(1)</a> <a href='/blog/categories/mongodb' style='font-size: 106.0%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 130.0%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 112.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 148.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 106.0%'>nsd(1)</a> <a href='/blog/categories/opendkim' style='font-size: 106.0%'>opendkim(1)</a> <a href='/blog/categories/openstack' style='font-size: 112.0%'>openstack(2)</a> <a href='/blog/categories/pacemaker' style='font-size: 106.0%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 130.0%'>php(5)</a> <a href='/blog/categories/postfix' style='font-size: 106.0%'>postfix(1)</a> <a href='/blog/categories/redis' style='font-size: 112.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 106.0%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 154.0%'>ruby(9)</a> <a href='/blog/categories/s3' style='font-size: 112.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 106.0%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 106.0%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 106.0%'>spdy(1)</a> <a href='/blog/categories/swift' style='font-size: 106.0%'>swift(1)</a> <a href='/blog/categories/syslog' style='font-size: 106.0%'>syslog(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 106.0%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 124.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 118.0%'>その他(3)</a> <a href='/blog/categories/勉強会' style='font-size: 118.0%'>勉強会(3)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51wzT24ZBHL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51wvIrJ%2BsxL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/416BZhuMxEL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

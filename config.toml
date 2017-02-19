@@ -1,5 +1,5 @@
 baseurl = "//blog.youyo.info/"
-languageCode = "ja-jp"
+languageCode = "en"
 title = "blog.youyo.info"
 theme = "hugo-tranquilpeak-theme"
 disqusShortname = "youyo"

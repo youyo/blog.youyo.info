@@ -1,6 +1,6 @@
 ---
 title: "pip install でバージョン指定"
-thumbnailImage: //upload.wikimedia.org/wikipedia/commons/0/05/Ansible_Logo.png
+thumbnailImage: images/eye-catch/ansible.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-02-09

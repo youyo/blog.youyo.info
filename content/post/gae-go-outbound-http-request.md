@@ -1,6 +1,6 @@
 ---
 title: "GAE/Goで外部にhttpリクエスト送るには？"
-thumbnailImage: //1.bp.blogspot.com/-ldb24xUV3f0/U-VjaM380DI/AAAAAAAAmPw/V9jDvdAT8R8/s1600/gae.png
+thumbnailImage: images/eye-catch/gae.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-07-05

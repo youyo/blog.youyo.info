@@ -1,5 +1,7 @@
 ---
 title: "Werckerを使ってフェーズ間のパッケージの受け渡し周りでハマった"
+thumbnailImage: images/eye-catch/wercker.png
+thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-06-18
 categories:

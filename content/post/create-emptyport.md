@@ -1,6 +1,6 @@
 ---
 title: "emptyportというGolangのライブラリを作った"
-thumbnailImage:
+thumbnailImage: images/eye-catch/golang.jpg
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-02-08

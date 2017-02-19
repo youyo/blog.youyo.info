@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: dnsmasq | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/dnsmasq/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[mysql5.6+php5.4+nginxな環境を作る(インストールのみ)]]></title>
+    <link href="http://blog.youyo.info/blog/2013/02/12/server-build-log/"/>
+    <updated>2013-02-12T20:16:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/02/12/server-build-log</id>
+    <content type="html"><![CDATA[<p>今までVPS2Gプランを借りていたのですが、ちょっとした家計の事情でより安い1Gプランに移ることにしました。んで。せっかくなのでmysql5.6な環境作りたいな〜っと思いまして、ついでにphpも5.4にして毎回忘れるVDAパッチ済みのpostfixもつくっとこうってことでやりました。<br/>
+以下いつも通りやったことです。今回はインストール作業のみで設定ファイル編集とかは基本的にやってないです。</p>
+
+<h2>環境とインストールしたもの</h2>
+
+<ul>
+<li>CentOS 6.3 x86_64</li>
+<li><a href="#N1">Minimal Install &amp; ユーザ追加</a></li>
+<li><a href="#N2">初期設定</a></li>
+<li><a href="#N3">rbenv install</a></li>
+<li><a href="#N4">dnsmasq2.48 install</a></li>
+<li><a href="#N5">mysql5.6 install</a></li>
+<li><a href="#N6">php5.4 install</a></li>
+<li><a href="#N7">nginx1.2.6 install</a></li>
+<li><a href="#N8">postfix2.9.5+VDAパッチ install</a></li>
+<li><a href="#N9">dovecot2.0.9 install</a></li>
+</ul>
+
+
+<!--more-->
+
+
+
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N1">Minimal Install &amp; ユーザ追加</a></h3>
+
+<p>普通にOSインストールしてユーザ追加です。</p>
+
+<p>```</p>
+
+<h1>useradd xxxx</h1>
+
+<h1>su - xxxx</h1>
+
+<p>$ ssh-keygen -t rsa
+$ cat .ssh/id_rsa.pub > .ssh/authorized_keys
+$ chmod 400 .ssh/authorized_keys</p>
+
+<h1>sed -ie "s/#PermitRootLogin yes/PermitRootLogin no/" /etc/ssh/sshd_config</h1>
+
+<h1>echo -e "AllowUsers\txxxx" >> /etc/ssh/sshd_config</h1>
+
+<h1>/etc/init.d/sshd restart</h1>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N2">初期設定</a></h3>
+
+<p>とりあえずこまごま設定です。iptablesとかselinuxとかoffってるけど構築途中ということで勘弁！</p>
+
+<p>```</p>
+
+<h1>yum groupinstall "Base"</h1>
+
+<h1>yum update</h1>
+
+<h1>yum install sudo git</h1>
+
+<h1>echo "xxxx ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/xxxx</h1>
+
+<h1>chmod 400 /etc/sudoers.d/xxxx</h1>
+
+<h1>sed -ie "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config</h1>
+
+<h1>chkconfig iptables off</h1>
+
+<h1>chkconfig ip6tables off</h1>
+
+<h1>chkconfig cpuspeed off</h1>
+
+<h1>echo "NETWORKING_IPV6=no" >> /etc/sysconfig/network</h1>
+
+<h1>echo "options ipv6 disable=1" > /etc/modprobe.d/disable-ipv6.conf</h1>
+
+<h1>sed -ie 's/NM_CONTROLLED="yes"/NM_CONTROLLED="no"/' /etc/sysconfig/network-scripts/ifcfg-eth0</h1>
+
+<h1>echo -e "nameserver 210.157.1.171\nnameserver 8.8.8.8" > /etc/resolv.conf</h1>
+
+<h1>sed -ie "s/server 0.centos.pool.ntp.org/server ntp.nict.jp/" /etc/ntp.conf</h1>
+
+<h1>sed -ie "s/server 1.centos.pool.ntp.org/server ntp1.jst.mfeed.ad.jp/" /etc/ntp.conf</h1>
+
+<h1>sed -ie "s/server 2.centos.pool.ntp.org/server ntp2.jst.mfeed.ad.jp/" /etc/ntp.conf</h1>
+
+<h1>chkconfig ntpd on</h1>
+
+<h1>chkconfig ntpdate on</h1>
+
+<h1>su - xxxx</h1>
+
+<p>$ vim .vimrc</p>
+
+<h1>reboot</h1>
+
+<p>```</p>
+
+<p>``` sh .vimrc
+syntax on
+set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8,iso-2022-jp,euc-jp,ucs-2,cp932,sjis
+set tabstop=2
+set autoindent
+set expandtab
+set shiftwidth=2
+set ignorecase
+set showmatch
+set showmode
+set title
+highlight JpSpace cterm=underline ctermfg=darkblue guifg=darkblue
+match JpSpace /　/</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<p>ここからは項目通りにインストールしていくだけです。</p>
+
+<h3><a id="N3">rbenv install</a></h3>
+
+<p>自分の記事まんま(´ω`)<br/>
+<a href="http://blog.youyo.info/blog/2013/01/21/rbenv-all-users/">http://blog.youyo.info/blog/2013/01/21/rbenv-all-users/</a></p>
+
+<p>``` sh</p>
+
+<h1>cd /usr/local/src/</h1>
+
+<h1>wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</h1>
+
+<h1>rpm -ivh epel-release-6-8.noarch.rpm</h1>
+
+<h1>sed -ie "s/enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo</h1>
+
+<h1>cd /usr/local/</h1>
+
+<h1>git clone git://github.com/sstephenson/rbenv.git rbenv</h1>
+
+<h1>mkdir rbenv/{shims,versions}</h1>
+
+<h1>git clone git://github.com/sstephenson/ruby-build.git ruby-build</h1>
+
+<h1>cd ruby-build/</h1>
+
+<h1>./install.sh</h1>
+
+<h1>echo 'export RBENV_ROOT="/usr/local/rbenv"' > /etc/profile.d/rbenv.sh</h1>
+
+<h1>echo 'export PATH="/usr/local/rbenv/bin:$PATH"' >> /etc/profile.d/rbenv.sh</h1>
+
+<h1>echo 'eval "$(rbenv init -)"' >> /etc/profile.d/rbenv.sh</h1>
+
+<h1>. /etc/profile.d/rbenv.sh</h1>
+
+<h1>yum install make gcc kernel-devel zlib-devel openssl-devel readline-devel curl-devel sqlite-devel libyaml-devel --enablerepo=epel</h1>
+
+<h1>rbenv install 1.9.3-p385</h1>
+
+<h1>rbenv global 1.9.3-p385</h1>
+
+<h1>rbenv rehash</h1>
+
+<h1>gem install bundler</h1>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N4">dnsmasq2.48 install</a></h3>
+
+<p>自分の記事まんま2(´ω`)<br/>
+<a href="http://blog.youyo.info/blog/2013/01/24/dnsmasq/">http://blog.youyo.info/blog/2013/01/24/dnsmasq/</a></p>
+
+<p><code>
+sudo yum install dnsmasq
+sudo vim /etc/resolv.conf
+sudo /etc/init.d/dnsmasq start
+sudo chkconfig dnsmasq on
+</code></p>
+
+<p>``` sh resolv.conf
+nameserver 127.0.0.1
+nameserver 210.157.1.171
+nameserver 8.8.8.8</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N5">mysql5.6 install</a></h3>
+
+<p>こちらのサイト様を参考に(´ω`)<br/>
+<a href="http://d.hatena.ne.jp/akishin999/20130207/1360241401">http://d.hatena.ne.jp/akishin999/20130207/1360241401</a></p>
+
+<p><code>sh
+sudo mkdir /usr/local/src/mysql5.6/
+cd /usr/local/src/mysql5.6/
+sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-shared-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-shared-compat-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-server-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-client-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+sudo wget http://dev.mysql.com/get/Downloads/MySQL-5.6/MySQL-devel-5.6.10-1.el6.x86_64.rpm/from/http://cdn.mysql.com/
+sudo yum localinstall MySQL-*
+sudo /etc/init.d/mysql start
+mysql -u root -p
+mysql&gt; SET PASSWORD FOR root@localhost=PASSWORD('password');
+sudo mysql_secure_installation
+sudo ln -s /usr/my.cnf /etc/
+sudo vim /etc/my.cnf
+sudo mkdir /var/run/mysqld
+sudo chown mysql /var/run/mysqld/
+sudo mkdir /var/log/mysqld
+sudo chown mysql:mysql /var/log/mysqld
+sudo /etc/init.d/mysql restart
+</code></p>
+
+<p>``` sh my.cnf
+[mysqld]
+datadir                 = /var/lib/mysql
+socket                  = /var/lib/mysql/mysql.sock
+pid-file                = /var/run/mysqld/mysqld.pid
+character-set-server    = utf8
+skip-character-set-client-handshake</p>
+
+<p>log-error               = /var/log/mysqld/mysqld-error.log
+general_log             = 1
+general_log_file        = /var/log/mysqld/mysql.log
+slow_query_log          = 1
+slow_query_log_file     = /var/log/mysqld/slow.log</p>
+
+<p>log-bin                 = mysql-bin
+binlog_format           = mixed
+expire_logs_days        = 30
+server-id               = 1</p>
+
+<p>innodb_file_per_table
+innodb_flush_log_at_trx_commit = 0
+innodb_flush_method     = O_DIRECT
+innodb_buffer_pool_size = 256M
+innodb_log_file_size    = 128M
+innodb_log_buffer_size  = 8M</p>
+
+<p>query_cache_type        = 1
+query_cache_size        = 64M
+key_buffer_size         = 32M
+sort_buffer_size        = 1M
+read_buffer_size        = 1M
+read_rnd_buffer_size    = 4M</p>
+
+<p>sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES</p>
+
+<p>[mysqld_safe]
+log-error               = /var/log/mysqld/mysqld_safe-error.log
+pid-file                = /var/run/mysqld/mysqld.pid
+character-set-server    = utf8</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N6">php5.4 install</a></h3>
+
+<p>php54.specファイルを少しいじっています(´ω`)</p>
+
+<p>``` sh
+sudo yum groupinstall "Development tools"
+sudo yum install bzip2-devel db4-devel gmp-devel httpd-devel pam-devel libedit-devel libtool-ltdl-devel libc-client-devel cyrus-sasl-devel openldap-devel postgresql-devel unixODBC-devel libxml2-devel firebird-devel net-snmp-devel libxslt-devel libjpeg-devel libpng-devel freetype-devel libXpm-devel t1lib-devel libmcrypt-devel libtidy-devel libtidy-devel freetds-devel aspell-devel recode-devel libicu-devel enchant-devel --enablerepo=epel
+sudo useradd rpmdevel
+su - root
+su - rpmdevel
+mkdir -p ~/rpm/{BUILD,SRPMS,SPECS,SOURCES,RPMS}
+echo "%_topdir $HOME/rpm" > $HOME/.rpmmacros
+mkdir src
+cd src/
+wget http://rpms.famillecollet.com/SRPMS/php-5.4.11-1.remi.src.rpm
+rpm -ivh php-5.4.11-1.remi.src.rpm
+cd ../rpm/SPECS/
+sed -ie "s/mysql-devel/MySQL-devel/" php54.spec</p>
+
+<h2>vim php54.spec</h2>
+
+<h1>%global mysql_config %{_libdir}/mysql/mysql_config</h1>
+
+<h2>%global mysql_config /usr/bin/mysql_config</h2>
+
+<p>rpmbuild -v -ba --clean php54.spec
+logout
+cd /home/rpmdevel/rpm/RPMS/x86_64/
+yum localinstall php-5.4.11-1.el6.x86_64.rpm php-cli-5.4.11-1.el6.x86_64.rpm php-common-5.4.11-1.el6.x86_64.rpm php-devel-5.4.11-1.el6.x86_64.rpm php-fpm-5.4.11-1.el6.x86_64.rpm php-gd-5.4.11-1.el6.x86_64.rpm php-mbstring-5.4.11-1.el6.x86_64.rpm php-mcrypt-5.4.11-1.el6.x86_64.rpm php-mysql-5.4.11-1.el6.x86_64.rpm php-pdo-5.4.11-1.el6.x86_64.rpm php-snmp-5.4.11-1.el6.x86_64.rpm php-xml-5.4.11-1.el6.x86_64.rpm php-xmlrpc-5.4.11-1.el6.x86_64.rpm</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N7">nginx1.2.6 install</a></h3>
+
+<p>適当にインストール(´ω`)</p>
+
+<p><code>
+sudo vim /etc/yum.repos.d/nginx.repo
+sudo yum install nginx --enablerepo=nginx
+</code></p>
+
+<p>``` sh nginx.repo
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/rhel/$releasever/$basearch/
+gpgcheck=0
+enabled=0</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N8">postfix2.9.5+VDAパッチ install</a></h3>
+
+<p>VDAパッチ当てるのとmysql対応させるためにspecファイルいじってます(´ω`)</p>
+
+<p>``` sh
+sudo yum install pcre-devel
+su - rpmdevel
+cd src/
+wget http://download.imt-systems.com/postfix/2.9.5/x86_64/postfix-2.9.5-1.el6.src.rpm
+wget http://vda.sourceforge.net/VDA/postfix-vda-v11-2.9.5.patch
+rpm -ivh postfix-2.9.5-1.el6.src.rpm
+mv postfix-vda-v11-2.9.5.patch ../rpm/SOURCES/
+cd ../rpm/SPECS/
+sed -ie "s/%bcond_without mysql/%bcond_with mysql/" postfix.spec
+sed -ie "s/mysql-devel/MySQL-devel/" postfix.spec</p>
+
+<h2>vim postfix.spec</h2>
+
+<p>Release: 1_VDA_%{?dist}
+Epoch: 3
+Patch12: postfix-vda-v11-2.9.5.patch</p>
+
+<h2>%patch12 -p1 -b .VDA</h2>
+
+<p>rpmbuild -v -ba --clean postfix.spec
+logout
+cd /home/rpmdevel/rpm/RPMS/x86_64/
+yum localinstall postfix-2.9.5-1_VDA_.el6.x86_64.rpm</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<h3><a id="N9">dovecot2.0.9 install</a></h3>
+
+<p>適当にインス(ry</p>
+
+<p>``` sh
+sudo yum install dovecot dovecot-mysql</p>
+
+<h2>```</h2>
+
+<br>
+
+
+<br>
+
+
+<ul>
+<li>インストールだけしました。</li>
+<li>ちゃんとした設定はあとで。</li>
+<li><s>作成したrpmはなくさないようにあとで公開予定(未定)</s></li>
+</ul>
+
+
+<p>置きました！<br/>
+<a href="http://download.youyo.info/Linux/centos/6/x86_64/RPM/">http://download.youyo.info/Linux/centos/6/x86_64/RPM/</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[dnsmasqでDNSキャッシュサーバたててみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/24/dnsmasq/"/>
+    <updated>2013-01-24T22:37:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/24/dnsmasq</id>
+    <content type="html"><![CDATA[<p>簡単手軽なDNSキャッシュサーバないかな〜って思ってたらdnsmasqってのがいいらしいとわかったので試してみました。インストールは以下の通りに。</p>
+
+<p>```</p>
+
+<h1>yum install dnsmasq</h1>
+
+<h1>vim /etc/resolv.conf</h1>
+
+<p>nameserver 127.0.0.1
+nameserver 8.8.8.8</p>
+
+<h1>/etc/init.d/dnsmasq start</h1>
+
+<p>Starting dnsmasq:                                          [  OK  ]
+```</p>
+
+<p>なんという手軽さ！！ これだけで出来上がりです！！<br/>
+本当にキャッシュできているか試します。</p>
+
+<!--more-->
+
+
+<p>```</p>
+
+<h1>dig youyo.info</h1>
+
+<p>; &lt;&lt;>> DiG 9.7.3-P3-RedHat-9.7.3-8.P3.el6_2.2 &lt;&lt;>> youyo.info
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 59083
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0</p>
+
+<p>;; QUESTION SECTION:
+;youyo.info.            IN  A</p>
+
+<p>;; ANSWER SECTION:
+youyo.info.     104 IN  A   49.212.132.45</p>
+
+<p>;; Query time: 46 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+;; WHEN: Thu Jan 24 22:32:06 2013
+;; MSG SIZE  rcvd: 44</p>
+
+<h1>dig youyo.info</h1>
+
+<p>; &lt;&lt;>> DiG 9.7.3-P3-RedHat-9.7.3-8.P3.el6_2.2 &lt;&lt;>> youyo.info
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 64016
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0</p>
+
+<p>;; QUESTION SECTION:
+;youyo.info.            IN  A</p>
+
+<p>;; ANSWER SECTION:
+youyo.info.     101 IN  A   49.212.132.45</p>
+
+<p>;; Query time: 1 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+;; WHEN: Thu Jan 24 22:32:09 2013
+;; MSG SIZE  rcvd: 44
+```</p>
+
+<p>46msecから1msecに！ しっかりキャッシュできてます(´ω`)<br/>
+　<br/>
+さらにdnsmasqはDNSラウンドロビンの機能もあるそうで。試します。<br/>
+"/etc/hosts"にIPとホスト名を書いてdnsmasqを再起動します。"/etc/hosts"で簡単にDNSレコード管理できるのも素晴らしいですね！</p>
+
+<p>```</p>
+
+<h1>vim /etc/hosts</h1>
+
+<p>192.168.1.1     test.youyo.info
+192.168.1.2     test.youyo.info
+192.168.1.3     test.youyo.info</p>
+
+<h1>/etc/init.d/dnsmasq restart</h1>
+
+<p>Shutting down dnsmasq:                                     [  OK  ]
+Starting dnsmasq:                                          [  OK  ]</p>
+
+<h1>dig test.youyo.info</h1>
+
+<p>; &lt;&lt;>> DiG 9.7.3-P3-RedHat-9.7.3-8.P3.el6_2.2 &lt;&lt;>> test.youyo.info
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 42090
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0</p>
+
+<p>;; QUESTION SECTION:
+;test.youyo.info.       IN  A</p>
+
+<p>;; ANSWER SECTION:
+test.youyo.info.    0   IN  A   192.168.1.1
+test.youyo.info.    0   IN  A   192.168.1.2
+test.youyo.info.    0   IN  A   192.168.1.3</p>
+
+<h1>dig test.youyo.info</h1>
+
+<p>; &lt;&lt;>> DiG 9.7.3-P3-RedHat-9.7.3-8.P3.el6_2.2 &lt;&lt;>> test.youyo.info
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 10457
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0</p>
+
+<p>;; QUESTION SECTION:
+;test.youyo.info.       IN  A</p>
+
+<p>;; ANSWER SECTION:
+test.youyo.info.    0   IN  A   192.168.1.2
+test.youyo.info.    0   IN  A   192.168.1.3
+test.youyo.info.    0   IN  A   192.168.1.1</p>
+
+<h1>dig test.youyo.info</h1>
+
+<p>; &lt;&lt;>> DiG 9.7.3-P3-RedHat-9.7.3-8.P3.el6_2.2 &lt;&lt;>> test.youyo.info
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 41275
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0</p>
+
+<p>;; QUESTION SECTION:
+;test.youyo.info.       IN  A</p>
+
+<p>;; ANSWER SECTION:
+test.youyo.info.    0   IN  A   192.168.1.3
+test.youyo.info.    0   IN  A   192.168.1.1
+test.youyo.info.    0   IN  A   192.168.1.2
+```</p>
+
+<p>返されるIPの順序が変わっています。ちゃんとDNSラウンドロビンが機能しているようです！<br/>
+　<br/>
+dnsmasqはDNSサーバとしての機能だけでなく、TFTPサーバやDHCPサーバとしても機能するようです。PXEbootに必要な機能を満たしているので、これだけでPXEboot環境を作れそうです！<br/>
+(試していません。そのうちやってみます...</p>
+]]></content>
+  </entry>
+  
+</feed>

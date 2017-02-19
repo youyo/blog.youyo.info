@@ -1,7 +1,7 @@
 ---
 title: "CentOS7にphp5.2をインストール"
-thumbnailImage: //raw.githubusercontent.com/docker-library/docs/c4df0024e2cad985326dc38f6b6ce39abeab59c5/centos/logo.png
-thumbnailImagePosition: left
+thumbnailImage: images/eye-catch/centos.png
+thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-02-10
 categories:

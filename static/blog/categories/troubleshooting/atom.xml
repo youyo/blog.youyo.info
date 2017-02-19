@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: troubleshooting | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/troubleshooting/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[hwclockのせいでOS起動しなくなった]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/17/hang-by-hwclock/"/>
+    <updated>2014-06-17T16:49:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/17/hang-by-hwclock</id>
+    <content type="html"><![CDATA[<p>CentOS 5系のサーバを何気なくrebootしたら上がってこなくなった。<br/>
+慌ててリモートコンソール繋ぐと、</p>
+
+<p><code>
+INIT: version 2.86 booting
+Welcome to  CentOS release 5 (Final)
+Press ‘I’ to enter interactive startup.
+</code></p>
+
+<p>この画面で止まってた。。<br/>
+　<br/>
+ガクブルしつつ再度rebootし、singleユーザーモードで立ち上げるも同じところで止まる。。。<br/>
+　<br/>
+<code>INIT welcome to centos hang</code>とかでググってみると下記サイトがヒット！
+<a href="http://blog.wapnet.nl/2010/12/centos-fedora-red-hat-guest-os-hangs-during-boot-vmware/">http://blog.wapnet.nl/2010/12/centos-fedora-red-hat-guest-os-hangs-during-boot-vmware/</a><br/>
+　<br/>
+どうやらhwclockが悪さをしているらしい。<br/>
+　<br/>
+BIOSで時刻設定が合ってるか確認したけど問題なし。<br/>
+時間合ってるかは関係ないのかな〜、というか仮想化してないし物理ハードだし〜とか思いつつも、<br/>
+とりあえずrescueモードで立ち上げてサイトにある対応を実施。</p>
+
+<p><code>
+mv hwclock hwclock.original
+echo "exit 0" &gt; hwclock
+chmod 755 hwclock
+</code></p>
+
+<p>(こういうときだけ)神に祈りつつreboot...！！<br/>
+　<br/>
+無事起動しました！！！</p>
+
+<h3>まとめ</h3>
+
+<ul>
+<li>googleさんありがとう</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: fluentd | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/fluentd/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[fluentdでsyslog受信しようとしたらハマった]]></title>
+    <link href="http://blog.youyo.info/blog/2014/11/14/td-agent-syslog/"/>
+    <updated>2014-11-14T19:49:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/11/14/td-agent-syslog</id>
+    <content type="html"><![CDATA[<p>スイッチとかのログを集めようと思って下記のような設定をしてテストしてみるも、エラーを吐いてうまくいかない。</p>
+
+<p>```
+<source>
+  type syslog
+  port 514
+  bind 192.168.21.1
+  tag network1
+</source></p>
+
+<p><match network1.local0.*>
+  type file
+  buffer_type file
+  path /var/log/td-agent/test.log
+  compress gzip
+</match>
+```</p>
+
+<p>こんなエラーを吐く。</p>
+
+<p><code>
+2014-11-14T19:40:31+09:00   fluent.error    {"error":"invalid time format: value = 'administrator' succeeded for, error_class = ArgumentError, error = invalid strptime format - `%b %d %H:%M:%S'","message":"\"&lt;174&gt;'administrator' succeeded for SSH: 192.168.20.2 admin\" error=\"invalid time format: value = 'administrator' succeeded for, error_class = ArgumentError, error = invalid strptime format - `%b %d %H:%M:%S'\""}
+</code></p>
+
+<p>なんでや。。。<br/>
+と思いつつ、ググりまくっていたらformatを変更すればいいという情報にたどり着いた。</p>
+
+<p><a href="https://groups.google.com/forum/#!topic/fluentd/k0HU1Dkbazs">https://groups.google.com/forum/#!topic/fluentd/k0HU1Dkbazs</a></p>
+
+<p><code>format none</code>を追加すればいいらしい。<br/>
+試したところバッチリ動きました！</p>
+
+<p>```
+<source>
+  type syslog
+  format none
+  port 514
+  bind 192.168.21.1
+  tag network1
+</source></p>
+
+<p><match network1.local0.*>
+  type file
+  buffer_type file
+  path /var/log/td-agent/test.log
+  compress gzip
+</match>
+```</p>
+
+<p><code>
+2014-11-14T19:47:19+09:00   network1.local5.info    {"message":"Login succeeded for SSH: 192.168.20.2 admin"}
+2014-11-14T19:47:23+09:00   network1.local5.info    {"message":"'administrator' succeeded for SSH: 192.168.20.2 admin"}
+2014-11-14T19:47:26+09:00   network1.local5.info    {"message":"Configuration saved in \"CONFIG0\" by SSH(admin)"}
+2014-11-14T19:52:26+09:00   network1.local5.info    {"message":"Logout from SSH: 192.168.20.2 admin"}
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[fluent-plugin-ping-messageとzabbixで死活監視]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/28/fluentd-ping-message-zabbix/"/>
+    <updated>2013-01-28T10:04:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/28/fluentd-ping-message-zabbix</id>
+    <content type="html"><![CDATA[<p>Fluentdの死活監視を設定しました。使用したプラグインは下記です。</p>
+
+<ul>
+<li>fluent-plugin-ping-message</li>
+<li>fluent-plugin-flowcounter</li>
+<li>fluent-plugin-forest</li>
+<li>fluent-plugin-redeliver</li>
+<li>fluent-plugin-zabbix</li>
+</ul>
+
+
+<p>ログの送信には基本的に<code>fluent-agent-lite</code>を使用しています。<code>fluent-agent-lite</code>で<code>ping_message</code>を設定すると<code>fluent-agent-lite</code>のプロセス数分ping messageが飛ぶので、その数値を<code>fluent-plugin-flowcounter</code>で計測しzabbixで監視しています。また、どのプロセスが落ちたのかを記録するために<code>ping_message_checker</code>にも渡してファイルに記録されるようにしています。<code>fluent-plugin-flowcounter</code>と<code>ping_message_checker</code>にタグを書き換えて渡すために、<code>fluent-plugin-redeliver</code>を使用します。</p>
+
+<p>送信側の<code>fluent-agent-lite</code>の設定は下記のようにしています。<code>PING_TAG</code>のhostnameはzabbixに登録してあるホスト名と同じであると想定しています。違う場合は適当に直書きでいいと思います。</p>
+
+<!--more-->
+
+
+<p><code>
+PING_TAG=ping.`hostname`
+PING_DATA=`hostname`
+PING_INTERVAL=60
+</code></p>
+
+<p>受信側の設定は下記です。<code>notification_times</code>や<code>PING_INTERVAL</code>等、監視間隔を60秒で統一するのがポイントです(´ω`)</p>
+
+<p><div><script src='https://gist.github.com/4652167.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p>あとはzabbixでこんな感じのアイテム作ればfluentdのプロセス鵜が取れてくると思います。</p>
+
+<p><img src="http://cloudfront.youyo.info/fluentd-ping-message-zabbix/zabbix-item.jpg" alt="item" /></p>
+
+<p>適当にトリガーを設定してプロセス数に変化があったらアラートあげるなりfluent-agent-lite再起動するなりすればいいと思います。</p>
+
+<p>また、これだけだとどのログを読み込んでいたプロセスが落ちたのかわからないですが、<code>ping_message_checker</code>で落ちたプロセスをファイルに落としているのでそこを見れば一応わかるようになってます。(/var/log/td-agent/ping_error)</p>
+
+<p>「こんなめんどくさいことしなくても、ping_message_checkerのアラートをzabbixのログ監視すればいいんじゃね？('・u・`) 」と最初思いましたが、zabbix 1.8系のログ監視はミリ秒単位のログ監視はできず、1秒以内に複数のログがあがった場合正確にアラートをあげることができなかったような気がするな〜ってことでやめました。(zabbix 2.0系では直っていたはずです。)</p>
+
+<p>送信側<code>fluent-agent-lite</code>の設定はホストごとに変える必要がなく、かつzabbixでホストごとに監視できるのでわかりやすいかと思います。(たぶん) <code>fluent-agent-lite</code>は<code>PING_TAG</code>等をあらかじめ設定したrpmファイルを作成してzabbixはテンプレートを作成することでホスト追加も簡単にできる！！と思います(´ω`) 個人的には満足のできです！</p>
+]]></content>
+  </entry>
+  
+</feed>

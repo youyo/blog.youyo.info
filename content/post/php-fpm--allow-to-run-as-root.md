@@ -1,6 +1,6 @@
 ---
 title: "php-fpmはrootで動かない"
-thumbnailImage: //www.squaredbrainwebdesign.com/images/resources/PHP-logo.png
+thumbnailImage: images/eye-catch/php.jpg
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-02-15

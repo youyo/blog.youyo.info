@@ -1,6 +1,6 @@
 ---
 title: "NginxのTCP Load Balancing試してみた"
-thumbnailImage: //nginx.org/nginx.png
+thumbnailImage: images/eye-catch/nginx.png
 thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-06-07

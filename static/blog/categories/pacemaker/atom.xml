@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: pacemaker | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/pacemaker/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Heartbeat + Pacemaker で３ノードクラスタ]]></title>
+    <link href="http://blog.youyo.info/blog/2013/05/22/heartbeat-pacemaker-3/"/>
+    <updated>2013-05-22T21:48:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/05/22/heartbeat-pacemaker-3</id>
+    <content type="html"><![CDATA[<p>Heartbeat + Pacemaker で冗長構成作ってみました。３ノードでVIPを２つ共有します。<br/>
+DRBDは絡みませんのでDRBDがらみの設定が知りたい方はすぐにブラウザバック！！</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>node1.info eth0[192.168.1.1] eth1[10.0.0.1]</li>
+<li>node2.info eth0[192.168.1.2] eth1[10.0.0.2]</li>
+<li>node3.info eth0[192.168.1.3] eth1[10.0.0.3]</li>
+<li>サービス用VIP 192.168.1.4 192.168.1.5</li>
+</ul>
+
+
+<p>こんな感じ？</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-05-22-heartbeat-pacemaker-3/3node-clster.jpg" width="300"></p>
+
+<!--more-->
+
+
+<h3>Heartbeat + Pacemaker Install</h3>
+
+<p>全部rootで作業してます。。。<br/>
+３台全てに設定します。</p>
+
+<p>```</p>
+
+<h1>hostsに登録</h1>
+
+<p>echo -e "192.168.1.1 node1.info\n192.168.1.2 node2.info\n192.168.1.3 node3.info" >> /etc/hosts</p>
+
+<h1>heartbeat pacemaker インストール</h1>
+
+<p>cd /usr/local/src/
+wget http://jaist.dl.sourceforge.jp/linux-ha/58547/pacemaker-1.0.13-1.1.el6.x86_64.repo.tar.gz
+tar xvzf pacemaker-1.0.13-1.1.el6.x86_64.repo.tar.gz
+mv pacemaker-1.0.13-1.1.el6.x86_64.repo /tmp/
+cd /tmp/pacemaker-1.0.13-1.1.el6.x86_64.repo/
+yum -c pacemaker.repo install  pacemaker-1.0.13 heartbeat.x86_64
+echo "exclude=pacemaker pacemaker-libs corosync cluster-glue heartbeat resource-agents" >> /etc/yum.conf</p>
+
+<h1>rsyslog.confに下記を追加</h1>
+
+<p>local1.*            /var/log/ha-log
+```</p>
+
+<p>ha.cfを書きます。nodeを３つにしとけば良さげです。eth0,eth1両方マルチキャストで監視します。</p>
+
+<p>```
+pacemaker on
+logfacility local1</p>
+
+<p>debug 0
+udpport 694</p>
+
+<p>keepalive 2
+warntime 20
+deadtime 24
+initdead 48
+auto_failback off</p>
+
+<p>mcast eth0 225.0.0.1 694 1 0
+mcast eth1 224.0.0.1 694 1 0</p>
+
+<p>node node1.info
+node node2.info
+node node3.info
+uuidfrom nodename</p>
+
+<p>watchdog /dev/watchdog
+```</p>
+
+<p>authkeysも適当に。。。</p>
+
+<p><code>
+auth 1
+1 sha1 shared_key
+</code></p>
+
+<p><code>chmod 400 /etc/ha.d/authkeys</code> でパーミッション設定忘れずに。<br/>
+あとはheartbeat起動すればこんな感じになるはず。。</p>
+
+<p>```
+/etc/init.d/heartbeat start</p>
+
+<h1>crm_mon -1A</h1>
+
+<p>Last updated: Tue May 21 07:57:46 2013
+Stack: Heartbeat
+Current DC: node1.info (87b07da8-5cf5-f0ec-be67-c2a90dcfd635) - partition with quorum
+Version: 1.0.13-30bb726
+3 Nodes configured, unknown expected votes</p>
+
+<h1>0 Resources configured.</h1>
+
+<p>Online: [ node1.info node2.info node3.info ]</p>
+
+<p>Node Attributes:
+* Node node1.info:
+* Node node2.info:
+* Node node3.info:
+```</p>
+
+<h3>pacemaker設定</h3>
+
+<p>ここからはcrmシェルを使って設定します。STONITHはとりあえず無効で。。。<br/>
+GW(192.168.1.254)にping打って失敗したらフェイルオーバーするようにします。<br/>
+<code>VIP1</code>はnode1=>node3=>node2,<code>VIP2</code>はnode2=>node3=>node1の順にフェイルオーバーするようにlocation設定します。</p>
+
+<p>```
+crm configure
+crm(live)configure# property no-quorum-policy="ignore" stonith-enabled="false"
+crm(live)configure# rsc_defaults resource-stickiness="INFINITY" migration-threshold="1"
+crm(live)configure# primitive vip1 ocf:heartbeat:IPaddr2 params ip="192.168.1.4" nic="eth0" cidr_netmask="24"
+crm(live)configure# primitive vip2 ocf:heartbeat:IPaddr2 params ip="192.168.1.5" nic="eth0" cidr_netmask="24"</p>
+
+<p>crm(live)configure# primitive prmPingd ocf:pacemaker:pingd \</p>
+
+<blockquote><p>params name="default_ping_set" host_list="192.168.1.254" multiplier="100" dampen="1" \
+op start interval="0s" timeout="90s" on-fail="restart" \
+op monitor interval="5s" timeout="30s" on-fail="restart" \
+op stop interval="0s" timeout="100s" on-fail="block"</p></blockquote>
+
+<p>crm(live)configure# clone clnPingd prmPingd meta clone-max="3" clone-node-max="1" target-role="Started"</p>
+
+<p>crm(live)configure# location location1 vip1 \</p>
+
+<blockquote><p>rule $id="location1-rule" 300: #uname eq node1.info \
+rule $id="location1-rule-0" 200: #uname eq node3.info \
+rule $id="location1-rule-1" 100: #uname eq node2.info \
+rule $id="location1-rule-2" -inf: not_defined default_ping_set or default_ping_set lt 100</p></blockquote>
+
+<p>crm(live)configure# location location2 vip2 \</p>
+
+<blockquote><p>rule $id="location2-rule" 300: #uname eq node2.info \
+rule $id="location2-rule-0" 200: #uname eq node3.info \
+rule $id="location2-rule-1" 100: #uname eq node1.info \
+rule $id="location2-rule-2" -inf: not_defined default_ping_set or default_ping_set lt 100</p></blockquote>
+
+<p>crm(live)configure# verify
+crm(live)configure# commit
+```</p>
+
+<p>んでうまくいけばこうなるはず。</p>
+
+<p>```</p>
+
+<h1>crm_mon -1A </h1>
+
+<p>Last updated: Wed May 22 12:10:49 2013
+Stack: Heartbeat
+Current DC: node1.info (87b07da8-5cf5-f0ec-be67-c2a90dcfd635) - partition with quorum
+Version: 1.0.13-30bb726
+3 Nodes configured, unknown expected votes</p>
+
+<h1>3 Resources configured. </h1>
+
+<p>Online: [ node1.info node2.info node3.info ]</p>
+
+<p>vip1   (ocf::heartbeat:IPaddr2):       Started node1.info
+vip2   (ocf::heartbeat:IPaddr2):       Started node2.info
+Clone Set: clnPingd
+  Started: [ node1.info node2.info node3.info ]</p>
+
+<p>Node Attributes:
+* Node node1.info:</p>
+
+<pre><code>+ default_ping_set                  : 100 
+</code></pre>
+
+<ul>
+<li>Node node2.info:
+
+<ul>
+<li>default_ping_set                  : 100</li>
+</ul>
+</li>
+<li>Node node3.info:
+
+<ul>
+<li>default_ping_set                  : 100
+```</li>
+</ul>
+</li>
+</ul>
+
+
+<p>あとは実際にフェイルオーバーさせて設定通りに動くか確認して完了です！</p>
+]]></content>
+  </entry>
+  
+</feed>

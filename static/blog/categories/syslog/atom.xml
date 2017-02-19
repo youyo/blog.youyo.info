@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: syslog | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/syslog/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[fluentdでsyslog受信しようとしたらハマった]]></title>
+    <link href="http://blog.youyo.info/blog/2014/11/14/td-agent-syslog/"/>
+    <updated>2014-11-14T19:49:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/11/14/td-agent-syslog</id>
+    <content type="html"><![CDATA[<p>スイッチとかのログを集めようと思って下記のような設定をしてテストしてみるも、エラーを吐いてうまくいかない。</p>
+
+<p>```
+<source>
+  type syslog
+  port 514
+  bind 192.168.21.1
+  tag network1
+</source></p>
+
+<p><match network1.local0.*>
+  type file
+  buffer_type file
+  path /var/log/td-agent/test.log
+  compress gzip
+</match>
+```</p>
+
+<p>こんなエラーを吐く。</p>
+
+<p><code>
+2014-11-14T19:40:31+09:00   fluent.error    {"error":"invalid time format: value = 'administrator' succeeded for, error_class = ArgumentError, error = invalid strptime format - `%b %d %H:%M:%S'","message":"\"&lt;174&gt;'administrator' succeeded for SSH: 192.168.20.2 admin\" error=\"invalid time format: value = 'administrator' succeeded for, error_class = ArgumentError, error = invalid strptime format - `%b %d %H:%M:%S'\""}
+</code></p>
+
+<p>なんでや。。。<br/>
+と思いつつ、ググりまくっていたらformatを変更すればいいという情報にたどり着いた。</p>
+
+<p><a href="https://groups.google.com/forum/#!topic/fluentd/k0HU1Dkbazs">https://groups.google.com/forum/#!topic/fluentd/k0HU1Dkbazs</a></p>
+
+<p><code>format none</code>を追加すればいいらしい。<br/>
+試したところバッチリ動きました！</p>
+
+<p>```
+<source>
+  type syslog
+  format none
+  port 514
+  bind 192.168.21.1
+  tag network1
+</source></p>
+
+<p><match network1.local0.*>
+  type file
+  buffer_type file
+  path /var/log/td-agent/test.log
+  compress gzip
+</match>
+```</p>
+
+<p><code>
+2014-11-14T19:47:19+09:00   network1.local5.info    {"message":"Login succeeded for SSH: 192.168.20.2 admin"}
+2014-11-14T19:47:23+09:00   network1.local5.info    {"message":"'administrator' succeeded for SSH: 192.168.20.2 admin"}
+2014-11-14T19:47:26+09:00   network1.local5.info    {"message":"Configuration saved in \"CONFIG0\" by SSH(admin)"}
+2014-11-14T19:52:26+09:00   network1.local5.info    {"message":"Logout from SSH: 192.168.20.2 admin"}
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

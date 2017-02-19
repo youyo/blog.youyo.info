@@ -1,6 +1,6 @@
 ---
 title: "JAWS DAYS 2016で発表してきた"
-thumbnailImage:
+thumbnailImage: images/eye-catch/jawsug.jpg
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-03-12

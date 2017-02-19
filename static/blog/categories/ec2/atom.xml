@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ec2 | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/ec2/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[rbenvを全ユーザー共通で使用できるようにする]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/21/rbenv-all-users/"/>
+    <updated>2013-01-21T10:16:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/21/rbenv-all-users</id>
+    <content type="html"><![CDATA[<p>rbenv,ruby-buildを全ユーザー共通で使用できるように設定しました。参考にさせていただいたサイトは<a href="http://yatmsu.hatenablog.com/entry/20120413/1334300058">こちら</a>。ありがとうございます。完全にそのままですw 忘れてもいいようにブログに残します。今回はec2に構築していきます。</p>
+
+<h2>rbenv,ruby-build install</h2>
+
+<p>メモなので手順のみつらつらと...<br/>
+手抜きなのですべてrootユーザで作業してます。</p>
+
+<p><code>
+cd /usr/local  
+git clone git://github.com/sstephenson/rbenv.git rbenv  
+mkdir rbenv/{shims,versions}  
+git clone git://github.com/sstephenson/ruby-build.git ruby-build  
+cd ruby-build/  
+./install.sh  
+echo 'export RBENV_ROOT="/usr/local/rbenv"' &gt; /etc/profile.d/rbenv.sh  
+echo 'export PATH="/usr/local/rbenv/bin:$PATH"' &gt;&gt; /etc/profile.d/rbenv.sh  
+echo 'eval "$(rbenv init -)"' &gt;&gt; /etc/profile.d/rbenv.sh  
+. /etc/profile.d/rbenv.sh  
+yum install make gcc kernel-devel zlib-devel openssl-devel readline-devel curl-devel sqlite-devel libyaml-devel  
+rbenv install 1.9.3-p374  
+rbenv global 1.9.3-p374  
+rbenv rehash  
+gem install bundler
+</code></p>
+
+<p>あとはGemfile書いて<code>bundle install --path=vendor/bundle</code>して自由に管理すればいいと思います。<br/>
+<code>rbenv install</code>コマンドがない！って場合は再ログインしてみればいいと思います。<code>./install.sh</code>で<code>ruby-build</code>,<code>rbenv-install</code>,<code>rbenv-uninstall</code>コマンドを<code>/usr/local/bin/</code>以下にコピーしているのですが、元々<code>/usr/local/bin/</code>以下に何もない場合はログイン時にPATHが通らないようです。再ログイン時には<code>rbenv</code>コマンド類があるのでちゃんとPATHが通ります。 <br/>
+<code>libyaml-devel</code>はepelレポジトリに含まれているのでCentOS等の場合はepel追加してインストールすればいいと思います。Amazon Linux は始めから入ってるのでラクチンですね!</p>
+]]></content>
+  </entry>
+  
+</feed>

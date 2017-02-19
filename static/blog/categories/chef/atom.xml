@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: chef | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/chef/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[chefでmysql-5.6インストールしようとしたら苦労した話]]></title>
+    <link href="http://blog.youyo.info/blog/2013/07/11/chef-mysql56/"/>
+    <updated>2013-07-11T18:32:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/07/11/chef-mysql56</id>
+    <content type="html"><![CDATA[<p>最近chefにハマってます。<br/>
+いろんなレシピを書いて勉強中です。<br/>
+　<br/>
+で、mysql-5.6をchefでインストールしようとしたらはまってしまいました。(泥沼に...<br/>
+CentOS6標準のmysql-5.1と同じノリでやったら苦労したのでメモ。<br/>
+　<br/>
+　</p>
+
+<ul>
+<li>mysql-5.1のとき</li>
+</ul>
+
+
+<p>こんな感じでレシピ書いてました。</p>
+
+<p>```
+%w(mysql-server mysql mysql-devel).each do |pkg|
+  package pkg do</p>
+
+<pre><code>action :install
+</code></pre>
+
+<p>  end
+end</p>
+
+<p>template '/etc/my.cnf' do
+  source 'my.cnf.erb'
+  owner 'root'
+  group 'root'
+  mode 644
+  notifies :restart, "service[mysqld]", :delayed
+end</p>
+
+<p>service 'mysqld' do
+  action [:start, :enable]
+end</p>
+
+<p>script "Secure_Install" do
+  interpreter 'bash'
+  user "root"
+  only_if "mysql -u root -e 'show databases'"
+  code &lt;&lt;-EOL</p>
+
+<pre><code>mysqladmin -u root password "your_password"
+mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='';"
+mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1');"
+mysql -u root -pyour_password -e "DROP DATABASE test;"
+mysql -u root -pyour_password -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+mysql -u root -pyour_password -e "FLUSH PRIVILEGES;"
+</code></pre>
+
+<p>  EOL
+end</p>
+
+<p>```</p>
+
+<!--more-->
+
+
+<p><code>script "Secure_Install" do</code>の部分は<code>mysql_secure_installation</code>コマンドを叩いたときに流れるクエリを並べただけです。rootのパスワードが空のときのみ実行されます。<br/>
+　<br/>
+　<br/>
+これと同じノリでmysql-5.6のレシピを最初書いたのですがまったくうまくいかない。。。<br/>
+　<br/>
+　<br/>
+　</p>
+
+<h3>(個人的)ハマりポイント</h3>
+
+<ol>
+<li>MySQL-serverのrpmファイルのインストールが完了した時点で<code>mysql_install_db</code>が自動実行される。</li>
+<li>初期パスワードが設定されている。</li>
+<li>そのパスワードの有効期限？が切れている。。。</li>
+</ol>
+
+
+<p>　<br/>
+上から順番に。</p>
+
+<h4>MySQL-serverのrpmファイルのインストールが完了した時点で<code>mysql_install_db</code>が自動実行される</h4>
+
+<p>今までは初回起動時だったと思います。なのでmysqlインストール→my.cnf編集→mysql起動でいい感じに<code>ib_logfile0</code>なんかが作成されていました。<br/>
+が、rpmでmysql5.6をインストールするとその時点で<code>mysql_install_db</code>が走ります。<br/>
+さらに<code>/usr/my.cnf</code>を作成したうえで走ります。(なぜ/etc/my.cnfじゃないんだ！！！<br/>
+　<br/>
+MySQL-serverをインストールしてからmy.cnf(innodb_log_file_sizeとか)をいじったらうまく起動しないのです。。。
+　<br/>
+　<br/>
+なのでインストール前にmy.cnf置いておけばOKです。<br/>
+(詳しくはこちら様をご覧ください。<a href="http://yoku0825.blogspot.jp/2013/01/rpmmycnf.html">http://yoku0825.blogspot.jp/2013/01/rpmmycnf.html</a>)<br/>
+　</p>
+
+<h4>初期パスワードが設定されている</h4>
+
+<p>そのまんまです。初期パスワードは空ではなくランダムに設定されています。<br/>
+その初期パスワードは<code>/root/.mysql_secret</code>に書かれています。
+初回ログイン時にしっかり確認しましょう。
+　</p>
+
+<h4>そのパスワードの有効期限？が切れている</h4>
+
+<p><code>password_expired</code>なる項目があり<code>Y</code>ってなってます。<br/>
+このままだと下記のようなエラーが出てしまいます。</p>
+
+<p><code>
+$ mysql -u root -p -e "show databases"
+ERROR 1862 (HY000): Your password has expired. To log in you must change it using a client that supports expired passwords.
+</code></p>
+
+<p>よくわかんねーなーと思いながら<code>mysql_secure_installation</code>を読んでたら<code>--connect-expired-password</code>なるオプション見つけました。<br/>
+いいのあるじゃない！ これ使います。</p>
+
+<ul>
+<li>mysql-5.6のレシピ</li>
+</ul>
+
+
+<p>(個人的)ハマりポイントを解消した結果のレシピがこちらです。</p>
+
+<p>```</p>
+
+<h1>MySQL-client MySQL-shared-compat MySQL-shared-compat MySQL-devel をインストール</h1>
+
+<p>for number in 0..3</p>
+
+<p>  cookbook_file "/usr/local/src/#{node[:mysql56][:rpm][:filename][number]}" do</p>
+
+<pre><code>source node[:mysql56][:rpm][:filename][number]
+</code></pre>
+
+<p>  end</p>
+
+<p>  package node[:mysql56][:rpm][:package][number] do</p>
+
+<pre><code>action :install
+provider Chef::Provider::Package::Rpm
+source "/usr/local/src/#{node[:mysql56][:rpm][:filename][number]}"
+</code></pre>
+
+<p>  end</p>
+
+<p>end</p>
+
+<p>link '/etc/my.cnf' do
+  to '/usr/my.cnf'
+end</p>
+
+<p>template '/etc/my.cnf' do
+  source 'my.cnf.erb'
+  owner 'root'
+  group 'root'
+  notifies :restart, "service[mysql]", :delayed
+end</p>
+
+<h1>MySQL-server をインストール</h1>
+
+<p>cookbook_file "/usr/local/src/#{node[:mysql56][:rpm][:filename][4]}" do
+  source node[:mysql56][:rpm][:filename][4]
+end</p>
+
+<p>package node[:mysql56][:rpm][:package][4] do
+  action :install
+  provider Chef::Provider::Package::Rpm
+  source "/usr/local/src/#{node[:mysql56][:rpm][:filename][4]}"
+end</p>
+
+<p>directory '/var/run/mysqld' do
+  owner 'mysql'
+  group 'root'
+  mode 0755
+  action :create
+end</p>
+
+<p>service 'mysql' do
+  action [:start, :enable]
+end</p>
+
+<p>script "Secure_Install" do
+  interpreter 'bash'
+  user "root"
+  not_if "mysql -u root -pyour_password -e 'show databases'"
+  code &lt;&lt;-EOL</p>
+
+<pre><code>export Initial_PW=`head -n 1 /root/.mysql_secret |awk '{print $(NF - 0)}'`
+mysql -u root -p${Initial_PW} --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('your_password');"
+mysql -u root -pyour_password -e "SET PASSWORD FOR root@'127.0.0.1'=PASSWORD('your_password');"
+mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='';"
+mysql -u root -pyour_password -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1');"
+mysql -u root -pyour_password -e "DROP DATABASE test;"
+mysql -u root -pyour_password -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+mysql -u root -pyour_password -e "FLUSH PRIVILEGES;"
+</code></pre>
+
+<p>  EOL
+end
+```</p>
+
+<p>僕のようなsqlのsもわからないようなへっぽこにしてはよくできたほうです。<br/>
+満足(´ω`)</p>
+]]></content>
+  </entry>
+  
+</feed>

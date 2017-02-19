@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: centos | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/centos/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[リモートのdockerホストに接続する]]></title>
+    <link href="http://blog.youyo.info/blog/2015/07/06/docker-connect-tls/"/>
+    <updated>2015-07-06T13:09:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2015/07/06/docker-connect-tls</id>
+    <content type="html"><![CDATA[<p><a href="https://beatsync.net/main/log20141212.html">インターネットの向こう側にあるDockerを使う</a> を大いに参考にした。(丸パクリ</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>centos7</li>
+<li>dockerをyumでインストール</li>
+</ul>
+
+
+<h2>Server側</h2>
+
+<p>```
+cd /etc/docker/certs.d/
+openssl genrsa -des3 -out ca-key.pem 4096
+openssl req -new -x509 -days 3650 -key ca-key.pem -out ca.pem</p>
+
+<p>openssl genrsa -des3 -out server-key.pem 4096
+openssl req -subj '/CN=server' -new -key server-key.pem -out server.csr
+openssl x509 -req -days 3650 -in server.csr -CA ca.pem -CAkey ca-key.pem -out server-cert.pem</p>
+
+<p>openssl genrsa -des3 -out key.pem 4096
+openssl req -subj '/CN=client' -new -key key.pem -out client.csr
+echo extendedKeyUsage = clientAuth > extfile.cnf
+openssl x509 -req -days 3650 -in client.csr -CA ca.pem -CAkey ca-key.pem -out cert.pem -extfile extfile.cnf</p>
+
+<p>openssl rsa -in server-key.pem -out server-key.pem
+openssl rsa -in key.pem -out key.pem</p>
+
+<h2>vim /etc/sysconfig/docker</h2>
+
+<h1>OPTIONS='--selinux-enabled'</h1>
+
+<h2>OPTIONS='--selinux-enabled --tlsverify --tlscacert=/etc/docker/certs.d/ca.pem --tlscert=/etc/docker/certs.d/server-cert.pem --tlskey=/etc/docker/certs.d/server-key.pem -H=0.0.0.0:2376 -H unix:///var/run/docker.sock'</h2>
+
+<p>systemctl start docker.service
+systemctl enable docker
+```</p>
+
+<h2>client側</h2>
+
+<p>```
+vim ~/.docker/ca.pem
+vim ~/.docker/cert.pem
+vim ~/.docker/key.pem</p>
+
+<p>vim ~/.zshrc
+export DOCKER_HOST=tcp://xxx.xxx.xxx.xxx:2376
+export DOCKER_TLS_VERIFY=1
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CentOSのsystem領域にrubyの最新バージョンを手軽にインストールする]]></title>
+    <link href="http://blog.youyo.info/blog/2014/12/05/centos-latest-ruby/"/>
+    <updated>2014-12-05T13:33:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/12/05/centos-latest-ruby</id>
+    <content type="html"><![CDATA[<p>CentOS6系のパッケージでインストールされるrubyのバージョンは1.8.7です。さすがに低すぎるってことでもっと新しいバージョンを使おうってときに普通はrbenvやRVMを利用すると思います。<br/>
+でもdeamonからrubyを使おうとしたとき、rbenvで入れたrubyって少し使いづらいです。。</p>
+
+<p>systemのrubyのバージョンを上げたいってとき、epelなどでもパッケージ提供されていないのでソースからインストールするしかないのかな〜って思ってます。<br/>
+今回aws-sdkを使おうとしたらバージョン低すぎるよ！って言われたのでどうにかすることにしました。</p>
+
+<p>```</p>
+
+<h1>gem install aws-sdk</h1>
+
+<p>ERROR:  Error installing aws-sdk:</p>
+
+<pre><code>nokogiri requires Ruby version &gt;= 1.9.2.
+</code></pre>
+
+<p>```</p>
+
+<h2>でもソースインストールってめんどくさい</h2>
+
+<p>僕は嫌いです。。<br/>
+コンパイルオプションの指定とかめんどいし。。</p>
+
+<h2>ruby-build使えばいいんじゃね？</h2>
+
+<p><code>rbenv</code>のプラグインである<code>ruby-build</code>を直で使えば楽にソースインストールできるんじゃね？ってことでやってみました。</p>
+
+<p>```
+git clone https://github.com/sstephenson/ruby-build.git
+cd ruby-build
+./install.sh
+ruby-build 2.1.5 /usr/local/ruby-2.1.5
+ln -s /usr/local/ruby-2.1.5/bin/ruby /usr/local/bin/
+ln -s /usr/local/ruby-2.1.5/bin/gem /usr/local/bin/</p>
+
+<h1>ruby -v</h1>
+
+<p>ruby 2.1.5p273 (2014-11-13 revision 48405) [x86_64-linux]
+```</p>
+
+<h2>できました</h2>
+
+<p><code>/usr/local/bin/</code>にシンボリックリンクを作成することでバージョンアップが必要になったときもこれで楽チンです！<br/>
+これでsystemのrubyで気軽に最新バージョン使えますね！</p>
+
+<p>```
+ruby-build 2.0.0-p598 /usr/local/ruby-2.0.0-p598
+rm -f /usr/local/bin/ruby &amp;&amp; ln -s /usr/local/ruby-2.0.0-p598/bin/ruby /usr/local/bin/
+rm -f /usr/local/bin/gem &amp;&amp; ln -s /usr/local/ruby-2.0.0-p598/bin/gem /usr/local/bin/</p>
+
+<h1>ruby -v</h1>
+
+<p>ruby 2.0.0p598 (2014-11-13 revision 48408) [x86_64-linux]
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[KVMでLiveMigrationしてみた]]></title>
+    <link href="http://blog.youyo.info/blog/2014/08/18/kvm-live-migrate/"/>
+    <updated>2014-08-18T00:53:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/08/18/kvm-live-migrate</id>
+    <content type="html"><![CDATA[<p>やってみました。<br/>
+参考は<a href="http://d.hatena.ne.jp/enakai00/20111124/1322106772]">こちら。</a></p>
+
+<h2>構成</h2>
+
+<ul>
+<li>host1 centos6.5 (10.0.2.111)</li>
+<li>host2 centos6.5 (10.0.2.112)</li>
+<li>VM centos6.5 (gitlab)</li>
+</ul>
+
+
+<p>host1からhost2にVMを移動させてみます。</p>
+
+<h2>やってみる</h2>
+
+<ul>
+<li>とりあえず実行してみた</li>
+</ul>
+
+
+<p><code>
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+エラー: cannot open file '/var/lib/libvirt/images/gitlab.qcow2.img': No such file or directory
+</code></p>
+
+<p>「ディスクイメージないよ！」と言われたので作成して再度やってみる。</p>
+
+<ul>
+<li>ディスクイメージ作成して再実行</li>
+</ul>
+
+
+<p><code>
+qemu-img create -f qcow2 /var/lib/libvirt/images/gitlab.qcow2.img 50G
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+エラー: Unable to resolve address 'host2' service '49153': Name or service not known
+</code></p>
+
+<p>「<code>host2</code>が名前解決できないよ！」と言われたので、<code>/etc/hosts</code>に追記して再実行。</p>
+
+<ul>
+<li>名前解決できるようにして再実行</li>
+</ul>
+
+
+<p><code>
+echo -e "host2\t10.0.2.112" &gt;&gt; /etc/hosts
+virsh migrate --live --persistent --copy-storage-all --change-protection --verbose gitlab qemu+ssh://10.0.2.112:10022/system
+root@10.0.2.112's password:
+マイグレーション: [100 %]
+</code></p>
+
+<p>できた！！！</p>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>簡単にできた。</li>
+<li>VMにssh接続しながら移動させたけど、ほんとに止まってなかった。</li>
+<li>これ使わなくてもいいようなしっかりとした設計を。(戒め)</li>
+<li>でもメンテナンスには絶大な威力発揮できそう。(もっと検証必要だけど)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[hwclockのせいでOS起動しなくなった]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/17/hang-by-hwclock/"/>
+    <updated>2014-06-17T16:49:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/17/hang-by-hwclock</id>
+    <content type="html"><![CDATA[<p>CentOS 5系のサーバを何気なくrebootしたら上がってこなくなった。<br/>
+慌ててリモートコンソール繋ぐと、</p>
+
+<p><code>
+INIT: version 2.86 booting
+Welcome to  CentOS release 5 (Final)
+Press ‘I’ to enter interactive startup.
+</code></p>
+
+<p>この画面で止まってた。。<br/>
+　<br/>
+ガクブルしつつ再度rebootし、singleユーザーモードで立ち上げるも同じところで止まる。。。<br/>
+　<br/>
+<code>INIT welcome to centos hang</code>とかでググってみると下記サイトがヒット！
+<a href="http://blog.wapnet.nl/2010/12/centos-fedora-red-hat-guest-os-hangs-during-boot-vmware/">http://blog.wapnet.nl/2010/12/centos-fedora-red-hat-guest-os-hangs-during-boot-vmware/</a><br/>
+　<br/>
+どうやらhwclockが悪さをしているらしい。<br/>
+　<br/>
+BIOSで時刻設定が合ってるか確認したけど問題なし。<br/>
+時間合ってるかは関係ないのかな〜、というか仮想化してないし物理ハードだし〜とか思いつつも、<br/>
+とりあえずrescueモードで立ち上げてサイトにある対応を実施。</p>
+
+<p><code>
+mv hwclock hwclock.original
+echo "exit 0" &gt; hwclock
+chmod 755 hwclock
+</code></p>
+
+<p>(こういうときだけ)神に祈りつつreboot...！！<br/>
+　<br/>
+無事起動しました！！！</p>
+
+<h3>まとめ</h3>
+
+<ul>
+<li>googleさんありがとう</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6でNAT設定]]></title>
+    <link href="http://blog.youyo.info/blog/2014/05/20/nat-centos/"/>
+    <updated>2014-05-20T21:01:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/05/20/nat-centos</id>
+    <content type="html"><![CDATA[<p>いつも忘れるのでメモ。</p>
+
+<ul>
+<li>ローカルネットワークは192.168.10.0/24 とする。</li>
+</ul>
+
+
+<p><code>
+sed -i "s|net.ipv4.ip_forward = 0|net.ipv4.ip_forward = 1|" /etc/sysctl.conf
+sysctl -p
+iptables -t nat -A POSTROUTING -s 192.168.10.0/255.255.255.0 -j MASQUERADE
+service iptables save
+</code></p>
+
+<h3>[追記]</h3>
+
+<ul>
+<li>外部からのアクセスを許可する。</li>
+</ul>
+
+
+<p><code>
+iptables -t nat -A POSTROUTING -d 192.168.10.0/255.255.255.0 -j MASQUERADE
+</code></p>
+
+<ul>
+<li>スタティックルート設定</li>
+</ul>
+
+
+<p>192.168.5.224はnatサーバのIP。</p>
+
+<p><code>
+echo "192.168.10.0/24 via 192.168.5.224" &gt; /etc/sysconfig/network-scripts/route-eth0
+service network restart
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

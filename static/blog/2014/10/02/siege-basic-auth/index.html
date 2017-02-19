@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>負荷テストツール「siege」でBasic認証を突破する方法 - blog.youyo.info</title>
+  <meta name="author" content="youyo">
+
+  
+  <meta name="description" content="siegeとは siegeの詳細は下記URL参照。
+http://blog.cloudpack.jp/2014/08/25/easy-web-load-test-with-using-siege/ basic認証通るには $HOME/.siegercに1行追加するだけ。 1
+login = &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.youyo.info/blog/2014/10/02/siege-basic-auth//">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="blog.youyo.info" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- table -->
+<link href="/stylesheets/data-table.css" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37862128-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <!-- <header role="banner"><hgroup>
+  <h1><a href="/">blog.youyo.info</a></h1>
+  
+</hgroup>
+
+</header> -->
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.youyo.info" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li>
+    <a href="/"><span class="blue_light">blog.youyo.info</span>
+    
+    </a>
+  </li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="http://photo.youyo.info/photo-room/">Photo-Room</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">負荷テストツール「siege」でBasic認証を突破する方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-02T10:31:00+09:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>siegeとは</h2>
+
+<p>siegeの詳細は下記URL参照。<br/>
+<a href="http://blog.cloudpack.jp/2014/08/25/easy-web-load-test-with-using-siege/">http://blog.cloudpack.jp/2014/08/25/easy-web-load-test-with-using-siege/</a></p>
+
+<h2>basic認証通るには</h2>
+
+<p><code>$HOME/.siegerc</code>に1行追加するだけ。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>login = username:password:siege_basic_auth</span></code></pre></td></tr></table></div></figure>
+
+
+<p>siege 3.0.0 で確認。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">youyo</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-02T10:31:00+09:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/stress/'>stress</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  <a href="http://b.hatena.ne.jp/entry/blog.youyo.info/" class="hatena-bookmark-button" 
+  data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加">
+    <img src="http://b.st-hatena.com/images/entry-button/button-only.gif"
+      alt="このエントリーをはてなブックマークに追加"
+      width="20" height="20" style="border: none;" />
+  </a>
+  <script type="text/javascript"
+    src="http://b.st-hatena.com/js/bookmark_button.js"
+    charset="utf-8" async="async">
+  </script>
+  &nbsp;&nbsp;&nbsp;
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.youyo.info/blog/2014/10/02/siege-basic-auth/" data-via="youyo_" data-counturl="http://blog.youyo.info/blog/2014/10/02/siege-basic-auth/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    
+  <h2>Related posts</h2>
+  <ul class="posts">
+  
+  </ul>
+
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/08/jft2014-s3/" title="Previous Post: JFT2014でAmazonS3の発表してきた">&laquo; JFT2014でAmazonS3の発表してきた</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="http://cloudfront.youyo.info/profile/profile.png" width="200" height="200">
+  <br>
+  <p>
+    洋 <a href="https://twitter.com/youyo_">@youyo_</a><br><br>
+    クラウドとオンプレを行ったり来たり。<br>
+    仙台でサーバいじってます。<br>
+    AWS認定ソリューションアーキテクト - アソシエイトレベル<br>
+    AWS認定SysOpsアドミニストレーター – アソシエイトレベル<br>
+    Photo-Room: <a href="http://photo.youyo.info/photo-room/">http://photo.youyo.info/photo-room/</a><br>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/02/siege-basic-auth/">負荷テストツール「siege」でBasic認証を突破する方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/08/jft2014-s3/">JFT2014でAmazonS3の発表してきた</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/kvm-live-migrate/">KVMでLiveMigrationしてみた</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/22/jtf2014/">JTF2014行ってきた</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/17/hang-by-hwclock/">hwclockのせいでOS起動しなくなった</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Tag Cloud</h1>
+    <span id="tag-cloud"><a href='/blog/categories/aws' style='font-size: 160.0%'>aws(8)</a> <a href='/blog/categories/centos' style='font-size: 160.0%'>centos(8)</a> <a href='/blog/categories/chef' style='font-size: 107.5%'>chef(1)</a> <a href='/blog/categories/dnsmasq' style='font-size: 115.0%'>dnsmasq(2)</a> <a href='/blog/categories/docker' style='font-size: 107.5%'>docker(1)</a> <a href='/blog/categories/ec2' style='font-size: 107.5%'>ec2(1)</a> <a href='/blog/categories/fluentd' style='font-size: 107.5%'>fluentd(1)</a> <a href='/blog/categories/ha' style='font-size: 115.0%'>HA(2)</a> <a href='/blog/categories/heartbeat' style='font-size: 107.5%'>heartbeat(1)</a> <a href='/blog/categories/jaws-ug' style='font-size: 130.0%'>jaws-ug(4)</a> <a href='/blog/categories/jtf' style='font-size: 107.5%'>jtf(1)</a> <a href='/blog/categories/kvm' style='font-size: 115.0%'>kvm(2)</a> <a href='/blog/categories/mongodb' style='font-size: 107.5%'>mongodb(1)</a> <a href='/blog/categories/mysql' style='font-size: 137.5%'>mysql(5)</a> <a href='/blog/categories/network' style='font-size: 115.0%'>network(2)</a> <a href='/blog/categories/nginx' style='font-size: 160.0%'>nginx(8)</a> <a href='/blog/categories/nsd' style='font-size: 107.5%'>nsd(1)</a> <a href='/blog/categories/openstack' style='font-size: 107.5%'>openstack(1)</a> <a href='/blog/categories/pacemaker' style='font-size: 107.5%'>pacemaker(1)</a> <a href='/blog/categories/php' style='font-size: 137.5%'>php(5)</a> <a href='/blog/categories/redis' style='font-size: 115.0%'>redis(2)</a> <a href='/blog/categories/redmine' style='font-size: 107.5%'>redmine(1)</a> <a href='/blog/categories/ruby' style='font-size: 160.0%'>ruby(8)</a> <a href='/blog/categories/s3' style='font-size: 115.0%'>s3(2)</a> <a href='/blog/categories/shell' style='font-size: 107.5%'>shell(1)</a> <a href='/blog/categories/sinatra' style='font-size: 107.5%'>sinatra(1)</a> <a href='/blog/categories/spdy' style='font-size: 107.5%'>spdy(1)</a> <a href='/blog/categories/stress' style='font-size: 107.5%'>stress(1)</a> <a href='/blog/categories/swift' style='font-size: 107.5%'>swift(1)</a> <a href='/blog/categories/troubleshooting' style='font-size: 107.5%'>troubleshooting(1)</a> <a href='/blog/categories/zabbix' style='font-size: 130.0%'>zabbix(4)</a> <a href='/blog/categories/その他' style='font-size: 115.0%'>その他(2)</a> <a href='/blog/categories/勉強会' style='font-size: 115.0%'>勉強会(2)</a> </span>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/youyo_" data-widget-id="345891522094436352" data-tweet-limit="6">@youyo_ からのツイート</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+<section>
+  <br>
+  <h2>オススメ商品？</h2>
+  <h2>いいえ！僕が欲しいものです！</h2>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X"><img src="http://ecx.images-amazon.com/images/I/51iUJmKsPUL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/HTTPの教科書-上野-宣/dp/479812625X?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=479812625X">HTTPの教科書</a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583"><img src="http://ecx.images-amazon.com/images/I/51cUlzWu-lL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/CloudStack徹底入門-日本CloudStackユーザー会ほか/dp/4798130583?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4798130583">CloudStack徹底入門</a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087"><img src="http://ecx.images-amazon.com/images/I/61zcn%2Brx0iL._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/7つのデータベース-7つの世界-Eric-Redmond/dp/4274069087?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4274069087">7つのデータベース 7つの世界</a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948"><img src="http://ecx.images-amazon.com/images/I/41oqE-9dM2L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/エキスパートのためのMySQL-運用-管理-トラブルシューティングガイド-奥野/dp/4774142948?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4774142948">エキスパートのためのMySQL[運用+管理]トラブルシューティングガイド</a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892"><img src="http://ecx.images-amazon.com/images/I/41qHKrFZi0L._SL160_.jpg" /></a></p>
+  <p><a href="http://www.amazon.co.jp/SQLアンチパターン-Bill-Karwin/dp/4873115892?SubscriptionId=AKIAJXPJTMP3Q62X7GNA&tag=youyo07-22&linkCode=xm2&camp=2025&creative=165953&creativeASIN=4873115892">SQLアンチパターン</a></p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - youyo -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'youyo';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.youyo.info/blog/2014/10/02/siege-basic-auth/';
+        var disqus_url = 'http://blog.youyo.info/blog/2014/10/02/siege-basic-auth/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ja_JP/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

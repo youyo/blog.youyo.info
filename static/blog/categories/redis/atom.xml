@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: redis | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/redis/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Redis-Sentinelのclient-reconfig-scriptでVIPをつける]]></title>
+    <link href="http://blog.youyo.info/blog/2014/05/24/redis-cluster/"/>
+    <updated>2014-05-24T20:59:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/05/24/redis-cluster</id>
+    <content type="html"><![CDATA[<p>Redis-Sentinelを使って冗長化するとき、VIPの制御はどうしよっかな〜と思っていろいろ調べた結果、<code>client-reconfig-script</code>を使うとVIP付けれそう！ってことがわかって、やってみたのでまとめ。</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>CentOS 6.5 x86_64</li>
+<li>redis-2.8.9-1.el6.remi.x86_64</li>
+</ul>
+
+
+<p>3台構成でIPとかははこんな感じで。<br/>
+Portはデフォルトの6379です。
+3台全てでredis,redis-sentinelが動きます。</p>
+
+<ul>
+<li>redis1 192.168.0.1/24</li>
+<li>redis2 192.168.0.2/24</li>
+<li>redis3 192.168.0.3/24</li>
+<li>VIP    192.168.0.4/24</li>
+</ul>
+
+
+<h2>Redis,Redis-Sentinel インストール</h2>
+
+<p>remiレポジトリを使用して2.8系をyumでサクッと。<br/>
+redis1をマスターにしてレプリケーションを組んでおきます。</p>
+
+<p><code>
+yum install --enablerepo=epel,remi redis -y
+sed -i "s|bind 127.0.0.1|bind 0.0.0.0|g" /etc/redis.conf
+service redis start
+chkconfig redis on
+</code></p>
+
+<p>redis2,redis3で。</p>
+
+<p><code>
+redis-cli
+127.0.0.1:6379&gt; SLAVEOF 192.168.0.1 6379
+</code></p>
+
+<h2>VIP設定用スクリプト</h2>
+
+<p>フェイルオーバー時に実行されるスクリプトです。<br/>
+<code>client-reconfig-script</code>で実行されるスクリプトには下記のような引数が渡されます。</p>
+
+<p>```</p>
+
+<h1>The following arguments are passed to the script:</h1>
+
+<p>#</p>
+
+<h1><master-name> <role> <state> <from-ip> <from-port> <to-ip> <to-port></h1>
+
+<p>```</p>
+
+<p>6番目の<code>&lt;to-ip&gt;</code>を使って、自分がマスターになったときにVIPをつけて、それ以外のときはVIPを外す動作をします。
+<code>ip</code>コマンドで付けてるだけなので、フェイルオーバー時にarpが問題になることがあります。
+そのため<code>arping</code>コマンドでGARPを投げています。
+<code>ip</code>コマンド、<code>arping</code>コマンドいずれもroot権限が必要なので<code>sudo</code>設定します。</p>
+
+<p><code>
+vim /var/lib/redis/failover.sh
+chmod 755 /var/lib/redis/failover.sh
+chown redis: /var/lib/redis/failover.sh
+echo -e "redis\tALL=(ALL)\tNOPASSWD:/sbin/ip,NOPASSWD:/sbin/arping" &gt; /etc/sudoers.d/redis
+sed -i "s|Defaults.*requiretty|#Defaults\trequiretty|" /etc/sudoers
+chmod 440 /etc/sudoers.d/redis
+</code></p>
+
+<p>```</p>
+
+<h1>!/bin/bash</h1>
+
+<p>MASTER_IP=${6}
+MY_IP='192.168.0.1' # 各サーバ自身のIP
+VIP='192.168.0.4'       # VIP
+NETMASK='24'            # Netmask
+INTERFACE='eth0'        # インターフェイス</p>
+
+<p>if [ ${MASTER_IP} = ${MY_IP} ]; then</p>
+
+<pre><code>    sudo /sbin/ip addr add ${VIP}/${NETMASK} dev ${INTERFACE}
+    sudo /sbin/arping -q -c 3 -A ${VIP} -I ${INTERFACE}
+    exit 0
+</code></pre>
+
+<p>else</p>
+
+<pre><code>    sudo /sbin/ip addr del ${VIP}/${NETMASK} dev ${INTERFACE}
+    exit 0
+</code></pre>
+
+<p>fi
+exit 1
+```</p>
+
+<h2>Redis-Sentinel設定</h2>
+
+<p>redis-sentonelの設定をして起動します。<br/>
+初回だけVIPを手動で設定します。</p>
+
+<p>```
+vim /etc/redis-sentinel.conf</p>
+
+<p>service redis-sentinel start
+chkconfig redis-sentinel on</p>
+
+<p>ip addr add 192.168.0.4/24 dev eth0
+```</p>
+
+<p>```</p>
+
+<h1>sentinel.conf</h1>
+
+<p>port 26379
+logfile /var/log/redis/sentinel.log
+sentinel monitor mymaster 192.168.0.1 6379 2
+sentinel down-after-milliseconds mymaster 3000
+sentinel parallel-syncs mymaster 1
+sentinel failover-timeout mymaster 60000
+sentinel client-reconfig-script mymaster /var/lib/redis/failover.sh
+```</p>
+
+<h2>確認</h2>
+
+<p>あとはマスターになっているredisをkillしてみてフェイルオーバーするか、pingを打ちながらフェイルオーバーさせて途切れないか、などチェックしてみればいいと思います。<br/>
+<code>sentinel down-after-milliseconds mymaster 3000</code>にあるように3秒でredisのダウンを検知するようにしています。よりシビアな環境の場合は短く変更して試してみるといいと思います。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sinatraでセッション管理をredisでやろうとしたらちょっと困った話]]></title>
+    <link href="http://blog.youyo.info/blog/2013/05/02/rack-session-redis/"/>
+    <updated>2013-05-02T10:39:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/05/02/rack-session-redis</id>
+    <content type="html"><![CDATA[<p>sinatra勉強中で、セッションの管理をデフォルトのクッキーではなくredisでやりたいなと。<br/>
+んでちょっと調べたら良さそうなのがあると。<br/>
+　<br/>
+<a href="https://github.com/vangberg/rack-session-redis">https://github.com/vangberg/rack-session-redis</a>
+　<br/>
+使い方も簡単そうだしいいね！てことでちょっと使ってみることに。</p>
+
+<ul>
+<li>Usage</li>
+</ul>
+
+
+<p>READMEそのままでOKです。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis'
+</code></p>
+
+<p>``` rb config.ru
+require "rack/session/redis"</p>
+
+<p>use Rack::Session::Redis, {<br/>
+  :url          => "redis://localhost:6379/0",<br/>
+  :namespace    => "rack:session",<br/>
+  :expire_after => 600<br/>
+}
+```</p>
+
+<!-- more -->
+
+
+<p>あとは普通に<code>session['name']</code>とかで使用するだけ。簡単幸せです(´ω`)</p>
+
+<p><code>rb 　
+get '/' do
+  session['name'] = youyo
+  haml :index
+end
+</code></p>
+
+<ul>
+<li>しかししかし削除がうまくいかない...</li>
+</ul>
+
+
+<p><code>rb 　
+get '/logout' do
+  session.clear
+  redirect '/'
+end
+</code></p>
+
+<p>とかやれば通常のクッキーベースのセッションであればクリアされるのですが、何故か消えない...<br/>
+ググったところこれはバグでもうすでに直っているそうです。(<a href="https://github.com/vangberg/rack-session-redis/commits/">https://github.com/vangberg/rack-session-redis/commits/</a>)<br/>
+　<br/>
+あれ？じゃあ、なんでdelete失敗してるの？って思ってコードみたら直ってなかった...<br/>
+　<br/>
+　</p>
+
+<h3>なるほど。gemでインストールできるのではなく最新を持ってこい。と。</h3>
+
+<ul>
+<li>Bundlerでgithubから直接ソースを取得する</li>
+</ul>
+
+
+<p><a href="http://qiita.com/items/d92ec09f51e8ff144be6">こちら</a>を参考にGemfileを修正。</p>
+
+<p><code>rb Gemfile
+gem 'rack-session-redis', :git =&gt; "git://github.com/vangberg/rack-session-redis.git"
+</code></p>
+
+<p>あとは再インストール。簡単ですね(´ω`)<br/>
+無事<code>session.clear</code>動きました！</p>
+]]></content>
+  </entry>
+  
+</feed>

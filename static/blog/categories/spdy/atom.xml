@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: spdy | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/spdy/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[nginxにSPDYパッチあててみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/03/31/nginx-spdy/"/>
+    <updated>2013-03-31T00:12:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/03/31/nginx-spdy</id>
+    <content type="html"><![CDATA[<p>nginxにSPDYパッチあててみました。<br/>
+参考サイトはこちら様。<br/>
+<a href="http://techblog.heartrails.com/2013/01/using-spry-in-nginx.html">http://techblog.heartrails.com/2013/01/using-spry-in-nginx.html</a><br/>
+　</p>
+
+<p>nginx自体はもうyumでインストールしていたので、configureオプションなどはほぼそのまま使用しています。
+sbin-pathの変更と使わなそうなmail関係のモジュールを外すのとspdyモジュールを追加してビルドです！</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>CentOS6.3 x86_64</li>
+<li>nginx 1.3.14</li>
+<li>openssl-1.0.1e</li>
+</ul>
+
+
+<h3>Install</h3>
+
+<p>念のため設定ファイルとかバックアップとっておきましょう。<br/>
+現在のnginxのconfigureオプションを確認するには<code>nginx -V</code>です。</p>
+
+<p>```</p>
+
+<h1>nginx -V</h1>
+
+<p>nginx version: nginx/1.2.6
+built by gcc 4.4.4 20100726 (Red Hat 4.4.4-13) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-mail --with-mail_ssl_module --with-file-aio --with-ipv6 --with-cc-opt='-O2 -g'
+```</p>
+
+<!--more-->
+
+
+<p>これを元にビルドします。<br/>
+まずはソースをダウンロードしてきてパッチあてます。</p>
+
+<p><code>
+mkdir /usr/local/src/spdy
+cd /usr/local/src/spdy
+wget http://nginx.org/download/nginx-1.3.14.tar.gz
+wget http://nginx.org/patches/spdy/patch.spdy-70_1.3.14.txt
+wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
+tar xvzf nginx-1.3.14.tar.gz
+tar xvzf openssl-1.0.1e.tar.gz
+cd nginx-1.3.14
+patch -p1 &lt; ../patch.spdy-69_1.3.14.txt
+</code></p>
+
+<p>先ほどのconfigureオプションから<code>--sbin-path=/usr/local/sbin/nginx</code>への変更、<code>--with-mail</code>,<code>--with-mail_ssl_module</code>の削除、<code>--with-openssl=/usr/local/src/spdy/openssl-1.0.1e</code>,<code>--with-http_spdy_module</code>を追加してインストールします。</p>
+
+<p>```
+./configure --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log \
+--pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp \
+--http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+--user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module \
+--with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module \
+--with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module \
+--with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' \
+--with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module</p>
+
+<p>・
+・
+・</p>
+
+<p>Configuration summary
+  + using system PCRE library
+  + using OpenSSL library: /usr/local/src/spdy/openssl-1.0.1e
+  + md5: using OpenSSL library
+  + sha1: using OpenSSL library
+  + using system zlib library</p>
+
+<p>  nginx path prefix: "/etc/nginx/"
+  nginx binary file: "/usr/local/sbin/nginx"
+  nginx configuration prefix: "/etc/nginx"
+  nginx configuration file: "/etc/nginx/nginx.conf"
+  nginx pid file: "/var/run/nginx.pid"
+  nginx error log file: "/var/log/nginx/error.log"
+  nginx http access log file: "/var/log/nginx/access.log"
+  nginx http client request body temporary files: "/var/cache/nginx/client_temp"
+  nginx http proxy temporary files: "/var/cache/nginx/proxy_temp"
+  nginx http fastcgi temporary files: "/var/cache/nginx/fastcgi_temp"
+  nginx http uwsgi temporary files: "/var/cache/nginx/uwsgi_temp"
+  nginx http scgi temporary files: "/var/cache/nginx/scgi_temp"</p>
+
+<p>make
+sudo make install
+```</p>
+
+<h3>確認</h3>
+
+<p><code>
+/usr/local/sbin/nginx -V
+nginx version: nginx/1.3.14
+built by gcc 4.4.6 20120305 (Red Hat 4.4.6-4) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' --with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module
+</code></p>
+
+<p>いい感じです(´ω`)<br/>
+作業してて気づいたんですけどnginxってSNIサポートしてるんですね！ 今度検証してみたいです(脱線)</p>
+
+<p>あとは起動スクリプト内のnginxへのパスを修正して実際にアクセスしてみます。</p>
+
+<p>```
+vim /etc/init.d/nginx</p>
+
+<h1>nginx=${NGINX-/usr/sbin/nginx}</h1>
+
+<p>nginx=${NGINX-/usr/local/sbin/nginx}</p>
+
+<p>vim /etc/sysconfig/nginx</p>
+
+<h1>NGINX=/usr/sbin/nginx</h1>
+
+<p>NGINX=/usr/local/sbin/nginx
+```</p>
+
+<p>``` sh nginx.conf
+server {
+  listen 443 ssl spdy default_server;
+  server_name youyo.info;</p>
+
+<p>  ssl_certificate       youyo.info.crt;
+  ssl_certificate_key   youyo.info.key;</p>
+
+<p>  location / {</p>
+
+<pre><code>root /var/www/youyo.info;
+index index.html;
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p><code>sh
+/usr/local/sbin/nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+/etc/init.d/nginx restart
+</code></p>
+
+<p>アクセスしてみると...?</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-03-31-nginx-spdy/spdy-test.png" alt="spdy-test" /></p>
+
+<p><img src="http://cloudfront.youyo.info/2013-03-31-nginx-spdy/chrome.png" alt="chrome" /></p>
+
+<p>無事SPDYで接続できたようです！<br/>
+chromeのエクステンションやら<code>chrome://net-internals/#spdy</code>で確認できたので大丈夫なはずです！(不安</p>
+
+<h3>まとめ</h3>
+
+<ul>
+<li>意外と簡単にできた</li>
+<li>接続が速くなったかはわかっていない(テストしてないから</li>
+<li>SNIも試してみたくなった</li>
+<li>証明書の期限が切れる寸前だとわかった(あとあと一週間...</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

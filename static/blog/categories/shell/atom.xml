@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: shell | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/shell/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Too many authentication failures for user]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/17/too-many-authentication-failures-for-user/"/>
+    <updated>2014-06-17T13:24:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/17/too-many-authentication-failures-for-user</id>
+    <content type="html"><![CDATA[<p>macでsshしようとするとたまに出る。</p>
+
+<p><code>
+[naoto@MBA ~] $ ssh root@192.168.5.222
+Received disconnect from 192.168.5.222: 2: Too many authentication failures for root
+</code></p>
+
+<p>よくわかってないが、何かをクリアすると繋がるようになる。</p>
+
+<p><code>
+[naoto@MBA ~] $ ssh-add -D
+All identities removed.
+</code></p>
+
+<p>※ ググったらいろいろ出ました。詳細はググるべし。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,6 +1,6 @@
 ---
 title: "CloudFlareの無料SSL/httpsリダイレクトを使用しているサイトにwordpressを突っ込む"
-thumbnailImage: //www.cloudflare.com/img/cf-facebook-card.png
+thumbnailImage: images/eye-catch/cloudflare.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2016-01-14

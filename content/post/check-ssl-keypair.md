@@ -1,6 +1,6 @@
 ---
 title: "SSL証明書のkeyとcrtがペアかどうか確認する"
-thumbnailImage: //i2.wp.com/static.movingpackets.net/2015/03/OpenSSLLogo.png
+thumbnailImage: images/eye-catch/openssl.png
 thumbnailImagePosition: top
 metaAlignment: left
 date: 2016-02-19

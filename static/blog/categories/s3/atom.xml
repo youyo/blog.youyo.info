@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: s3 | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/s3/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JFT2014でAmazonS3の発表してきた]]></title>
+    <link href="http://blog.youyo.info/blog/2014/09/08/jft2014-s3/"/>
+    <updated>2014-09-08T01:42:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/09/08/jft2014-s3</id>
+    <content type="html"><![CDATA[<p>発表資料はこちら。</p>
+
+<iframe src="http://blog.youyo.info//www.slideshare.net/slideshow/embed_code/38766359" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/youyo_/s3-38766359" title="クラウドを支えるS3の基本を学ぼう" target="_blank">クラウドを支えるS3の基本を学ぼう</a> </strong> from <strong><a href="http://www.slideshare.net/youyo_" target="_blank">Naoto Ishizawa</a></strong> </div></p>
+
+<!-- more -->
+
+
+<h3>とにかく緊張してた</h3>
+
+<p>当日は朝7:30集合で会場準備を始めて、朝飯も食わずに動き回ってお腹もすいてたのに、お弁当がまったく喉を通らない状況。「もし時間が余って変な感じになったらどうしよう」などという不安から、食事を諦めてスライドを1枚足す作業を開始。この時点で発表1時間30分前。</p>
+
+<h3>マサカリの方、お断り！</h3>
+
+<p>お昼休み終わりの一発目で教室は空いていたので、45分前に入室しててちゃんと映るか確認。そのまま開始までぐだぐだする。今までの人生で一番長く感じた45分間だった。</p>
+
+<p><img src="http://cloudfront.youyo.info/2014-09-08-jft2014-s3/no_masakari.png" width="500"></p>
+
+<p>ただ待ってるのもアレなので、「マサカリの方、お断り！ 質問禁止！！」と書いてみたら逆効果だったようで、マサカリの方に絡まれました。</p>
+
+<h3>汗だくで発表した</h3>
+
+<p><img src="http://cloudfront.youyo.info/2014-09-08-jft2014-s3/jft2014-s3-photo.jpg"></p>
+
+<p>自分が思ってたよりも人数が多い。(汗<br/>
+　<br/>
+25人くらいはいたのかなぁと。始まってから後ろのほうで立ち見し始めた方もいたのでもう少しいたのかもしれない。もともと汗っかきな上に少し教室が暑かった(僕だけ？)ので、汗だくで大変でした。。 ハンカチ片手に水飲みつつ、勝手に休みつつ。。<br/>
+　<br/>
+早口にならないように、時間を余らせないように。を意識してしゃべった結果、時間オーバーしました。LTならきれいにパイ投げられてましたね。危なかったです。</p>
+
+<h3>結果</h3>
+
+<ul>
+<li>すげー楽しかった！</li>
+<li>気づいたら発表することになっててこの1ヶ月間ずっと吐きそうだったけど、最終的に楽しかった！</li>
+<li>見にくいスライドでごめんなさい。1枚に詰め込みすぎるのは僕の悪い癖。</li>
+<li>もう50分とか喋りたくないです。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[S3に保存してアクセスURL取り出してみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/01/22/store-s3-script/"/>
+    <updated>2013-01-22T13:07:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/01/22/store-s3-script</id>
+    <content type="html"><![CDATA[<p>octopress + github でこのブログを作ったのですが、画像の管理をどうしようか迷っていました。ちょっとググってみると画像はdropboxに置いて公開ってのが多いように感じましたが、なんとなくみんなと一緒はいやだったので僕は s3 + cloudfront でいくことにしました。<br/>
+で。Management Console でいろいろ画像upload試してはURLを確認してアクセスしていたのですがいちいちめんどくさい('・u・`)  せっかくoctopressで快適になったんだからこのへんもCLIでパパッとできるようにしよう！ ということで作ってみました。</p>
+
+<!-- more -->
+
+
+<p><div><script src='https://gist.github.com/4591976.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+</p>
+
+<p>適宜<code>Access_key</code>とか<code>MyBucket</code>とか変更で。<code>DEFAULT_HOST.replace</code>変えればリージョン変更できます。デフォルト東京リージョンです。あとは<code>./store-s3.rb コピー元ファイル コピー先ディレクトリ</code>ってな感じで使うとファイルをuploadできてURLが取得できます。</p>
+
+<p><code>
+$ ./store-s3.rb ~/Desktop/danbo_.jpg /test
+Upload success!
+URL: http://cloudfront.youyo.info/test/danbo_.jpg
+</code></p>
+
+<p>コピー先ディレクトリは省略できます。省略したときはトップディレクトリに保存されます。ディレクトリは存在していない場合自動で作成されます。すでに同名のファイルがある場合はエラーが返ります。<br/>
+これで取得したURLをそのまんまブログに張れば表示できるしラクチンですね(´ω`)b</p>
+
+<p><img src="http://cloudfront.youyo.info/test/danbo_.jpg" alt="danbo_" /></p>
+]]></content>
+  </entry>
+  
+</feed>

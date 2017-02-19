@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: nginx | blog.youyo.info]]></title>
+  <link href="http://blog.youyo.info/blog/categories/nginx/atom.xml" rel="self"/>
+  <link href="http://blog.youyo.info/"/>
+  <updated>2015-07-06T13:15:44+09:00</updated>
+  <id>http://blog.youyo.info/</id>
+  <author>
+    <name><![CDATA[youyo]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Redmine構築]]></title>
+    <link href="http://blog.youyo.info/blog/2014/06/06/redmine-mysql-nginx/"/>
+    <updated>2014-06-06T22:09:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2014/06/06/redmine-mysql-nginx</id>
+    <content type="html"><![CDATA[<p>Redmine構築したのでメモ。(いつも忘れてググってるので。。)</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>CentOS 6.5</li>
+<li>Redmine 2.5.1</li>
+<li>Ruby 2.0.0-p481</li>
+<li>Nginx 1.6.0</li>
+<li>MySQL 5.1.73</li>
+</ul>
+
+
+<p>Apache Passengerは使わず、unicornで起動してproxyとしてnginxを使います。unicornはupstartで起動します。rubyはrbenvでお好きなものを。</p>
+
+<!-- more -->
+
+
+<h2>MySQL install</h2>
+
+<p>適当に。<br/>
+チューニングはスペックに合わせてしっかりやる。</p>
+
+<p>```
+yum -y install mysql-server</p>
+
+<p>cat &lt;<EOS > /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+character-set-server = utf8
+skip-character-set-client-handshake
+ignore-builtin-innodb
+plugin-load=innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so
+innodb_file_per_table
+innodb_flush_method = O_DIRECT
+innodb_buffer_pool_size = 512M
+innodb_log_file_size = 256M
+innodb_data_file_path = ibdata1:64M:autoextend
+innodb_autoextend_increment = 64
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+character-set-server = utf8
+EOS</p>
+
+<p>service mysqld start
+chkconfig mysqld on
+mysql_secure_installation
+```</p>
+
+<p>データベース、ユーザーを作成しておく。</p>
+
+<p><code>
+create database redmine;
+grant all on redmine.* to redmine@"localhost" identified by "password";
+flush privileges;
+</code></p>
+
+<h2>Ruby install</h2>
+
+<p>ユーザーを追加してrbenvでrubyインストール。<br/>
+ホームディレクトリとかお好きにどうぞ。</p>
+
+<p><code>
+mkdir -p /var/www/vhost
+useradd -d /var/www/vhost/redmine.youyo.info redmine.youyo.info
+chmod 755 /var/www/vhost/redmine.youyo.info
+su - redmine.youyo.info
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' &gt;&gt; ~/.bash_profile
+echo 'eval "$(rbenv init -)"' &gt;&gt; ~/.bash_profile
+exec $SHELL -l
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+exec $SHELL -l
+rbenv install 2.0.0-p481
+rbenv global 2.0.0-p481
+rbenv rehash
+gem install bundler
+rbenv rehash
+</code></p>
+
+<h2>Redmine install</h2>
+
+<p>そのまま<code>redmine.youyo.info</code>ユーザーでredmineをインストールしていきます。</p>
+
+<p>```
+cd
+wget http://www.redmine.org/releases/redmine-2.5.1.tar.gz
+tar xvzf redmine-2.5.1.tar.gz
+cd redmine-2.5.1/
+bundle install --without development test rmagick postgresql sqlite
+cp -a config/database.yml.example config/database.yml</p>
+
+<h2>vim config/database.yml</h2>
+
+<p>production:
+  adapter: mysql2
+  database: redmine
+  host: localhost
+  username: redmine
+  password: "password"</p>
+
+<h2>  encoding: utf8</h2>
+
+<p>echo "gem 'unicorn'" >> Gemfile
+bundle install --without development test rmagick postgresql sqlite
+RAILS_ENV=production rake db:migrate
+RAILS_ENV=production rake redmine:load_default_data
+rake generate_secret_token
+```</p>
+
+<p>テストで起動してみる。問題なければctrl＋cで終了しておく。</p>
+
+<p><code>
+bundle exec rails s -e production
+</code></p>
+
+<p>unicorn設定。</p>
+
+<p>```
+cp -a ~/.rbenv/versions/2.0.0-p481/lib/ruby/gems/2.0.0/gems/unicorn-4.8.3/examples/unicorn.conf.rb config/</p>
+
+<h2>vim config/unicorn.conf.rb</h2>
+
+<p>working_directory "/var/www/vhost/redmine.youyo.info/redmine-2.5.1"
+listen "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/sockets/unicorn.sock", :backlog => 64
+timeout 60
+pid "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/pids/unicorn.pid"</p>
+
+<p>stderr_path "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/log/unicorn.stderr.log"</p>
+
+<h2>stdout_path "/var/www/vhost/redmine.youyo.info/redmine-2.5.1/log/unicorn.stdout.log"</h2>
+
+<p>```</p>
+
+<p>起動テスト。</p>
+
+<p><code>
+bundle exec unicorn_rails -c config/unicorn.conf.rb -E production
+</code></p>
+
+<h2>Upstart config</h2>
+
+<p>upstartでredmine起動するようにします。</p>
+
+<p>```</p>
+
+<h2>vim /etc/init/redmine.conf</h2>
+
+<p>description "redmine"
+author "youyo"</p>
+
+<p>start on runlevel [2345]
+stop on runlevel [016]</p>
+
+<p>exec su - redmine.youyo.info -c "cd /var/www/vhost/redmine.youyo.info/redmine-2.5.1 &amp;&amp; bundle exec unicorn_rails -c config/unicorn.conf.rb -E production"</p>
+
+<h2>respawn</h2>
+
+<p>initctl start redmine
+```</p>
+
+<h2>Nginx install</h2>
+
+<p>nginxでproxyする設定します。</p>
+
+<p>```</p>
+
+<h2>vim /etc/yum.repos.d/nginx.repo</h2>
+
+<p>[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=0</p>
+
+<h2>enabled=1</h2>
+
+<p>yum install nginx
+rm -rf /etc/nginx/conf.d/*</p>
+
+<h2>vim /etc/nginx/nginx.conf</h2>
+
+<p>keepalive_timeout  10;
+proxy_redirect off;
+proxy_set_header Host                   $host;
+proxy_set_header X-Real-IP              $remote_addr;
+proxy_set_header X-Forwarded-Host       $host;
+proxy_set_header X-Forwarded-Server     $host;
+proxy_set_header X-Forwarded-For        $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto      $scheme;</p>
+
+<h2>server_tokens off;</h2>
+
+<h2>vim /etc/nginx/conf.d/redmine.conf</h2>
+
+<p>server {</p>
+
+<pre><code>    listen 80;
+    server_name redmine.youyo.info;
+    root /var/www/vhost/redmine.youyo.info/redmine-2.5.1/public;
+    location / {
+            if (!-f $request_filename) {
+                    proxy_pass http://unix:/var/www/vhost/redmine.youyo.info/redmine-2.5.1/tmp/sockets/unicorn.sock;
+                    break;
+            }
+    }
+</code></pre>
+
+<h2>}</h2>
+
+<p>nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful</p>
+
+<p>service nginx start
+chkconfig nginx on
+```</p>
+
+<h2>できあがり！</h2>
+
+<p>これで<code>http://redmine.youyo.info/</code>にアクセスすればredmine使えるはず！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[yumで古いバージョンのパッケージをインストールする]]></title>
+    <link href="http://blog.youyo.info/blog/2013/10/18/old-version-install/"/>
+    <updated>2013-10-18T14:18:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/10/18/old-version-install</id>
+    <content type="html"><![CDATA[<p><code>
+yum install nginx-1.4.2-1.el6.ngx --enablerepo=nginx
+</code></p>
+
+<p>バージョンまで指定してinstall。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx-1.4.1にアップデート]]></title>
+    <link href="http://blog.youyo.info/blog/2013/05/09/nginx-1-dot-4/"/>
+    <updated>2013-05-09T16:30:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/05/09/nginx-1-dot-4</id>
+    <content type="html"><![CDATA[<p>先日の記事(<a href="http://blog.youyo.info/blog/2013/03/31/nginx-spdy/">nginxにSPDYパッチあててみた</a>)でnginxのSPDY対応をすませた訳ですが、
+パッチをあてずとも正式にSPDY対応したnginx-1.4が出ちゃったのでアップデートします。<br/>
+あとwebsocketのリバースプロキシにも対応したそうですね。</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>CentOS6.3 x86_64</li>
+</ul>
+
+
+<h3>Install</h3>
+
+<p>手順はパッチをあてる以外、前回とほぼ同じです。<br/>
+しっかりバックアップを取ってから作業します。<br/>
+　<br/>
+まずは現在のconfigureオプションの確認から。</p>
+
+<p>```</p>
+
+<h1>nginx -V</h1>
+
+<p>nginx version: nginx/1.3.14
+built by gcc 4.4.6 20120305 (Red Hat 4.4.6-4) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' --with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module
+```</p>
+
+<p>これを元にビルドします。<br/>
+SPDYは前回のビルド時に有効にしていたのでもうありますね。<br/>
+<code>--with-openssl</code>と<code>--sbin-path</code>のpathだけ書き換えてビルドします。</p>
+
+<!--more-->
+
+
+<p>```
+mkdir /usr/local/src/nginx-1.4.1
+cd /usr/local/src/nginx-1.4.1
+wget http://nginx.org/download/nginx-1.4.1.tar.gz
+wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
+tar xvzf nginx-1.4.1.tar.gz
+tar xvzf openssl-1.0.1e.tar.gz
+cd nginx-1.4.1</p>
+
+<p>./configure \
+--prefix=/etc/nginx/ \
+--sbin-path=/usr/local/sbin/nginx-1.4.1 \
+--conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log \
+--http-log-path=/var/log/nginx/access.log \
+--pid-path=/var/run/nginx.pid \
+--lock-path=/var/run/nginx.lock \
+--http-client-body-temp-path=/var/cache/nginx/client_temp \
+--http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
+--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+--user=nginx --group=nginx --with-http_ssl_module \
+--with-http_realip_module \
+--with-http_addition_module \
+--with-http_sub_module \
+--with-http_dav_module \
+--with-http_flv_module \
+--with-http_mp4_module \
+--with-http_gzip_static_module \
+--with-http_random_index_module \
+--with-http_secure_link_module \
+--with-http_stub_status_module \
+--with-file-aio \
+--with-cc-opt='-O2 -g' \
+--with-openssl=/usr/local/src/nginx-1.4.1/openssl-1.0.1e \
+--with-http_spdy_module</p>
+
+<p>・
+・
+・</p>
+
+<p>Configuration summary
+  + using system PCRE library
+  + using OpenSSL library: /usr/local/src/nginx-1.4.1/openssl-1.0.1e
+  + md5: using OpenSSL library
+  + sha1: using OpenSSL library
+  + using system zlib library</p>
+
+<p>  nginx path prefix: "/etc/nginx/"
+  nginx binary file: "/usr/local/sbin/nginx-1.4.1"
+  nginx configuration prefix: "/etc/nginx"
+  nginx configuration file: "/etc/nginx/nginx.conf"
+  nginx pid file: "/var/run/nginx.pid"
+  nginx error log file: "/var/log/nginx/error.log"
+  nginx http access log file: "/var/log/nginx/access.log"
+  nginx http client request body temporary files: "/var/cache/nginx/client_temp"
+  nginx http proxy temporary files: "/var/cache/nginx/proxy_temp"
+  nginx http fastcgi temporary files: "/var/cache/nginx/fastcgi_temp"
+  nginx http uwsgi temporary files: "/var/cache/nginx/uwsgi_temp"
+  nginx http scgi temporary files: "/var/cache/nginx/scgi_temp"</p>
+
+<p>make
+sudo make install
+```</p>
+
+<h3>確認 &amp; restart</h3>
+
+<p>```</p>
+
+<h1>/usr/local/sbin/nginx-1.4.1 -V</h1>
+
+<p>nginx version: nginx/1.4.1
+built by gcc 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx-1.4.1 --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' --with-openssl=/usr/local/src/nginx-1.4.1/openssl-1.0.1e --with-http_spdy_module
+```</p>
+
+<p>問題なし！<br/>
+あとは<code>/usr/local/sbin/nginx</code>をリネームしたりへシンボリックリンク張ったりしていい感じにします。<br/>
+最後に再起動して完了！</p>
+
+<p>```</p>
+
+<h1>which nginx</h1>
+
+<p>/usr/local/sbin/nginx</p>
+
+<h1>mv /usr/local/sbin/nginx /usr/local/sbin/nginx-1.3.14</h1>
+
+<h1>ln -s /usr/local/sbin/nginx-1.4.1 /usr/local/sbin/nginx</h1>
+
+<h1>nginx -v</h1>
+
+<p>nginx version: nginx/1.4.1</p>
+
+<h1>nginx -t</h1>
+
+<p>nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful</p>
+
+<h1>service nginx restart</h1>
+
+<p>nginx を停止中:                                            [  OK  ]
+nginx を起動中:                                            [  OK  ]
+```</p>
+
+<h3>まとめ</h3>
+
+<ul>
+<li>nginxって現在のconfigureオプションが確認できるからソースからインストールするときも安心(´ω`)</li>
+<li>よってyumでインストールしたnginxからのアップデートも簡単！</li>
+<li>結果幸せです。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[nginxにSPDYパッチあててみた]]></title>
+    <link href="http://blog.youyo.info/blog/2013/03/31/nginx-spdy/"/>
+    <updated>2013-03-31T00:12:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/03/31/nginx-spdy</id>
+    <content type="html"><![CDATA[<p>nginxにSPDYパッチあててみました。<br/>
+参考サイトはこちら様。<br/>
+<a href="http://techblog.heartrails.com/2013/01/using-spry-in-nginx.html">http://techblog.heartrails.com/2013/01/using-spry-in-nginx.html</a><br/>
+　</p>
+
+<p>nginx自体はもうyumでインストールしていたので、configureオプションなどはほぼそのまま使用しています。
+sbin-pathの変更と使わなそうなmail関係のモジュールを外すのとspdyモジュールを追加してビルドです！</p>
+
+<h3>環境</h3>
+
+<ul>
+<li>CentOS6.3 x86_64</li>
+<li>nginx 1.3.14</li>
+<li>openssl-1.0.1e</li>
+</ul>
+
+
+<h3>Install</h3>
+
+<p>念のため設定ファイルとかバックアップとっておきましょう。<br/>
+現在のnginxのconfigureオプションを確認するには<code>nginx -V</code>です。</p>
+
+<p>```</p>
+
+<h1>nginx -V</h1>
+
+<p>nginx version: nginx/1.2.6
+built by gcc 4.4.4 20100726 (Red Hat 4.4.4-13) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-mail --with-mail_ssl_module --with-file-aio --with-ipv6 --with-cc-opt='-O2 -g'
+```</p>
+
+<!--more-->
+
+
+<p>これを元にビルドします。<br/>
+まずはソースをダウンロードしてきてパッチあてます。</p>
+
+<p><code>
+mkdir /usr/local/src/spdy
+cd /usr/local/src/spdy
+wget http://nginx.org/download/nginx-1.3.14.tar.gz
+wget http://nginx.org/patches/spdy/patch.spdy-70_1.3.14.txt
+wget http://www.openssl.org/source/openssl-1.0.1e.tar.gz
+tar xvzf nginx-1.3.14.tar.gz
+tar xvzf openssl-1.0.1e.tar.gz
+cd nginx-1.3.14
+patch -p1 &lt; ../patch.spdy-69_1.3.14.txt
+</code></p>
+
+<p>先ほどのconfigureオプションから<code>--sbin-path=/usr/local/sbin/nginx</code>への変更、<code>--with-mail</code>,<code>--with-mail_ssl_module</code>の削除、<code>--with-openssl=/usr/local/src/spdy/openssl-1.0.1e</code>,<code>--with-http_spdy_module</code>を追加してインストールします。</p>
+
+<p>```
+./configure --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log \
+--pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp \
+--http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
+--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
+--user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module \
+--with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module \
+--with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module \
+--with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' \
+--with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module</p>
+
+<p>・
+・
+・</p>
+
+<p>Configuration summary
+  + using system PCRE library
+  + using OpenSSL library: /usr/local/src/spdy/openssl-1.0.1e
+  + md5: using OpenSSL library
+  + sha1: using OpenSSL library
+  + using system zlib library</p>
+
+<p>  nginx path prefix: "/etc/nginx/"
+  nginx binary file: "/usr/local/sbin/nginx"
+  nginx configuration prefix: "/etc/nginx"
+  nginx configuration file: "/etc/nginx/nginx.conf"
+  nginx pid file: "/var/run/nginx.pid"
+  nginx error log file: "/var/log/nginx/error.log"
+  nginx http access log file: "/var/log/nginx/access.log"
+  nginx http client request body temporary files: "/var/cache/nginx/client_temp"
+  nginx http proxy temporary files: "/var/cache/nginx/proxy_temp"
+  nginx http fastcgi temporary files: "/var/cache/nginx/fastcgi_temp"
+  nginx http uwsgi temporary files: "/var/cache/nginx/uwsgi_temp"
+  nginx http scgi temporary files: "/var/cache/nginx/scgi_temp"</p>
+
+<p>make
+sudo make install
+```</p>
+
+<h3>確認</h3>
+
+<p><code>
+/usr/local/sbin/nginx -V
+nginx version: nginx/1.3.14
+built by gcc 4.4.6 20120305 (Red Hat 4.4.6-4) (GCC)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx/ --sbin-path=/usr/local/sbin/nginx --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-file-aio --with-cc-opt='-O2 -g' --with-openssl=/usr/local/src/spdy/openssl-1.0.1e --with-http_spdy_module
+</code></p>
+
+<p>いい感じです(´ω`)<br/>
+作業してて気づいたんですけどnginxってSNIサポートしてるんですね！ 今度検証してみたいです(脱線)</p>
+
+<p>あとは起動スクリプト内のnginxへのパスを修正して実際にアクセスしてみます。</p>
+
+<p>```
+vim /etc/init.d/nginx</p>
+
+<h1>nginx=${NGINX-/usr/sbin/nginx}</h1>
+
+<p>nginx=${NGINX-/usr/local/sbin/nginx}</p>
+
+<p>vim /etc/sysconfig/nginx</p>
+
+<h1>NGINX=/usr/sbin/nginx</h1>
+
+<p>NGINX=/usr/local/sbin/nginx
+```</p>
+
+<p>``` sh nginx.conf
+server {
+  listen 443 ssl spdy default_server;
+  server_name youyo.info;</p>
+
+<p>  ssl_certificate       youyo.info.crt;
+  ssl_certificate_key   youyo.info.key;</p>
+
+<p>  location / {</p>
+
+<pre><code>root /var/www/youyo.info;
+index index.html;
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p><code>sh
+/usr/local/sbin/nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+/etc/init.d/nginx restart
+</code></p>
+
+<p>アクセスしてみると...?</p>
+
+<p><img src="http://cloudfront.youyo.info/2013-03-31-nginx-spdy/spdy-test.png" alt="spdy-test" /></p>
+
+<p><img src="http://cloudfront.youyo.info/2013-03-31-nginx-spdy/chrome.png" alt="chrome" /></p>
+
+<p>無事SPDYで接続できたようです！<br/>
+chromeのエクステンションやら<code>chrome://net-internals/#spdy</code>で確認できたので大丈夫なはずです！(不安</p>
+
+<h3>まとめ</h3>
+
+<ul>
+<li>意外と簡単にできた</li>
+<li>接続が速くなったかはわかっていない(テストしてないから</li>
+<li>SNIも試してみたくなった</li>
+<li>証明書の期限が切れる寸前だとわかった(あとあと一週間...</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Nginx+php-fpmでphpMyAdminを動かす]]></title>
+    <link href="http://blog.youyo.info/blog/2013/02/13/phpmyadmin-nginx/"/>
+    <updated>2013-02-13T23:17:00+09:00</updated>
+    <id>http://blog.youyo.info/blog/2013/02/13/phpmyadmin-nginx</id>
+    <content type="html"><![CDATA[<ul>
+<li><a href="#N0">phpmyadmin設置</a></li>
+<li><a href="#N1">php-fpm設定</a></li>
+<li><a href="#N2">nginx設定</a></li>
+<li><a href="#N3">nginxでphpのセッションを扱えるようにしておく</a></li>
+</ul>
+
+
+<br>
+
+
+<h3><a id="N0">phpmyadmin設置</a></h3>
+
+<p>適当にダウンロードしてきて適当に設置。</p>
+
+<p>``` sh
+cd /usr/local/src/
+sudo wget http://downloads.sourceforge.net/project/phpmyadmin/phpMyAdmin/3.5.6/phpMyAdmin-3.5.6-all-languages.tar.gz?r=http%3A%2F%2Fwww.phpmyadmin.net%2Fhome_page%2Fdownloads.php&amp;ts=1360757374&amp;use_mirror=jaist
+sudo tar xvzf phpMyAdmin-3.5.6-all-languages.tar.gz
+sudo mv phpMyAdmin-3.5.6-all-languages /var/www/phpMyAdmin
+sudo chown -R nginx:nginx /var/www/phpMyAdmin/</p>
+
+<h2>```</h2>
+
+<!--more-->
+
+
+
+
+<br><br>
+
+
+<h3><a id="N1">php-fpm設定</a></h3>
+
+<p>confファイルを作成してphp-fpm起動。</p>
+
+<p><code>sh
+cd /etc/php-fpm.d/
+sudo vim phpMyAdmin.conf
+sudo /etc/init.d/php-fpm start
+</code></p>
+
+<p>``` sh /etc/php-fpm.d/phpMyAdmin.conf
+[phpMyAdmin]
+listen = /var/run/php-fpm/phpMyAdmin.socket
+;listen.backlog = -1
+listen.allowed_clients = 127.0.0.1
+listen.owner = nginx
+listen.group = nginx
+;listen.mode = 0666
+user = nginx
+group = nginx
+pm = dynamic
+pm.max_children = 20
+pm.start_servers = 5
+pm.min_spare_servers = 4
+pm.max_spare_servers = 5
+pm.max_requests = 100
+;pm.status_path = /status
+;ping.path = /ping
+;ping.response = pong
+;request_terminate_timeout = 0
+;request_slowlog_timeout = 0
+slowlog = /var/log/php-fpm/phpMyAdmin-slow.log
+;rlimit_files = 1024
+;rlimit_core = 0
+;chroot =
+;chdir = /var/www
+;catch_workers_output = yes
+;security.limit_extensions = .php .php3 .php4 .php5
+;env[HOSTNAME] = $HOSTNAME
+;env[PATH] = /usr/local/bin:/usr/bin:/bin
+;env[TMP] = /tmp
+;env[TMPDIR] = /tmp
+;env[TEMP] = /tmp
+;php_admin_value[sendmail_path] = /usr/sbin/sendmail -t -i -f www@my.domain.com
+;php_flag[display_errors] = off
+php_admin_value[error_log] = /var/log/php-fpm/phpMyAdmin-error.log
+php_admin_flag[log_errors] = on
+;php_admin_value[memory_limit] = 32M</p>
+
+<h2>```</h2>
+
+<br><br>
+
+
+<h3><a id="N2">nginx設定</a></h3>
+
+<p>適当にconf書いて起動。<br/>
+redirectとかアクセス制限とかも適当に。</p>
+
+<p><code>sh
+cd /etc/nginx/conf.d/
+sudo vim phpMyAdmin.conf
+sudo nginx -t
+sudo /etc/init.d/nginx restart
+</code></p>
+
+<p>``` sh /etc/nginx/conf.d/phpMyAdmin.conf
+server {
+  listen 80;
+  server_name your.webserver;
+  root /var/www;</p>
+
+<p>  location / {</p>
+
+<pre><code>rewrite ^(.*)$ http://blog.youyo.info$1 permanent;
+</code></pre>
+
+<p>  }</p>
+
+<p>  location /phpMyAdmin {</p>
+
+<pre><code>index index.php;
+
+allow   myIP;
+deny    all;
+</code></pre>
+
+<p>  }</p>
+
+<p>  location ~ .php$ {</p>
+
+<pre><code>fastcgi_pass   unix:/var/run/php-fpm/phpMyAdmin.socket;
+fastcgi_index  index.php;
+fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+include        fastcgi_params;
+</code></pre>
+
+<p>  }</p>
+
+<p>  location ~ /.ht {</p>
+
+<pre><code>deny all;
+</code></pre>
+
+<p>  }
+}</p>
+
+<h2>```</h2>
+
+<br><br>
+
+
+<h3><a id="N3">nginxでphpのセッションを扱えるようにしておく</a></h3>
+
+<p>デフォルトapacheな感じでnginxユーザーだとパーミッション許可されてないので許可しておく。(念のためです)</p>
+
+<p>``` sh
+sudo ls -l /var/lib/php/
+合計 4
+drwxrwx--- 2 root apache 4096  2月 12 16:23 2013 session</p>
+
+<p>sudo chown nginx /var/lib/php/session/</p>
+
+<h2>```</h2>
+
+<br><br>
+
+
+<p>あとはhttp://your.webserver/phpMyAdmin/にアクセスできるようになってるはずなので、適当にGUIから設定して終了。</p>
+
+<ul>
+<li>nginxのalias設定意味わかんね(結局使わなかった)</li>
+<li>"File Not Found"のエラーはもう見たくない</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
