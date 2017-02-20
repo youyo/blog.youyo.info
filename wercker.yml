@@ -6,7 +6,7 @@ build:
     - script:
       name: Build static pages.
       code: |-
-        hugo
+        hugo; echo ok
 
 deploy:
   box:
