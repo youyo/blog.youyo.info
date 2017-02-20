@@ -1,6 +1,6 @@
 build:
   box:
-    id: youyo/hugo:0.18.1
+    id: youyo/hugo:0.18
     cmd: /bin/sh
   steps:
     - script:
