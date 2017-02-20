@@ -1,0 +1,29 @@
+build:
+  box:
+    id: youyo/hugo:latest
+    cmd: /bin/sh
+  steps:
+    - script:
+      name: Build static pages.
+      code: |-
+        hugo
+
+deploy:
+  box:
+    id: youyo/awscli:1.10.60
+    cmd: /bin/sh
+  steps:
+    - script:
+      name: Deploy
+      code: |-
+        aws s3 sync --delete public/ s3://blog.youyo.info/
+
+cache:
+  box:
+    id: youyo/curl:latest
+    cmd: /bin/sh
+  steps:
+    - script:
+      name: Clear Cache
+      code: |-
+        curl -X POST -H "Fastly-Key: ${FASTLY_APIKEY}" https://api.fastly.com/service/${FASTLY_SERVICE_ID}/purge_all
