@@ -18,8 +18,8 @@ canonifyurls = true
 
 [author]
   name = "youyo"
-  bio = "I'm cloud engineer and software engineer.\nThis is a daily memorandum."
-  job = "Cloud engineer\nSoftware engineer"
+  bio = "I'm cloud engineer and software engineer.<br/>This is a daily memorandum."
+  job = "Cloud engineer<br/>Software engineer"
   location = "Sendai in Japan"
   gravatarEmail = "1003ni2@gmail.com"
   picture = "https://cdn1.iconfinder.com/data/icons/ninja-things-1/1772/ninja-simple-512.png"
@@ -102,4 +102,4 @@ canonifyurls = true
     icon = ""
     url = "/#about"
   [params.footer]
-    copyright = "youyo_. All rights reserved"
+    copyright = "youyo_"
