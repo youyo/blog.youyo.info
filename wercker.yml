@@ -7,6 +7,7 @@ build:
       name: Build static pages.
       code: |-
         hugo
+        sed -i "" 's|//blog.youyo.info|https://blog.youyo.info|g' public/sitemap.xml
   after-steps:
     - slack-notifier:
       url: 'https://hooks.slack.com/services/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'
