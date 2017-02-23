@@ -29,7 +29,7 @@ tags:
 
 ---
 
-現状はmacOSのみ対応です. (Linuxな人は `go build` )  
+現状はmacOSのみ対応です. (Linuxな人は `go build` . Windows? 知らない子ですね.)  
 バイナリを持ってきてパスの通ったところにおく.
 
 ```
