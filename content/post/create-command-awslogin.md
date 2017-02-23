@@ -33,7 +33,7 @@ tags:
 バイナリを持ってきてパスの通ったところにおく.
 
 ```
-$ wget https://github.com/youyo/awslogin/releases/download/0.1.1/awslogin_darwin_amd64.zip
+$ wget https://github.com/youyo/awslogin/releases/download/0.1.2/awslogin_darwin_amd64.zip
 $ unzip awslogin_darwin_amd64.zip
 ```
 
