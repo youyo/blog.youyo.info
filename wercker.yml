@@ -20,7 +20,7 @@ deploy:
     - script:
       name: Deploy
       code: |-
-        aws s3 sync --delete public/ s3://blog.youyo.info/
+        aws s3 sync --storage-class REDUCED_REDUNDANCY --delete public/ s3://blog.youyo.info/
   after-steps:
     - slack-notifier:
       url: 'https://hooks.slack.com/services/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'
