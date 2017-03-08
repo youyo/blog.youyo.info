@@ -20,7 +20,7 @@ https://github.com/youyo/grl.i-o.sh
 
 ## これは何？
 
-Github releasesにある最新のダウンロードパッケージのURLを返してくれるサービス.
+Github releasesにある最新のダウンロードパッケージのURLを返してくれるサイト.
 
 ## 使用例
 
