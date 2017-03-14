@@ -78,7 +78,7 @@ canonifyurls = true
   identifier = "archives"
   name = "Archived Blog"
   pre = "<i class=\"sidebar-button-icon fa fa-lg fa-archive\"></i>"
-  url = "//blog.youyo.info/blog/archives/"
+  url = "/blog/archives/"
 
 [[menu.misc]]
   weight = 0
