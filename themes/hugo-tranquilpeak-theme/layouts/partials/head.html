@@ -30,7 +30,7 @@
     <meta name="generator" content="Hugo {{ .Hugo.Version }}">
     <title>{{ with .Title }}{{ . }}{{ else }}{{ .Site.Title }}{{ end }}</title>
     <meta name="author" content="{{ .Site.Author.name }}">
-    <meta name="keywords" content="{{ with .Keywords }}{{ delimit . ", " }}{{ end }}{{ if .Site.Params.keywords }}, {{ delimit .Site.Params.keywords ", " }}{{ end }}">
+    <meta name="keywords" content="{{ with .Params.tags }}{{ delimit . ", " }}{{ end }}{{ if .Site.Params.keywords }}, {{ delimit .Site.Params.keywords ", " }}{{ end }}">
 
     <link rel="icon" href="/favicon.png">
     {{ with .RSSLink }}
@@ -40,19 +40,15 @@
     <!-- open graph data -->
     <meta name="description" content="{{ if .Description }}{{ .Description }}{{ else if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}">
     <meta property="og:description" content="{{ if .Description }}{{ .Description }}{{ else if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    <meta property="og:type" content="blog">
+    <meta property="og:type" content="article">
     <meta property="og:title" content="{{ with .Title }}{{ . }}{{ else }}{{ .Site.Title }}{{ end }}">
-    <meta property="og:url" content="{{ .URL }}">
+    <meta property="og:url" content="https://blog.youyo.info{{ .URL }}">
     <meta property="og:site_name" content="{{ .Site.Title }}">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ .Site.Title }}">
     <meta name="twitter:description" content="{{ if .Description }}{{ .Description }}{{ else if .IsPage }}{{ .Summary }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    {{ with .Site.Author.twitter }}
-      <meta name="twitter:creator" content="@{{ . }}">
-    {{ end }}
-    {{ with .Site.Params.fbAppId }}
-      <meta property="fb:app_id" content="{{ . }}">
-    {{ end }}
+    <meta name="twitter:creator" content="@youyo_">
+	<meta property="fb:app_id" content="198903540593450">
 
     <!-- Facebook admins -->
     {{ with .Site.Params.fbAdminIds }}
@@ -61,17 +57,11 @@
       {{ end }}
     {{ end }}
 
-    {{ if .Scratch.Get "gravatarEmail" }}
-      <meta property="og:image" content="//www.gravatar.com/avatar/{{ (md5 (.Scratch.Get "gravatarEmail")) | urlize }}?s=640">
-    {{ else if .Site.Author.picture }}
-      <meta property="og:image" content="{{ .Site.Author.picture | absURL }}">
-    {{ end }}
-
     {{ with .Params.thumbnailImage }}
-      <meta property="og:image" content="{{ . | absURL }}">
+      <meta property="og:image" content="https:{{ . | absURL }}">
     {{ end }}
     {{ with .Params.coverImage }}
-      <meta property="og:image" content="{{ . | absURL }}">
+      <meta property="og:image" content="https:{{ . | absURL }}">
     {{ end }}
     {{ with .Params.gallery }}
       {{ range . }}
