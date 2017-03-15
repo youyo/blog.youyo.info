@@ -75,10 +75,10 @@ canonifyurls = true
   url = "https://www.facebook.com/naoto.ishizawa.94"
 [[menu.links]]
   weight = 3
-  identifier = "archives"
-  name = "Archived Blog"
-  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-archive\"></i>"
-  url = "/blog/archives/"
+  identifier = "keybase"
+  name = "Keybase"
+  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-key\"></i>"
+  url = "https://keybase.io/youyo"
 
 [[menu.misc]]
   weight = 0
