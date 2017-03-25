@@ -12,7 +12,10 @@ tags:
 ---
 
 `awslogin` というコマンドを作りました.  
-[https://github.com/youyo/awslogin](https://github.com/youyo/awslogin)
+[https://github.com/youyo/awslogin](https://github.com/youyo/awslogin)  
+  
+[update]  
+[MFA対応した](/post/2017/03/17/awslogin_support_mfa/)
 
 
 ## これは何？
@@ -30,10 +33,13 @@ tags:
 ---
 
 現状はmacOSのみ対応です. (Linuxな人は `go build` . Windows? 知らない子ですね.)  
-バイナリを持ってきてパスの通ったところにおく.
+バイナリを持ってきてパスの通ったところにおく.  
+  
+[update]  
+[Linux用のバイナリも作った](https://github.com/youyo/awslogin/releases)
 
 ```
-$ wget https://github.com/youyo/awslogin/releases/download/0.1.2/awslogin_darwin_amd64.zip
+$ curl -LO `curl -s 'http://grl.i-o.sh/youyo/awslogin?suffix=darwin_amd64.zip'`
 $ unzip awslogin_darwin_amd64.zip
 ```
 
