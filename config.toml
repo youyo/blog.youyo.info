@@ -86,6 +86,12 @@ canonifyurls = true
   name = "RSS"
   pre = "<i class=\"sidebar-button-icon fa fa-lg fa-rss\"></i>"
   url = "/index.xml"
+[[menu.misc]]
+  weight = 1
+  identifier = "wishlist"
+  name = "Wish List"
+  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-shopping-bag\"></i>"
+  url = "https://www.amazon.co.jp/registry/wishlist/2EMFQQSR5140G"
 
 [params]
   clearReading = true
