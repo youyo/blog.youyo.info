@@ -15,6 +15,9 @@ tags:
 [https://github.com/youyo/awslogin](https://github.com/youyo/awslogin)  
   
 [update]  
+コマンドオプションやインストール方法など変更になっているので, 詳細は上記Github READMEを参照. 
+  
+[update]  
 [MFA対応した](/post/2017/03/17/awslogin_support_mfa/)
 
 
