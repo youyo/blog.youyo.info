@@ -78,7 +78,7 @@
                 {{ $path := .path }}
                 <div id="posts-list-{{ .name | urlize }}" class="archive box" data-category="{{ .name }}" data-parent-categories="" style="display: block;">
                   <h4 class="archive-title text-xlarge">
-                    <a class="link-unstyled" href="{{ .name | urlize }}">{{ .name }} ({{ $.Scratch.GetSortedMapValues $path | len }})</a>
+                    <a class="link-unstyled" href="{{ .name | urlize }}/">{{ .name }} ({{ $.Scratch.GetSortedMapValues $path | len }})</a>
                   </h4>
                   <ul class="archive-posts">
                     {{ range ($.Scratch.GetSortedMapValues $path) }}
@@ -99,7 +99,7 @@
               {{ range .Data.Terms.ByCount }}
               <div id="posts-list-{{ .Name | urlize }}" class="archive box" data-category="{{ .Name }}" style="display: block;">
                 <h4 class="archive-title text-xlarge">
-                  <a class="link-unstyled" href="{{ .Name | urlize }}">{{ .Name }} ({{ .Pages | len }})</a>
+                  <a class="link-unstyled" href="{{ .Name | urlize }}/">{{ .Name }} ({{ .Pages | len }})</a>
                 </h4>
                 <ul class="archive-posts">
                   {{ range .Pages.ByDate }}

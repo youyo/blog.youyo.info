@@ -29,7 +29,7 @@
               {{ range .Data.Terms.ByCount }}
                 <div id="{{ .Name | urlize }}-list" class="archive box" data-tag="{{ .Name | lower }}">
                   <h4 class="archive-title">
-                    <a class="link-unstyled" href="{{ .Name | urlize }}">
+                    <a class="link-unstyled" href="{{ .Name | urlize }}/">
                       {{ .Name }} ({{ .Pages | len }})
                     </a>
                   </h4>
