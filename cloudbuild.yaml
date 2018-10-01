@@ -1,6 +1,7 @@
 steps:
   - name: "youyo/hugo:0.39"
     entrypoint: 'hugo'
-  - name: "gcr.io/cloud-builders/gcloud"
+  - name: "google/cloud-sdk:alpine"
+    entrypoint: 'gcloud'
     args: ["--quiet", "app", "deploy"]
 timeout: "1600s"
