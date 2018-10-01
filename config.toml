@@ -35,13 +35,13 @@ canonifyurls = true
   identifier = "categories"
   name = "Categories"
   pre = "<i class=\"sidebar-button-icon fa fa-lg fa-bookmark\"></i>"
-  url = "/categories"
+  url = "/categories/"
 [[menu.main]]
   weight = 2
   identifier = "tags"
   name = "Tags"
   pre = "<i class=\"sidebar-button-icon fa fa-lg fa-tags\"></i>"
-  url = "/tags"
+  url = "/tags/"
 #[[menu.main]]
 #  weight = 3
 #  identifier = "archives"
