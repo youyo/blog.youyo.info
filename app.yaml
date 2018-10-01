@@ -1,0 +1,19 @@
+runtime: python37
+api_version: 1
+# service: __BRANCH_NAME__
+
+handlers:
+  - url: /
+    static_files: public/index.html
+    upload: /
+
+  - url: /(.*)/$
+    static_files: public/\1/index.html
+    upload: public/.*/index\.html
+
+  - url: /(.*)$
+    static_files: public/\1/index.html
+    upload: public/.*/index\.html
+
+  - url: /
+    static_dir: public

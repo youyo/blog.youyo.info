@@ -1,0 +1,11 @@
+.gcloudignore
+cloudbuild.yaml
+Makefile
+content/
+static/
+.git/
+themes/
+.envrc
+.gitignore
+config.toml
+resources/
