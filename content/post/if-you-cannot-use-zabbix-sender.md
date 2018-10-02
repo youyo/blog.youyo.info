@@ -35,6 +35,6 @@ ____________________________________O/_______
 ```
 
 ```
-$ curl -s -X POST -H 'Content-Type: application/json' -d '{"host":"some-host","key":"some-key","value":"some-value"}' http://127.0.0.1:1323/
-ZBXDZ{"response":"success","info":"processed: 0; failed: 1; total: 1; seconds spent: 0.000021"}%
+$ curl -s -X POST -H 'Content-Type: application/json' -d '{"host":"sender-test","key":"sender.test","value":"100"}' http://127.0.0.1:1323/
+ZBXDZ{"response":"success","info":"processed: 1; failed: 0; total: 1; seconds spent: 0.000030"}%
 ```
