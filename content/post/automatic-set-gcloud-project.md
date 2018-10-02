@@ -13,6 +13,8 @@ tags:
 
 gcloudコマンドが使用するprojectの設定は, 環境変数で設定することはできず `gcloud config set project PROJECTID` コマンドを使用する必要があります.
 
+<!--more-->
+
 >     --project=PROJECT_ID
         The Google Cloud Platform project name to use for this invocation. If
         omitted, then the current project is assumed; the current project can
