@@ -1,6 +1,6 @@
 ---
 title: "ディレクトリを切り替えたときに自動的にGCP Projectを設定する"
-thumbnailImage: images/eye-catch/default.png
+thumbnailImage: images/eye-catch/gcp.png
 thumbnailImagePosition: left
 metaAlignment: left
 date: 2018-10-02
