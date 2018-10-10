@@ -27,6 +27,11 @@ generate:
 deploy: generate
 	gcloud --quiet app deploy
 
+## Server
+server:
+	open http://localhost:1313/
+	hugo -w server
+
 ## Show help
 help:
 	@make2help $(MAKEFILE_LIST)
