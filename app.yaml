@@ -1,6 +1,4 @@
 runtime: python37
-api_version: 1
-# service: __BRANCH_NAME__
 
 handlers:
   - url: /
